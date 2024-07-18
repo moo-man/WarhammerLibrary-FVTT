@@ -1,0 +1,21 @@
+{
+  "name": "warhammer-lib",
+  "version": "1.0.0",
+  "description": "Shared code between Warhammer FoundryVTT systems",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c --watch",
+    "lint": "npx eslint ./src/**"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@stylistic/eslint-plugin-js": "^2.3.0",
+    "eslint": "^9.6.0",
+    "eslint-plugin-jsdoc": "^48.5.2",
+    "rollup": "^4.18.0",
+    "rollup-plugin-copy": "^3.5.0"
+  }
+}
