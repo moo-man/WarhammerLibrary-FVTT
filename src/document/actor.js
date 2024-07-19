@@ -7,12 +7,6 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 {
     _itemTypes = null;
 
-    prepareBaseData() 
-    {
-        this._itemTypes = null;
-    }
-
-
     get itemTypes()
     {
         if (!this._itemTypes) 
@@ -20,6 +14,23 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             this._itemTypes = super.itemTypes;
         }
         return this._itemTypes;
+    }
+
+    prepareBaseData()
+    {
+        this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+        this._itemTypes = null; 
+        this.system.computeBase();
+        this.runScripts("prepareBaseData", {actor : this});
+    }
+
+    prepareDerivedData()
+    {
+        this.runScripts("prePrepareDerivedData", {actor : this});
+        this.system.computeDerived();
+        this.items.forEach(i => i.prepareOwnedData());
+        this.runScripts("prepareOwnedItems", {actor : this});
+        this.runScripts("postPrepareDerivedData", {actor : this});
     }
 
     /**
@@ -72,7 +83,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             // Empty array => all items
             // No flag => Should not apply to items
             // Array with IDs => Apply only to those IDs
-            let targeted = e.getFlag("wfrp4e", "itemTargets");
+            let targeted = e.system.transferData.itemTargetIDs;
             if (targeted) 
             {
                 if (targeted.length) 

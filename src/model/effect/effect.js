@@ -21,7 +21,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             enableConditionScript: new fields.StringField({}),
             filter: new fields.StringField({}),
             prompt: new fields.BooleanField({ initial: false }),
-            itemTargetsData: new fields.ArrayField(new fields.StringField({}, { nullable: true }))
+            itemTargetIDs: new fields.ArrayField(new fields.StringField({}, { nullable: true }))
         });
 
         schema.scriptData = new fields.ArrayField(new fields.SchemaField({

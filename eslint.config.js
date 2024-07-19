@@ -47,6 +47,8 @@ export default [
                 $ : "readonly",
                 PIXI : "readonly",
                 SceneNavigation : "readonly",
+                CONST : "readonly",
+                MeasuredTemplate : "readonly",
                 ...globals.browser
             }
         }

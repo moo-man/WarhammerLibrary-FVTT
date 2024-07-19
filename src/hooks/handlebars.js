@@ -8,10 +8,10 @@ export default function ()
 
     Hooks.on("ready", () => 
     {
-        // AOS config needs to be created, so put this in ready
         loadTemplates({            
             avoidTestDetails: systemConfig().avoidTestTemplate,
-            dialogModifiers: "modules/warhammer-lib/templates/partials/dialog-modifiers.hbs"
+            dialogModifiers: "modules/warhammer-lib/templates/partials/dialog-modifiers.hbs",
+            effectButtons: "modules/warhammer-lib/templates/partials/effect-buttons.hbs"
         });
     });
 }

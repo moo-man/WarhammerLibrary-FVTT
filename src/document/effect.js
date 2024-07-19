@@ -4,7 +4,6 @@ import WarhammerScript from "../system/script";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
-
     // Config object used by systems to hide properties that aren't relevant
     static CONFIGURATION = {
         zones : false,

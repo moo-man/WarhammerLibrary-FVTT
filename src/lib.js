@@ -15,9 +15,13 @@ import { WarhammerItem } from "./document/item";
 import { BaseWarhammerModel } from "./model/base";
 import { BaseWarhammerActorModel } from "./model/actor";
 import { BaseWarhammerItemModel } from "./model/item";
-
+import defaultWarhammerConfig from "./system/config";
 import hooks from "./hooks/hooks";
 import { SocketHandlers } from "./util/socket-handlers";
+import TokenHelpers from "./util/token-helpers";
+import { WarhammerTestBase } from "./system/test";
+import AreaTemplate from "./util/area-template";
+import WarhammerChatListeners from "./util/chat-listeners";
 hooks();
 
 // This prevents namespace conflicts when files destructure foundry.utils
@@ -46,5 +50,10 @@ game.warhammer = {
     BaseWarhammerModel,
     BaseWarhammerActorModel,
     BaseWarhammerItemModel,
-    SocketHandlers
+    SocketHandlers,
+    defaultWarhammerConfig,
+    TokenHelpers,
+    WarhammerTestBase,
+    AreaTemplate,
+    WarhammerChatListeners
 };

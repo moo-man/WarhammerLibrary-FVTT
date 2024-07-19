@@ -47,9 +47,9 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
     {
         let data = {};
         data.script = this._dereference("script");
-        setProperty(data, "options.dialog.hideScript", this._dereference("options.dialog.hideScript"));
-        setProperty(data, "options.dialog.activateScript", this._dereference("options.dialog.activateScript"));
-        setProperty(data, "options.dialog.submissionScript", this._dereference("options.dialog.submissionScript"));
+        setProperty(data, "options.hideScript", this._dereference("options.hideScript"));
+        setProperty(data, "options.activateScript", this._dereference("options.activateScript"));
+        setProperty(data, "options.submissionScript", this._dereference("options.submissionScript"));
         return data;
     }
 
@@ -89,7 +89,7 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
         }
         else 
         {
-            return !!(getProperty(object, "options.dialog." + type) || "").match(regex);
+            return !!(getProperty(object, "options." + type) || "").match(regex);
         }
     }
 
@@ -108,19 +108,19 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
         scriptObject.trigger = formData.trigger;
         if (hasProperty(formData, "hideScript"))
         {
-            setProperty(scriptObject, "options.dialog.hideScript", formData.hideScript);
+            setProperty(scriptObject, "options.hideScript", formData.hideScript);
         }
         if (hasProperty(formData, "activateScript"))
         {
-            setProperty(scriptObject, "options.dialog.activateScript", formData.activateScript);
+            setProperty(scriptObject, "options.activateScript", formData.activateScript);
         }
         if (hasProperty(formData, "submissionScript"))
         {
-            setProperty(scriptObject, "options.dialog.submissionScript", formData.submissionScript);
+            setProperty(scriptObject, "options.submissionScript", formData.submissionScript);
         }
         
-        setProperty(scriptObject, "options.dialog.targeter", formData.targeter);
-        setProperty(scriptObject, "options.immediate.deleteEffect", formData.deleteEffect);
+        setProperty(scriptObject, "options.targeter", formData.targeter);
+        setProperty(scriptObject, "options.deleteEffect", formData.deleteEffect);
         if(script)
         {
             scriptObject.script = script;

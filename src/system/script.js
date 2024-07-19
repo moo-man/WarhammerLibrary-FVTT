@@ -49,7 +49,7 @@ export default class WarhammerScript
     // Dialog modifiers only
     hidden(args)
     {
-        if (!this.options.dialog?.hideScript)
+        if (!this.options?.hideScript)
         {
             return false; // Default to not hidden if no script
         }
@@ -57,7 +57,7 @@ export default class WarhammerScript
         {
             try 
             {
-                return this._runSubscript(args, this.options.dialog?.hideScript, "Hide");
+                return this._runSubscript(args, this.options?.hideScript, "Hide");
             }
             catch(e)
             {
@@ -69,7 +69,7 @@ export default class WarhammerScript
     // Dialog modifiers only
     activated(args)
     {
-        if (!this.options.dialog?.activateScript)
+        if (!this.options?.activateScript)
         {
             return false; // Default to not activated if no script
         }
@@ -77,7 +77,7 @@ export default class WarhammerScript
         {
             try 
             {
-                return this._runSubscript(args, this.options.dialog?.activateScript, "Activate");
+                return this._runSubscript(args, this.options?.activateScript, "Activate");
             }
             catch(e)
             {
@@ -89,9 +89,9 @@ export default class WarhammerScript
     // Dialog modifiers only
     submission(args)
     {
-        if (this.options.dialog?.submissionScript)
+        if (this.options?.submissionScript)
         {
-            return this._runSubscript(args, this.options.dialog?.submissionScript, "Submission");
+            return this._runSubscript(args, this.options?.submissionScript, "Submission");
         }
     }
 
