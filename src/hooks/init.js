@@ -1,5 +1,5 @@
 import { systemConfig } from "../util/utility";
-const {hasProperty} = foundry.utils;
+const {hasProperty, getProperty} = foundry.utils;
 
 /**
  *
@@ -30,6 +30,15 @@ export default function ()
             {return systemConfig()[obj]?.[key];}
             
         });
+
+        Handlebars.registerHelper("lookup", function (obj, key) 
+        {
+            if (obj[key])
+            {return obj[key];}
+            else 
+            {return getProperty(obj, key);};
+        });
+    
 
         Handlebars.registerHelper("pct", function (part, whole, max100=true) 
         {

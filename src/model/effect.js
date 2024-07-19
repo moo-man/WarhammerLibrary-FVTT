@@ -1,5 +1,5 @@
-import WarhammerScript from "../../system/script";
-import { AvoidTestModel } from "./avoidTest";
+import WarhammerScript from "../system/script";
+import { AvoidTestModel } from "./embedded/avoidTest";
 
 let fields = foundry.data.fields;
 

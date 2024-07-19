@@ -82,7 +82,7 @@ export default class AreaTemplate extends MeasuredTemplate
                     effectUuid: effectUuid,
                     messageId: messageId,
                     round: game.combat?.round ?? -1,
-                    instantaneous : effect.applicationData.areaType == "instantaneous"
+                    instantaneous : effect.system.area.duration == "instantaneous"
                 }
             }
         };
@@ -213,7 +213,7 @@ export default class AreaTemplate extends MeasuredTemplate
         this.document.updateSource(destination);
         this.#events.resolve(canvas.scene.createEmbeddedDocuments("MeasuredTemplate", [this.document.toObject()]).then(templates => 
         {
-            let test = game.messages.get(templates[0].flags.wfrp4e.messageId)?.getTest();
+            let test = game.messages.get(templates[0].flags.wfrp4e.messageId)?.system?.test;
             if (test && test.data.context.templates)
             {
                 test.data.context.templates = test.data.context.templates.concat(templates[0].id);

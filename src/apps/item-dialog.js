@@ -1,4 +1,4 @@
-import { localize } from "../util/utility";
+import { localize, systemConfig } from "../util/utility";
 const {getProperty} = foundry.utils;
 
 export default class ItemDialog extends Dialog 
@@ -14,13 +14,14 @@ export default class ItemDialog extends Dialog
     {
         const options = super.defaultOptions;
         options.resizable = true;
+        options.height = 500;
         options.classes.push("item-dialog");
         return options;
     }
 
     static _items = [];
 
-    static async create(items, count = 1, text)
+    static async create(items, count = 1, {title, text}={})
     {
 
         if (typeof items == "object" && !Array.isArray(items) && !(items instanceof Collection))
@@ -37,7 +38,7 @@ export default class ItemDialog extends Dialog
         return new Promise((resolve) => 
         {
             new ItemDialog({
-                title : localize("WH.ItemDialog"),
+                title : title || localize("WH.ItemDialog"),
                 content : html,
                 system : {items, count, text},
                 buttons : {
@@ -61,7 +62,7 @@ export default class ItemDialog extends Dialog
 
     
     // simulate document structure with key as the ID and the value as the name
-    static objectToArray(object, img = "modules/warhammer-lib/icons/blank.png")
+    static objectToArray(object, img = systemConfig().blankItemImage)
     {
         return Object.keys(foundry.utils.deepClone(object)).map(key => 
         {

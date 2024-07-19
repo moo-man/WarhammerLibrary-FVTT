@@ -17,11 +17,21 @@ export function systemConfig()
 
 /**
  *
+ * @param message
+ * @param force
+ * @param args
  */
-export function log() 
+export function log(message, force=false, args) 
 {
-    
+    if (CONFIG.debug.warhammer || force)
+    {
+        let format = systemConfig().logFormat;
+        format[0] = format[0].replace("@MESSAGE", message);
+        console.log(...format, args || "");
+    }
 }
+
+
 
 /**
  * @param {string} string string to be localized
@@ -81,7 +91,7 @@ export function findKey(value, obj, options = {})
  * @param {Document} document The document the id belongs to
  * @returns {boolean} whether or not to keep the id
  */
-export function keepID(id, document) 
+export function keepID(document) 
 {
     try 
     {
@@ -97,7 +107,7 @@ export function keepID(id, document)
         else if (world)
         {collection = document.collection;}
 
-        if (collection.has(id)) 
+        if (collection.has(document.id)) 
         {
             ui.notifications.notify(`${game.i18n.format("WH.Error.ID", {name: document.name})}`);
             return false;

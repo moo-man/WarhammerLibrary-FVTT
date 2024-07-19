@@ -13,7 +13,7 @@ export default {
 				{src: "./module.json", dest : modulePath},
 				{src: "./static/*", dest : modulePath}
 			],
-            watch: process.env.NODE_ENV == "production" ? false : ["./static/*/**", "system.json", "template.json"]
+            watch: process.env.NODE_ENV == "production" ? false : ["./static/**", "system.json", "template.json"]
 		})
 	],
 	// output: rollupPaths.map(repoPath => {

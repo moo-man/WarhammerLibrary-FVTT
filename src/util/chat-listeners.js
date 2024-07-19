@@ -1,17 +1,18 @@
 import AreaTemplate from "./area-template";
+import ZoneHelpers from "./zone-helpers";
 
 export default class WarhammerChatListeners 
 {
 
-    static async onApplyTargetEffect(event) 
+    static async onApplyTargetEffect(ev) 
     {
 
         let applyData = {};
-        let uuid = event.target.dataset.uuid;
-        let effectPath = event.target.dataset.path;
-        let messageId = $(event.currentTarget).parents('.message').attr("data-message-id");
+        let uuid = ev.target.dataset.uuid;
+        let effectPath = ev.target.dataset.path;
+        let messageId = $(ev.currentTarget).parents('.message').attr("data-message-id");
         let message = game.messages.get(messageId);
-        let test = message.getTest();
+        let test = message.system.test;
         let actor = test.actor;
         let item = test.item;
         let effect;
@@ -54,37 +55,27 @@ export default class WarhammerChatListeners
         }
     }
     
-    static async _onPlaceAreaEffect(event) 
+    static async onApplyZoneEffect(ev) 
     {
-        let messageId = $(event.currentTarget).parents('.message').attr("data-message-id");
-        let effectUuid = event.currentTarget.dataset.uuid;
-    
-        let test = game.messages.get(messageId).getTest();
-        let radius;
-        if (test?.result.overcast?.usage.target)
+        let el = $(ev.currentTarget);
+        let message = game.messages.get(el.parents(".message").attr("data-message-id"));
+        let test = message.system.test;
+        let effect = await fromUuid(ev.currentTarget.dataset.uuid);
+        if (ev.currentTarget.dataset.type == "zone")
         {
-            radius = test.result.overcast.usage.target.current;
-    
-            if (test.spell)
+            if (!(await effect.runPreApplyScript({test})))
             {
-                radius /= 2; // Spells define their diameter, not radius
+                return;
             }
-        }
-    
-        let effect = await fromUuid(effectUuid);
-        if (!(await effect.runPreApplyScript({test})))
-        {
-            return;
-        }
-        let template = await AOETemplate.fromEffect(effectUuid, messageId, radius);
-        await template.drawPreview(event);
-    }
+            ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid, message.id);
+        }            
+    };
 
-    // static async _onApplyTargetEffect(event) 
+    // static async _onApplyTargetEffect(ev) 
     // {
 
     //     let applyData = {};
-    //     let uuid = event.target.dataset.uuid;
+    //     let uuid = ev.target.dataset.uuid;
     //     let effect = await fromUuid(uuid);
     //     if (effect) 
     //     {
@@ -111,15 +102,15 @@ export default class WarhammerChatListeners
     //     }
     // }
     
-    // static async _onPlaceAreaEffect(event) 
+    // static async _onPlaceAreaEffect(ev) 
     // {
-    //     let effectUuid = event.currentTarget.dataset.uuid;
+    //     let effectUuid = ev.currentTarget.dataset.uuid;
     //     let effect = await fromUuid(effectUuid);
     //     if (!(await effect.runPreApplyScript()))
     //     {
     //         return;
     //     }
     //     let template = await AreaTemplate.fromEffect(effectUuid);
-    //     await template.drawPreview(event);
+    //     await template.drawPreview(ev);
     // }
 }

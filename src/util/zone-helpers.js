@@ -157,7 +157,7 @@ export default class ZoneHelpers
             .filter(t => t)
             .reduce((prev, current) => prev // Reduce them to just their "Follow" zone effects
                 .concat(Array.from(current.allApplicableEffects())
-                    .filter(e => e.applicationData.zoneType == "follow")), [])
+                    .filter(e => e.system.area.zoneType == "follow")), [])
             .map(effect =>                  // Convert these effects to data  
             {
                 let data = effect.toObject();
@@ -295,10 +295,10 @@ export default class ZoneHelpers
 
         if (zones.length == 0)
         {
-            return ui.notifications.error("IMPMAL.ErrorNoZones", {localize : true});
+            return ui.notifications.error("WH.ErrorNoZones", {localize : true});
         }
 
-        ItemDialog.create(zones, 1, {text : game.i18n.localize("IMPMAL.PickZone")}).then(choices => 
+        ItemDialog.create(zones, 1, {text : game.i18n.localize("WH.PickZone")}).then(choices => 
         {
             this.applyEffectToZone(effectUuids, messageId, canvas.scene.drawings.get(choices[0].id));
         });
@@ -332,11 +332,11 @@ export default class ZoneHelpers
                 let message = game.messages.get(messageId);
                 let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(), {temporary : true, message : message?.id});
 
-                if (zoneEffect.applicationData.zoneType == "tokens")
+                if (zoneEffect.system.transferData.zoneType == "tokens")
                 {
                     tokenEffectUuids.push(uuid);
                 }
-                else if (zoneEffect.applicationData.zoneType == "zone")
+                else if (zoneEffect.system.transferData.zoneType == "zone")
                 {
                     zoneEffects.push(zoneEffect.toObject());
                 }

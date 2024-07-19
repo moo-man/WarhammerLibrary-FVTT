@@ -9,7 +9,7 @@ import WarhammerBugReport from "./modules/bug-report";
 import WarhammerRollDialog from "./apps/roll-dialog";
 import WarhammerActiveEffectConfig from "./sheets/effect";
 import WarhammerEffectScriptConfig from "./apps/effect-script-config";
-import { WarhammerActiveEffectModel } from "./model/effect/effect";
+import { WarhammerActiveEffectModel } from "./model/effect";
 import { WarhammerActor } from "./document/actor";
 import { WarhammerItem } from "./document/item";
 import { BaseWarhammerModel } from "./model/base";
@@ -22,6 +22,7 @@ import TokenHelpers from "./util/token-helpers";
 import { WarhammerTestBase } from "./system/test";
 import AreaTemplate from "./util/area-template";
 import WarhammerChatListeners from "./util/chat-listeners";
+import { WarhammerTestMessageModel } from "./model/message";
 hooks();
 
 // This prevents namespace conflicts when files destructure foundry.utils
@@ -55,5 +56,6 @@ game.warhammer = {
     TokenHelpers,
     WarhammerTestBase,
     AreaTemplate,
-    WarhammerChatListeners
+    WarhammerChatListeners,
+    WarhammerTestMessageModel
 };

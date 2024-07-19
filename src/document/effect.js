@@ -17,7 +17,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // Take a copy of the test result that this effect comes from, if any
         // We can't use simply take a reference to the message id and retrieve the test as
         // creating a Test object before actors are ready (scripts can execute before that) throws errors
-        this.updateSource({[`system.source.test`] : game.messages.get(options.message)?.getTest()});
+        this.updateSource({[`system.source.test`] : game.messages.get(options.message)?.system?.test});
 
         let preventCreation = false;
         preventCreation = await this._handleFilter(data, options, user);
@@ -170,8 +170,8 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
      */
     async _handleItemApplication()
     {
-        let applicationData = this.system.transferData;
-        if (applicationData.documentType == "Item" && this.parent?.documentName == "Actor")
+        let transferData = this.system.transferData;
+        if (transferData.documentType == "Item" && this.parent?.documentName == "Actor")
         {
             let items = [];
             let filter = this.filterScript;
@@ -184,7 +184,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             }
 
             // If this effect specifies a prompt, create an item dialog prompt to select the items
-            if (applicationData.prompt)
+            if (transferData.prompt)
             {
                 items = await ItemDialog.create(items, "unlimited");
             }
@@ -196,14 +196,14 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     async _handleFilter()
     {
-        let applicationData = this.system.transferData;
+        let transferData = this.system.transferData;
         let filter = this.filterScript;
         if (!filter)
         {
             return;
         }
 
-        if (applicationData.documentType == "Item" && this.parent?.documentName == "Actor")
+        if (transferData.documentType == "Item" && this.parent?.documentName == "Actor")
         {
             return; // See above, _handleItemApplication
         }
@@ -226,64 +226,18 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return false;
         }
 
-        let applicationData = this.system.transferData;
+        let transferData = this.system.transferData;
 
         // If no test, cannot be avoided
-        if (applicationData.avoidTest.value == "none")
+        if (transferData.avoidTest.value == "none")
         {
             return false;
         }
 
-        let test;
-        if (applicationData.avoidTest.value == "script")
+        if (transferData.avoidTest.value == "script")
         {
-            let script = new WarhammerScript({label : this.effect + " Avoidance", script : applicationData.avoidTest.script}, WarhammerScript.createContext(this));
+            let script = new WarhammerScript({label : "Resist " + this.effect, script : transferData.avoidTest.script}, WarhammerScript.createContext(this));
             return await script.execute();
-        }
-        else if (applicationData.avoidTest.value == "custom")
-        {
-            let options = {
-                appendTitle : " - " + this.name,
-                skipTargets: true
-            };
-            if (applicationData.avoidTest.skill)
-            {
-                options.fields = {difficulty : applicationData.avoidTest.difficulty};
-                options.characteristic = applicationData.avoidTest.characteristic;
-                test = await this.actor.setupSkill(applicationData.avoidTest.skill, options);
-            }
-            else if (applicationData.avoidTest.characteristic)
-            {
-                options.fields = {difficulty : applicationData.avoidTest.difficulty};
-                test = await this.actor.setupCharacteristic(applicationData.avoidTest.characteristic, options);
-            }
-        }
-
-        await test.roll();
-
-        if (!applicationData.avoidTest.reversed)
-        {
-            // If the avoid test is marked as opposed, it has to win, not just succeed
-            if (applicationData.avoidTest.opposed && this.getFlag("wfrp4e", "sourceTest"))
-            {
-                return test.result.SL > this.getFlag("wfrp4e", "sourceTest").result?.SL;
-            }
-            else 
-            {
-                return test.succeeded;
-            }
-        }
-        else  // Reversed - Failure removes the effect
-        {
-            // If the avoid test is marked as opposed, it has to win, not just succeed
-            if (applicationData.avoidTest.opposed && this.getFlag("wfrp4e", "sourceTest"))
-            {
-                return test.result.SL < this.getFlag("wfrp4e", "sourceTest").result?.SL;
-            }
-            else 
-            {
-                return !test.succeeded;
-            }
         }
     }
 

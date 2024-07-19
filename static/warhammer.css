@@ -1,3 +1,20 @@
 .active-effect-sheet.warhammer .key select {
     width: 100%;
 }
+
+
+.item-dialog .dialog-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-dialog .dialog-content .dialog-text{
+    flex: 0 0 1.5rem;
+    font-size: var(--font-size-18);
+    text-align: center;
+}
+
+.item-dialog .dialog-content .directory {
+    flex: 1;
+    overflow-y: scroll;
+}

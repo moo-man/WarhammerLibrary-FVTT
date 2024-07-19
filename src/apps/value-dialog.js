@@ -11,10 +11,8 @@ export default class ValueDialog extends Dialog
     }
 
 
-    static create(text, title, defaultValue = "", values={})
+    static create({text, title}, defaultValue = "", values={})
     {
-
-
         // If values is an array, convert to an Object that has keys and values
         if (Array.isArray(values))
         {

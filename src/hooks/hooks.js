@@ -1,6 +1,6 @@
 import { keepID } from "../util/utility";
 import handlebars from "./handlebars";
-import ready from "./ready";
+import init from "./init";
 
 /**
  *
@@ -8,9 +8,14 @@ import ready from "./ready";
 export default function() 
 {
     handlebars();
-    ready();
+    init();
 
-    // Hooks.on("preCreateJournalEntry", keepID)
-    // Hooks.on("preCreateScene", keepID)
-    // Hooks.on("preCreateRollTable", keepID)
+    Hooks.on("preCreateJournalEntry", keepIDHook);
+    Hooks.on("preCreateScene", keepIDHook);
+    Hooks.on("preCreateRollTable", keepIDHook);
+}
+
+function keepIDHook(document, data, options)
+{
+    options.keepId = keepID(document);
 }
