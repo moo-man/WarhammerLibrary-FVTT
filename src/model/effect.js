@@ -79,15 +79,6 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         return this._scripts;
     }
 
-    get manualScripts() 
-    {
-        return this.scripts.filter(i => i.trigger == "manual").map((script, index) => 
-        {
-            script.index = index; // When triggering manual scripts, need to know the index (listing all manual scripts on an actor is messy)
-            return script;
-        });
-    }
-
     get filterScript() 
     {
         if (this.transferData.filter) 

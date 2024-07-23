@@ -54,7 +54,6 @@ export default class WarhammerModuleInitializer extends Dialog
 
     async initialize() 
     {
-
         let packList = this.data.module.flags.initializationPacks;
 
         for (let pack of packList.map(p => game.packs.get(p))) 
@@ -100,6 +99,7 @@ export default class WarhammerModuleInitializer extends Dialog
         let root = game.modules.get(pack.metadata.packageName).flags.folder;
         root.type = pack.metadata.type;
         root._id = foundry.utils.randomID();
+        root.flags = {source : this.data.module.id};
         let packFolders = pack.folders.contents.map(f => f.toObject());
         for(let f of packFolders)
         {
@@ -107,6 +107,7 @@ export default class WarhammerModuleInitializer extends Dialog
             {
                 f.folder = root._id;
             }
+            f.flags.source = this.data.module.id;
         }
         this.rootFolders[pack.metadata.id] = root._id;
         return CONFIG.Folder.documentClass.create(packFolders.concat(root), {keepId : true});
@@ -116,14 +117,14 @@ export default class WarhammerModuleInitializer extends Dialog
     {
         let existingDocuments = documents.filter(i => collection.has(i.id));
         let newDocuments = documents.filter(i => !collection.has(i.id));
-        await collection.documentClass.create(this._addFolder(newDocuments));
+        await collection.documentClass.create(this._addData(newDocuments));
         if (existingDocuments.length)
         {
             log("Pre Existing Documents: ", null, {args : existingDocuments});
             existingDocuments = await new Promise(resolve => new ModuleDocumentResolver(existingDocuments, {resolve}).render(true));
             log("Post Existing Documents: ", null, {args : existingDocuments});
         }
-        this._addFolder(existingDocuments);
+        this._addData(existingDocuments);
         for (let doc of existingDocuments)
         {
             let existing = collection.get(doc.id);
@@ -132,14 +133,15 @@ export default class WarhammerModuleInitializer extends Dialog
         }
     }
 
-    _addFolder(documents)
+    _addData(documents)
     {
         return documents.map(d => 
         {
             if (!d.folder)
             {
-                d.updateSource({folder : this.rootFolders[d.pack]});
+                d.updateSource({folder : this.rootFolders[d.pack], flags : {source : this.data.module.id}});
             }
+            d.updateSource({flags : {source : this.data.module.id}});
             return d;
         });
     }
@@ -147,57 +149,36 @@ export default class WarhammerModuleInitializer extends Dialog
     async deleteModuleContent(id)
     {
         let proceed = await Dialog.confirm({
-            title : localize("UPDATER.DeleteModuleContent"),
-            content : game.i18n.format("UPDATER.DeleteModuleContentPrompt", {id}),
+            title : localize("WH.Initialization.DeleteModuleContent"),
+            content : game.i18n.format("WH.Initialization.DeleteModuleContentPrompt", {id}),
             yes : () => {return true;},
             no : () => {return false;},
         });
         if (proceed)
         {
             ui.notifications.notify(this.data.module.title + ": Deleting Scenes");
-            let moduleScenes = game.scenes.filter(doc => doc.flags[id]);
-            moduleScenes.forEach(doc => 
-            {
-                doc.folder?.folder?.delete();
-                doc.folder?.delete();
-            });
+            let moduleScenes = game.scenes.filter(doc => doc.flags?.source == id);
             CONFIG.Scene.documentClass.deleteDocuments(moduleScenes.map(doc => doc.id));
 
             ui.notifications.notify(this.data.module.title + ": Deleting Actors");
-            let moduleActors = game.actors.filter(doc => doc.flags[id] && !doc.hasPlayerOwner);
-            moduleActors.forEach(doc => 
-            {
-                doc.folder?.folder?.delete();
-                doc.folder?.delete();
-            });
+            let moduleActors = game.actors.filter(doc => doc.flags?.source == id && !doc.hasPlayerOwner);
             CONFIG.Actor.documentClass.deleteDocuments(moduleActors.map(doc => doc.id));
 
             ui.notifications.notify(this.data.module.title + ": Deleting Items");
-            let moduleItems = game.items.filter(doc => doc.flags[id]);
-            moduleItems.forEach(doc => 
-            {
-                doc.folder?.folder?.delete();
-                doc.folder?.delete();
-            });
+            let moduleItems = game.items.filter(doc => doc.flags?.source == id);
             CONFIG.Item.documentClass.deleteDocuments(moduleItems.map(doc => doc.id));
 
             ui.notifications.notify(this.data.module.title + ": Deleting Journals");
-            let moduleJournals = game.journal.filter(doc => doc.flags[id]);
-            moduleJournals.forEach(doc => 
-            {
-                doc.folder?.folder?.delete();
-                doc.folder?.delete();
-            });
+            let moduleJournals = game.journal.filter(doc => doc.flags?.source == id);
             CONFIG.JournalEntry.documentClass.deleteDocuments(moduleJournals.map(doc => doc.id));
 
             ui.notifications.notify(this.data.module.title + ": Deleting Tables");
-            let moduleTables = game.tables.filter(doc => doc.flags[id]);
-            moduleTables.forEach(doc => 
-            {
-                doc.folder?.folder?.delete();
-                doc.folder?.delete();
-            });
+            let moduleTables = game.tables.filter(doc => doc.flags?.source == id);
             CONFIG.RollTable.documentClass.deleteDocuments(moduleTables.map(doc => doc.id));
+
+            ui.notifications.notify(this.data.module.title + ": Deleting Folders");
+            let moduleFolders = game.folders.filter(doc => doc.flags?.source == id);
+            CONFIG.Folder.documentClass.deleteDocuments(moduleFolders.map(doc => doc.id));
         }
     }
 }
@@ -211,9 +192,9 @@ class ModuleDocumentResolver extends FormApplication
         options.resizable = true;
         options.height = 600;
         options.width = 400;
-        options.template = "modules/warhammer-lib/templates/apps/document-resolver.hbs";
+        options.template = "modules/warhammer-lib/templates/modules/document-resolver.hbs";
         options.classes.push("document-resolver");
-        options.title = localize("INIT.ResolveDuplicates");
+        options.title = localize("WH.ResolveDuplicates");
         return options;
     }
 

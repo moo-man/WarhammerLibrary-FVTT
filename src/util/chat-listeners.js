@@ -55,6 +55,18 @@ export default class WarhammerChatListeners
         }
     }
     
+    static async onPlaceAreaEffect(ev) 
+    {
+        let effectUuid = ev.currentTarget.dataset.uuid;
+        let effect = await fromUuid(effectUuid);
+        if (!(await effect.runPreApplyScript()))
+        {
+            return;
+        }
+        let template = await AreaTemplate.fromEffect(effectUuid);
+        await template.drawPreview(ev);
+    }
+    
     static async onApplyZoneEffect(ev) 
     {
         let el = $(ev.currentTarget);
@@ -70,47 +82,4 @@ export default class WarhammerChatListeners
             ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid, message.id);
         }            
     };
-
-    // static async _onApplyTargetEffect(ev) 
-    // {
-
-    //     let applyData = {};
-    //     let uuid = ev.target.dataset.uuid;
-    //     let effect = await fromUuid(uuid);
-    //     if (effect) 
-    //     {
-    //         applyData = { effectData: [effect.convertToApplied()] };
-    //     }
-    //     else 
-    //     {
-    //         return ui.notifications.error("Unable to find effect to apply");
-    //     }
-    
-    //     // let effect = actor.populateEffect(effectId, item, test)
-    
-    //     let targets = Array.from(game.user.targets).map(t => t.actor);    
-    //     if (!(await effect.runPreApplyScript({targets})))
-    //     {
-    //         return;
-    //     }
-    //     game.user.updateTokenTargets([]);
-    //     game.user.broadcastActivity({ targets: [] });
-    
-    //     for (let target of targets) 
-    //     {
-    //         await target.applyEffect(applyData);
-    //     }
-    // }
-    
-    // static async _onPlaceAreaEffect(ev) 
-    // {
-    //     let effectUuid = ev.currentTarget.dataset.uuid;
-    //     let effect = await fromUuid(effectUuid);
-    //     if (!(await effect.runPreApplyScript()))
-    //     {
-    //         return;
-    //     }
-    //     let template = await AreaTemplate.fromEffect(effectUuid);
-    //     await template.drawPreview(ev);
-    // }
 }

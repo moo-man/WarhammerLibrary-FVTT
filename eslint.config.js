@@ -49,6 +49,8 @@ export default [
                 SceneNavigation : "readonly",
                 CONST : "readonly",
                 MeasuredTemplate : "readonly",
+                ActorSheet : "readonly",
+                ItemSheet : "readonly",
                 ...globals.browser
             }
         }

@@ -8,7 +8,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     {
         if (data._id)
         {
-            options.keepId = keepID(data._id, this);
+            options.keepId = keepID(this);
         }
 
         await super._preCreate(data, options, user);

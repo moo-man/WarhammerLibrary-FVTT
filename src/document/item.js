@@ -213,6 +213,10 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         return this._getTypedEffects("area");
     }
     
+    get zoneEffects() 
+    {
+        return this._getTypedEffects("zone");
+    }
     _getTypedEffects(type)
     {
         let effects = Array.from(this.allApplicableEffects()).filter(effect => effect.system.transferData.type == type);
@@ -223,5 +227,10 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     get manualScripts() 
     {
         return this.effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+    }
+
+    get testIndependentEffects()
+    {
+        return this.targetEffects.concat(this.areaEffects).concat(this.zoneEffects).filter(e => e.system.transferData.testIndependent);
     }
 }

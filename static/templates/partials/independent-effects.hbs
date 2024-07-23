@@ -1,0 +1,19 @@
+{{#if item.testIndependentEffects.length}}
+    <div class="script-buttons">
+        <div class="independent-effects">
+            {{#each item.testIndependentEffects}}
+                {{#if (eq this.system.transferData.type "target")}}
+                    <a class="apply-target" data-uuid="{{this.uuid}}"><i class="fa-solid fa-crosshairs"></i> {{this.name}}</a>
+                {{/if}}
+
+                {{#if (eq this.system.transferData.type "area")}}
+                    <a class="place-area" data-uuid="{{this.uuid}}"><i class="fa-solid fa-ruler-combined"></i> {{this.name}}</a>
+                {{/if}}
+
+                {{#if (eq this.system.transferData.type "zone")}}
+                    <a class="apply-zone" data-uuid="{{this.uuid}}"><i class="fa-solid fa-game-board-simple"></i> {{this.name}}</a>
+                {{/if}}
+            {{/each}}
+        </div>
+    </div>
+{{/if}}

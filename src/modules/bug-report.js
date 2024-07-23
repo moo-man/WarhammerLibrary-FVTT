@@ -12,8 +12,8 @@ export default class WarhammerBugReport extends Application
     {
         super(app);
 
-        this.endpoint = "https://aa5qja71ih.execute-api.us-east-2.amazonaws.com/Prod/grievance";
-        this.github = systemConfig().bugReportConfig.githubURL;
+        this.endpoint = systemConfig().bugReporterConfig.endpoint;
+        this.github = systemConfig().bugReporterConfig.githubURL;
 
         this.loadingIssues = this.loadIssues();
         this.latest = this.checkVersions();
@@ -23,12 +23,12 @@ export default class WarhammerBugReport extends Application
     {
         const options = super.defaultOptions;
         options.id = "bug-report";
-        options.template = "modules/warhammer-lib/templates/apps/bug-report.hbs";
-        options.classes.push(game.system.id, "wfrp-bug-report");
+        options.template = "modules/warhammer-lib/templates/modules/bug-report.hbs";
+        options.classes.push(game.system.id, "bug-report");
         options.resizable = true;
         options.width = 600;
         options.minimizable = true;
-        options.title = "Enter Your Grudge";
+        options.title = "Bug Report";
         options.tabs = [{ navSelector: ".tabs", contentSelector: ".content", initial: "submit" }];
         return options;
     }
@@ -50,7 +50,7 @@ export default class WarhammerBugReport extends Application
         data.record = await this.buildRecord();
         if (this.constructor.apiLimitReached)
         {
-            ui.notifications.error(localize("WH.BugReportAPIReached"), {permanent : true});
+            ui.notifications.error(localize("WH.BugReporter.APIReached"), {permanent : true});
         }
         return data;
     }
@@ -80,11 +80,11 @@ export default class WarhammerBugReport extends Application
 
         if (allUpdated) 
         {
-            element += localize("WH.BugReporterUpdated");
+            element += localize("WH.BugReporter.Updated");
         }
         else 
         {
-            element += localize("WH.BugREporter.NotUpdated");
+            element += localize("WH.BugReporter.NotUpdated");
             element += "<ul>";
             element += outdatedList;
             element += "</ul>";
@@ -113,11 +113,11 @@ export default class WarhammerBugReport extends Application
             {
                 if (res.status == 201) 
                 {
-                    ui.notifications.notify(localize("WH.PostSuccess"));
+                    ui.notifications.notify(localize("WH.BugReporter.PostSuccess"));
                     res.json().then(json => 
                     {
                         
-                        console.log(systemConfig().bugReportConfig.successMessage(json.html_url));
+                        console.log(systemConfig().bugReporterConfig.successMessage.replace("@URL", json.html_url));
                         this.recordIssue(json.number);
                     });
                 }
@@ -137,9 +137,9 @@ export default class WarhammerBugReport extends Application
 
     recordIssue(number)
     {
-        let grudges = foundry.utils.deepClone(game.settings.get(game.system.id, "grudges"));
-        grudges.push(number);
-        game.settings.set(game.system.id, "grudges", grudges).then(() => 
+        let postedIssues = foundry.utils.deepClone(game.settings.get(game.system.id, "postedIssues"));
+        postedIssues.push(number);
+        game.settings.set(game.system.id, "postedIssues", postedIssues).then(() => 
         {
             this.refreshIssues();
         });
@@ -151,7 +151,6 @@ export default class WarhammerBugReport extends Application
         log("Loading GitHub Issues...");
         if (this.constructor.issues.length == 0)
         {
-
             for(let i = 1; i <= 10; i++)
             {
                 SceneNavigation.displayProgressBar({label: localize("WH.LoadingIssues"), pct: Math.round((i / 10) * 100) });
@@ -200,7 +199,7 @@ export default class WarhammerBugReport extends Application
 
     async buildRecord()
     {
-        let numbersSubmitted = game.settings.get(game.system.id, "grudges");
+        let numbersSubmitted = game.settings.get(game.system.id, "postedIssues");
 
         let issuesSubmitted = this.constructor.issues.filter(i => numbersSubmitted.includes(i.number));
 
@@ -283,16 +282,16 @@ export default class WarhammerBugReport extends Application
         return matchingIssues;
     }
 
-    showMatchingGrudges(element, issues)
+    showMatchingpostedIssues(element, issues)
     {
         if(!issues || issues?.length <= 0)
         {element[0].style.display="none";}
         else 
         {
             element[0].style.display="flex";
-            let list = element.find(".grudge-list");
+            let list = element.find(".issue-list");
             list.children().remove();
-            list.append(issues.map(i => `<div class="grudge"><a href="${i.html_url}">${i.title}</div>`));
+            list.append(issues.map(i => `<div class="issue"><a href="${i.html_url}">${i.title}</div>`));
         }
     }
 
@@ -340,7 +339,7 @@ export default class WarhammerBugReport extends Application
             text = text.trim();
             if (text.length > 2) 
             {
-                this.showMatchingGrudges(matching, this.matchIssues(text));
+                this.showMatchingpostedIssues(matching, this.matchIssues(text));
             }
         });
 
@@ -356,9 +355,9 @@ export default class WarhammerBugReport extends Application
 
 
             if (!data.domain || !data.title || !data.description)
-            {return ui.notifications.error(localize("WH.ErrorBugReportForm"));}
+            {return ui.notifications.error(localize("WH.BugReporter.ErrorBugReportForm"));}
             if (!data.issuer)
-            {return ui.notifications.error(localize("WH.ErrorBugReportName1"));}
+            {return ui.notifications.error(localize("WH.BugReporter.ErrorBugReportName1"));}
 
 
             data.title = `[${systemConfig().premiumModules[data.domain]}] ${data.title}`;
@@ -388,5 +387,20 @@ export default class WarhammerBugReport extends Application
             this.submit(data);
             this.close();
         });
+    }
+    static addSidebarButton(app, html)
+    {
+        if (app.options.id == "settings")
+        {
+            let button = $(`<button class='bug-report'>${game.i18n.localize("WH.BugReporter")}</button>`);
+                
+            button.click(ev => 
+            {
+                new WarhammerBugReport().render(true);
+            });
+                
+            button.insertAfter(html.find("#game-details"));
+                
+        }
     }
 }

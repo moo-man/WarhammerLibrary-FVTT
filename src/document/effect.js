@@ -1,6 +1,7 @@
 import ItemDialog from "../apps/item-dialog";
-import { localize, log, systemConfig } from "../util/utility";
+import { format, log, systemConfig } from "../util/utility";
 import WarhammerScript from "../system/script";
+import { WarhammerTestBase } from "../system/test";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
@@ -23,13 +24,13 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         preventCreation = await this._handleFilter(data, options, user);
         if (preventCreation)
         {
-            log(game.i18n.format("WH.EffectFiltered", {name : this.name}), true, this);
+            log(format("WH.EffectFiltered", {name : this.name}), true, this);
             return false;
         }
         preventCreation = await this._handleEffectPrevention(data, options, user);
         if (preventCreation)
         {
-            ui.notifications.notify(game.i18n.format("WH.EffectPrevented", {name : this.name}));
+            ui.notifications.notify(format("WH.EffectPrevented", {name : this.name}));
             return false; // If avoided is true, return false to stop creation
         }
         preventCreation = await this._handleConditionCreation(data, options, user);
@@ -127,7 +128,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             if (scripts.length)
             {                                                // args.actor is often used so include it for compatibility 
                 let returnValues = await Promise.all(scripts.map(s => s.execute({actor : this.actor, data, options, user})));
-                return !this.system.scripts.every(s => s.options?.immediate?.deleteEffect) && !returnValues.every(v => v == false);
+                return !this.system.scripts.every(s => s.options?.deleteEffect) && !returnValues.every(v => v == false);
                 // If all scripts agree to delete the effect, or all scripts return false, return false (to prevent creation);
             }
         }
@@ -265,7 +266,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             let createdItems = this.getCreatedItems();
             if (createdItems.length)
             {
-                ui.notifications.notify(game.i18n.format("WH.DeletingEffectItems", {items : createdItems.map(i => i.name).join(", ")}));
+                ui.notifications.notify(format("WH.DeletingEffectItems", {items : createdItems.map(i => i.name).join(", ")}));
                 return this.actor.deleteEmbeddedDocuments("Item", createdItems.map(i => i.id));
             }
         }
@@ -333,7 +334,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
         if (this.item)
         {
-            effect.system.sourceItem = this.item.uuid;
+            effect.system.sourceData.item = this.item.uuid;
         }
         
         effect.origin = this.actor?.uuid;
@@ -402,11 +403,19 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return !!systemConfig.conditions[this.key];
     }
 
+    get manualScripts()
+    {
+        return this.scripts.filter(i => i.trigger == "manual").map((script, index) => 
+        {
+            script.index = index; // When triggering manual scripts, need to know the index (listing all manual scripts on an actor is messy)
+            return script;
+        });
+    }
 
     get sourceTest() 
     {
         let test = this.system.sourceData.test;
-        if (test instanceof TestWFRP)
+        if (test instanceof WarhammerTestBase)
         {
             return test;
         }

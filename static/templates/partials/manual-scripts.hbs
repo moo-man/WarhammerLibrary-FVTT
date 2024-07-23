@@ -1,7 +1,11 @@
-<div class="manual-scripts">
-{{#each scripts}}
-    <div class="trigger-script" data-index="{{this.index}}" data-uuid="{{this.effect.uuid}}">
-        {{this.Label}}
+{{#if item.manualScripts.length}}
+    <div class="manual-script-buttons">
+        <div class="manual-scripts">
+            {{#each item.manualScripts}}
+                <a class="trigger-script" data-index="{{this.index}}" data-uuid="{{this.effect.uuid}}">
+                    {{this.Label}}
+                </a>
+            {{/each}}
+        </div>
     </div>
-{{/each}}
-</div>
+{{/if}}

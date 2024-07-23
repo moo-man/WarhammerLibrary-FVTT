@@ -1,3 +1,4 @@
+import AreaTemplate from "../util/area-template";
 import { localize } from "../util/utility";
 
 const WarhammerSheetMixin = (cls) => class extends cls 

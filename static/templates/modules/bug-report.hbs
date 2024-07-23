@@ -1,14 +1,15 @@
 <div class="bug-report">
     <nav class="sheet-tabs tabs">
         <a class="item active" data-tab="submit">{{localize "Submit"}}</a>
-        <a class="item" data-tab="record">{{localize "Record"}} {{#if record.alert}}<i class="fa-regular fa-circle-exclamation alert"></i>{{/if}}</a>
+        <a class="item" data-tab="record">{{localize "Record"}} {{#if record.alert}}<i
+                    class="fa-regular fa-circle-exclamation alert"></i>{{/if}}</a>
     </nav>
 
     <section class="content">
         <div class="tab submit" data-tab="submit">
 
             <div class="notification info">
-                {{{localize "BUGREPORT.Troubleshooting"}}}
+                {{{localize "WH.BugReport.Troubleshooting"}}}
             </div>
 
             <div class="form-group">
@@ -37,13 +38,13 @@
             </div>
 
             <div class="form-group">
-                <label>{{localize "BUGREPORT.Contact"}}</label>
-                <input type="text" placeholder="{{localize 'BUGREPORT.ContactPlaceholder'}}" value="{{name}}"
+                <label>{{localize "WH.BugReport.Contact"}}</label>
+                <input type="text" placeholder="{{localize "WH.BugReport.ContactPlaceholder"}}" value="{{name}}"
                     class="issuer">
             </div>
 
-            <p class="notification warning publicity" style="display:none">{{{localize "BUGREPORT.Warning"}}}
-            <p class="notification warning discord" style="display:none">{{{localize "BugReport.DiscordChange"}}}
+            <p class="notification warning publicity" style="display:none">{{{localize "WH.BugReport.Warning"}}}
+            <p class="notification warning discord" style="display:none">{{{localize "WH.BugReport.DiscordChange"}}}
 
             <div class="form-group">
                 <label>{{localize "Title"}}</label>
@@ -52,8 +53,8 @@
 
 
             <div class="form-group matching" style="display: none">
-                <label class="wide">{{localize "BUGREPORT.MatchingGrudges"}}</label>
-                <div class="grudge-list">
+                <label class="wide">{{localize "WH.BugReport.MatchingIssues"}}</label>
+                <div class="issue-list">
 
                 </div>
             </div>
@@ -61,34 +62,35 @@
             <div class="form-group">
                 <label class="wide">{{localize "Description"}}</label>
             </div>
-            <textarea placeholder="{{localize 'BUGREPORT.DescriptionPlaceholder'}}" class="bug-description"></textarea>
+            <textarea placeholder="{{localize "WH.BugReport.DescriptionPlaceholder"}}" class="bug-description"></textarea>
 
             <div class='module-check'>
             </div>
 
             <div class="active-modules notification warning" style="display: none">
-                {{localize "BUGREPORT.ManyModules"}}
+                {{localize "WH.BugReport.ManyModules"}}
             </div>
             <button type="submit" class="bug-submit">{{localize "Submit"}}</button>
         </div>
         <div class="tab record" data-tab="record">
             {{#each record.open}}
-            <div class="record-details">
-                <div class="record-title">
-                <a href="{{this.html_url}}">{{this.title}}</a>
+                <div class="record-details">
+                    <div class="record-title">
+                        <a href="{{this.html_url}}">{{this.title}}</a>
+                    </div>
+                    {{#if this.alert}}
+                        <strong class="status" data-tooltip="{{localize "WH.BugReport.AlertHint"}}"><a
+                                class="alert">{{localize "WH.BugReport.NeedsAttention"}}</a></strong>
+                    {{/if}}
                 </div>
-                {{#if this.alert}}
-                <strong class="status" data-tooltip="{{localize 'BUGREPORT.AlertHint'}}"><a class="alert">{{localize "BUGREPORT.NeedsAttention"}}</a></strong>
-                {{/if}}
-            </div>
             {{/each}}
             {{#each record.closed}}
-            <div class="record-details closed">
-                <div class="record-title">
-                <a href="{{this.html_url}}">{{this.title}}</a>
+                <div class="record-details closed">
+                    <div class="record-title">
+                        <a href="{{this.html_url}}">{{this.title}}</a>
+                    </div>
+                    <strong class="status">{{localize "WH.BugReport.Settled"}}</strong>
                 </div>
-                <strong class="status">{{localize "BUGREPORT.Settled"}}</strong>
-            </div>
             {{/each}}
         </div>
 </div>

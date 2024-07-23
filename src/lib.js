@@ -23,6 +23,9 @@ import { WarhammerTestBase } from "./system/test";
 import AreaTemplate from "./util/area-template";
 import WarhammerChatListeners from "./util/chat-listeners";
 import { WarhammerTestMessageModel } from "./model/message";
+import WarhammerModuleInitializer from "./modules/module-initialization";
+import { WarhammerActorSheet } from "./sheets/actor";
+import { WarhammerItemSheet } from "./sheets/item";
 hooks();
 
 // This prevents namespace conflicts when files destructure foundry.utils
@@ -34,6 +37,7 @@ hasProperty = foundry.utils.hasProperty;
 deepClone = foundry.utils.deepClone;
 isNewerVersion = foundry.utils.isNewerVersion;
 diffObject = foundry.utils.isNewerVersion;
+isEmpty = foundry.utils.isEmpty;
 
 game.warhammer = {
     WarhammerScript,
@@ -57,5 +61,8 @@ game.warhammer = {
     WarhammerTestBase,
     AreaTemplate,
     WarhammerChatListeners,
-    WarhammerTestMessageModel
+    WarhammerTestMessageModel,
+    WarhammerModuleInitializer,
+    WarhammerActorSheet,
+    WarhammerItemSheet
 };

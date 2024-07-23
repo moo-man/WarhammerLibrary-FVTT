@@ -1,6 +1,6 @@
 import { systemConfig } from "../util/utility";
 import ScriptConfig from "./script-config";
-const {setProperty, getProperty, deepClone, hasProperty} = foundry.utils;
+const {setProperty, getProperty, deepClone, hasProperty, isEmpty} = foundry.utils;
 
 export default class WarhammerEffectScriptConfig extends ScriptConfig
 {
@@ -121,7 +121,7 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
         
         setProperty(scriptObject, "options.targeter", formData.targeter);
         setProperty(scriptObject, "options.deleteEffect", formData.deleteEffect);
-        if(script)
+        if(!isEmpty(script))
         {
             scriptObject.script = script;
         }
