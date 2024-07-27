@@ -26,7 +26,9 @@ import { WarhammerTestMessageModel } from "./model/message";
 import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
+import overrides from "./util/overrides";
 hooks();
+overrides();
 
 // This prevents namespace conflicts when files destructure foundry.utils
 // Can be removed in v13

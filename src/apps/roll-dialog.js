@@ -25,6 +25,11 @@ export default class WarhammerRollDialog extends Application
         return this.data.actor;
     }
 
+    get targets() 
+    {
+        return this.data.targets;
+    }
+
     /**
      * Creates a roll dialog instancte
      * @param {object} data Internal data the dialog should have

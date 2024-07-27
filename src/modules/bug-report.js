@@ -392,7 +392,7 @@ export default class WarhammerBugReport extends Application
     {
         if (app.options.id == "settings")
         {
-            let button = $(`<button class='bug-report'>${game.i18n.localize("WH.BugReporter")}</button>`);
+            let button = $(`<button class='bug-report'>${game.i18n.localize("WH.BugReporter.Title")}</button>`);
                 
             button.click(ev => 
             {

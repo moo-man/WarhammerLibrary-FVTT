@@ -9,7 +9,7 @@
         <div class="tab submit" data-tab="submit">
 
             <div class="notification info">
-                {{{localize "WH.BugReport.Troubleshooting"}}}
+                {{{localize "WH.BugReporter.Troubleshooting"}}}
             </div>
 
             <div class="form-group">
@@ -38,13 +38,13 @@
             </div>
 
             <div class="form-group">
-                <label>{{localize "WH.BugReport.Contact"}}</label>
-                <input type="text" placeholder="{{localize "WH.BugReport.ContactPlaceholder"}}" value="{{name}}"
+                <label>{{localize "WH.BugReporter.Contact"}}</label>
+                <input type="text" placeholder="{{localize "WH.BugReporter.ContactPlaceholder"}}" value="{{name}}"
                     class="issuer">
             </div>
 
-            <p class="notification warning publicity" style="display:none">{{{localize "WH.BugReport.Warning"}}}
-            <p class="notification warning discord" style="display:none">{{{localize "WH.BugReport.DiscordChange"}}}
+            <p class="notification warning publicity" style="display:none">{{{localize "WH.BugReporter.Warning"}}}
+            <p class="notification warning discord" style="display:none">{{{localize "WH.BugReporter.DiscordChange"}}}
 
             <div class="form-group">
                 <label>{{localize "Title"}}</label>
@@ -53,7 +53,7 @@
 
 
             <div class="form-group matching" style="display: none">
-                <label class="wide">{{localize "WH.BugReport.MatchingIssues"}}</label>
+                <label class="wide">{{localize "WH.BugReporter.MatchingIssues"}}</label>
                 <div class="issue-list">
 
                 </div>
@@ -62,13 +62,13 @@
             <div class="form-group">
                 <label class="wide">{{localize "Description"}}</label>
             </div>
-            <textarea placeholder="{{localize "WH.BugReport.DescriptionPlaceholder"}}" class="bug-description"></textarea>
+            <textarea placeholder="{{localize "WH.BugReporter.DescriptionPlaceholder"}}" class="bug-description"></textarea>
 
             <div class='module-check'>
             </div>
 
             <div class="active-modules notification warning" style="display: none">
-                {{localize "WH.BugReport.ManyModules"}}
+                {{localize "WH.BugReporter.ManyModules"}}
             </div>
             <button type="submit" class="bug-submit">{{localize "Submit"}}</button>
         </div>
@@ -79,8 +79,8 @@
                         <a href="{{this.html_url}}">{{this.title}}</a>
                     </div>
                     {{#if this.alert}}
-                        <strong class="status" data-tooltip="{{localize "WH.BugReport.AlertHint"}}"><a
-                                class="alert">{{localize "WH.BugReport.NeedsAttention"}}</a></strong>
+                        <strong class="status" data-tooltip="{{localize "WH.BugReporter.AlertHint"}}"><a
+                                class="alert">{{localize "WH.BugReporter.NeedsAttention"}}</a></strong>
                     {{/if}}
                 </div>
             {{/each}}
@@ -89,7 +89,7 @@
                     <div class="record-title">
                         <a href="{{this.html_url}}">{{this.title}}</a>
                     </div>
-                    <strong class="status">{{localize "WH.BugReport.Settled"}}</strong>
+                    <strong class="status">{{localize "WH.BugReporter.Settled"}}</strong>
                 </div>
             {{/each}}
         </div>

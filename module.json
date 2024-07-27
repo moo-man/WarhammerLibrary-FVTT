@@ -6,6 +6,13 @@
   "authors": [{"name": "Moo Man", "id": "Moo Man", "discord": "moo.man"}],
   "scripts" : ["warhammer.js"],
   "styles" : ["warhammer.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
   "library": true,
   "compatibility": {
     "minimum": "12",
