@@ -27,6 +27,7 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
+import { findKey, getActiveDocumentOwner, log } from "./util/utility";
 hooks();
 overrides();
 
@@ -41,7 +42,15 @@ isNewerVersion = foundry.utils.isNewerVersion;
 diffObject = foundry.utils.isNewerVersion;
 isEmpty = foundry.utils.isEmpty;
 
-game.warhammer = {
+warhammer = {};
+
+warhammer.utility = {
+    log,
+    findKey,
+    getActiveDocumentOwner
+};
+
+warhammer.apps = {
     WarhammerScript,
     ItemDialog,
     ValueDialog,
@@ -68,3 +77,5 @@ game.warhammer = {
     WarhammerActorSheet,
     WarhammerItemSheet
 };
+
+globalThis.warhammer = warhammer;

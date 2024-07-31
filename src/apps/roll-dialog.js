@@ -278,17 +278,19 @@ export default class WarhammerRollDialog extends Application
             script.isActive = false;
         });
         
-        this._hideScripts();
-        this._activateScripts();
-        await this.computeScripts();
-        await this.computeFields();
-
         this.tooltips.start(this);
         for(let key in this.userEntry)
         {
             this.fields[key] = this.userEntry[key];
         }
         this.tooltips.finish(this, "User Entry");
+
+        this._hideScripts();
+        this._activateScripts();
+
+        await this.computeScripts();
+        await this.computeFields();
+
 
         return {
             data : this.data,

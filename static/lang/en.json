@@ -21,7 +21,7 @@
             "BugReportFormError": "Please fill out the form",
             "BugReportNameError": "Please include your Discord tag or email in the Name section.",
 
-            "Troubleshooting": "Before submitting a report, please consult the <a href='https://moo-man.github.io/WFRP4e-FoundryVTT/pages/troubleshooting.html'>Troubleshooting</a> page.",
+            "Troubleshooting": "Before submitting a report, please consult the <a href='{url}'>Troubleshooting</a> page.",
             "Contact": "Contact Info",
             "ContactPlaceholder": "Discord Tag or Email.",
             "Warning": "<b>Be aware</b>: This information is posted on the GitHub issues page, which is public, so Discord tag is preferred. Otherwise, contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
@@ -79,8 +79,8 @@
         },
         "UpdateCombat": "Update Combat",
         "Error.ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
-        "ErrorNoZones": "No Zones to select. Add Drawings with text to the Scene to create Zones.",
-        "PickZone": "Pick the Zone you wish to apply to. A Drawing must have Text to be selected.",
+        "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
+        "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
         "TransferData" : {
             "TransferType": "Transfer Type",
             "TransferTypeHint": "Configure how the Active Effect is transferred or applied.",
@@ -115,7 +115,7 @@
             "TestIndependent": "Test Independent",
             "TestIndependentHint": "If checked, this Effect can be called directly from the owning Actor's sheet, instead of from chat",
             "PreApplyScript": "Pre-Apply Script",
-            "PreApplyScriptHint": "This executes before an effect is applied - this runs on the source, not the target. Return false to prevent application (Damage, Target, and Area only).",
+            "PreApplyScriptHint": "This executes before an effect is applied - this runs on the source, not the target. Return false to prevent application (Damage, Target, and Area/Zone only).",
             "EquipTransfer": "Equip Transfer",
             "EquipTransferHint": "Only transfer this effect when it is equipped.",
             "EnableScript": "Enable Script",

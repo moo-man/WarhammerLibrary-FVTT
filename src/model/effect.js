@@ -21,7 +21,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             enableConditionScript: new fields.StringField({}),
             filter: new fields.StringField({}),
             prompt: new fields.BooleanField({ initial: false }),
-            itemTargetIDs: new fields.ArrayField(new fields.StringField({}, { nullable: true }))
+            itemTargetIDs: new fields.ArrayField(new fields.StringField({}, { nullable: true, initial : null }))
         });
 
         schema.scriptData = new fields.ArrayField(new fields.SchemaField({
@@ -39,7 +39,8 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         }));
 
         schema.zone = new fields.SchemaField({
-            type: new fields.StringField(), // previously "Zone type"
+            type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", or "follow"
+            traits: new fields.ObjectField()
             //TODO
         });
         
@@ -85,7 +86,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         {
             try 
             {
-                return new WarhammerScript({ script: this.transferData.filter, label: `${this.name} Filter` }, WarhammerScript.createContext(this));
+                return new WarhammerScript({ script: this.transferData.filter, label: `${this.name} Filter` }, WarhammerScript.createContext(this.parent));
             }
             catch (e) 
             {

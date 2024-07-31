@@ -44,12 +44,12 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
             await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemCreated: this}));
     
             // Cannot simply call runScripts here because that would only be for Item effects
-            // If an item has a transfered effect, it won't call "addItems" scripts because the effect's
+            // If an item has a transfered effect, it won't call "onCreate" scripts because the effect's
             // onCreate method isn't called. Same reason handleImmediate scripts doesn't call runScripts
             let effects = Array.from(this.allApplicableEffects()).filter(effect => effect.system.transferData.type == "document" && ["Actor", "Item"].includes(effect.system.transferData.documentType));
             for(let effect of effects)
             {
-                for(let script of effect.scripts.filter(s => s.trigger == "addItems"))
+                for(let script of effect.scripts.filter(s => s.trigger == "onCreate"))
                 {
                     await script.execute({data, options, user});
                 }

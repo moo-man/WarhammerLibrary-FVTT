@@ -88,7 +88,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
         if (this.actor)
         {
-            for(let script of this.system.scripts.filter(i => i.trigger == "addItems"))
+            for(let script of this.system.scripts.filter(i => i.trigger == "onCreate"))
             {
                 await script.execute({data, options, user});
             }
@@ -175,7 +175,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         if (transferData.documentType == "Item" && this.parent?.documentName == "Actor")
         {
             let items = [];
-            let filter = this.filterScript;
+            let filter = this.system.filterScript;
 
             // If this effect specifies a filter, narrow down the items according to it
             // TODO this filter only happens on creation, so it won't apply to items added later
@@ -198,7 +198,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _handleFilter()
     {
         let transferData = this.system.transferData;
-        let filter = this.filterScript;
+        let filter = this.system.filterScript;
         if (!filter)
         {
             return;
@@ -329,7 +329,13 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
         else 
         {
+            if (effect.system.transferData.type == "damage" && effect.system.transferData.documentType == "Item")
+            {
+                effect.system.transferData.documentType = "Actor"; // There is never really a case when an item goes through normal damage application. 
+            }
+            
             effect.system.transferData.type = "document";
+
         }
 
         if (this.item)
@@ -427,12 +433,17 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get sourceActor() 
     {
-        return CONFIG.ChatMessage.documentClass.getSpeakerActor(this.sourceTest.context.speaker);
+        return this.sourceTest ? CONFIG.ChatMessage.documentClass.getSpeakerActor(this.sourceTest.context.speaker) : this.sourceItem?.actor;
     }
 
     get sourceItem() 
     {
         return fromUuidSync(this.system.sourceData.item);
+    }
+
+    get sourceZone()
+    {
+        return fromUuidSync(this.system.sourceData.zone);
     }
 
     static getCreateData(effectData, overlay=false)

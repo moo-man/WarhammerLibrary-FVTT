@@ -6,67 +6,59 @@ const {setProperty, deepClone} = foundry.utils;
 
 export default class ZoneHelpers 
 {
+    // Checks a token's current zone and zone effects, adding and removing them
+    static async checkTokenUpdate(token, update, options, user)
+    {
+        if (user == game.user.id)
+        {
+
+            let inZones = Array.from(token.regions);
+            let inZoneIds = inZones.map(i => i.uuid);
+            let effects = Array.from(token.actor.effects);
+            
+            let toAdd = [];
+            let toDelete = [];
+            
+            // Remove all zone effects that reference a zone the token is no longer in
+            toDelete = effects.filter(i => !inZoneIds.includes(i.system.sourceData.zone)).map(i => i.id);
+            
+            for(let zone of inZones)
+            {
+                let effects = this.getZoneEffects(zone);
+                toAdd = toAdd.concat(effects.filter(i => i.statuses[0] != [...token.actor.statuses][0]));
+            }
+                
+            await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+            await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
+        }
+    }
+
+    static checkZoneUpdate(region, update, options)
+    {
+
+    }
+
     /**
-     * Determines if a coordinate is within a Drawing's strokes
-     * @param {object} point object being tested
-     * @param {Drawing} drawing Drawing object being tested
-     * @returns {boolean} whether the point is within the drawing
+     * Retrieves custom/zone effects from a given region document
+     * @param {RegionDocument} zone Zone (Region) 
+     * @returns {Array<ActiveEffect>} Zone effects
      */
-    static isInDrawing(point, drawing)
+    static getZoneEffects(zone)
     {
-        if (drawing.document.shape.type == "r")
+        let effects = systemConfig().getZoneTraitEffects(zone);
+
+        effects = effects.concat(zone.getFlag(game.system.id, "effects") || []);
+
+        effects.forEach(e => 
         {
-            return this._isInRect(point, drawing);
-        }
-        else if (drawing.document.shape.type == "p")
-        {
-            return this._isInPolygon(point, drawing);
-        }
-        else if (drawing.document.shape.type == "e")
-        {
-            return this._isInEllipse(point, drawing);
-        }
-        else {return false;}
+            setProperty(e, "system.sourceData.zone", zone.uuid);
+            e.origin = zone.uuid;
+        });
+
+        return effects;
     }
 
-
-    /**
-     * Get all Tokens inside drawing
-     * @param {Drawing|DrawingDocument} drawing Drawing object being tested
-     * @returns {Array<TokenDocument>} List of tokens within a given drawing
-     */
-    static tokensInDrawing(drawing)
-    {
-        let scene = drawing.scene;
-        let tokens = scene.tokens.contents;
-        return tokens.filter(t => this.isInDrawing(t.object.center, drawing));
-    }
-
-    static _isInRect(point, drawing)
-    {
-        let x1 = drawing.document.x;
-        let x2 = x1 + drawing.document.shape.width;
-        let y1 = drawing.document.y;
-        let y2 = y1 + drawing.document.shape.height;
-
-        if (point.x > x1 && point.x < x2 && point.y > y1 && point.y < y2)
-        {
-            return true;
-        }
-    }
-
-    static _isInPolygon(point, drawing)
-    {                                                                                 // points are relative to origin of the drawing, needs to be origin of the map
-        let polygon = new PIXI.Polygon(drawing.document.shape.points.map((coord, index) => coord += index % 2 == 0 ? drawing.document.x : drawing.document.y ));
-        return polygon.contains(point.x, point.y);
-    }
-
-    static _isInEllipse(point, drawing)
-    {
-        let ellipse = new PIXI.Ellipse(drawing.x + drawing.shape.width / 2, drawing.y + drawing.shape.height / 2, drawing.shape.width / 2, drawing.shape.height / 2);
-        return ellipse.contains(point.x, point.y);
-    }
-
+  
     /**
      * Return an array of effect data based on Zone Settings
      * @param {Drawing} drawing Drawing instance
@@ -176,81 +168,81 @@ export default class ZoneHelpers
      * @param {object} update Token update data (new x and y)
      * @param {Array} drawings Array of Drawing instances to check
      */
-    static async checkTokenUpdate(token, update, drawings)
-    {
-        if (!(drawings instanceof Array))
-        {
-            drawings = [drawings];
-        }
+    // static async checkTokenUpdate(token, update, drawings)
+    // {
+    //     if (!(drawings instanceof Array))
+    //     {
+    //         drawings = [drawings];
+    //     }
 
-        if (update.x || update.y)
-        {
-            let preX = {x : token.object.center.x, y: token.object.center.y};
-            let postX = {
-                x :(update.x || token.x) + canvas.grid.size / 2 , 
-                y: (update.y || token.y) + canvas.grid.size / 2
-            };
+    //     if (update.x || update.y)
+    //     {
+    //         let preX = {x : token.object.center.x, y: token.object.center.y};
+    //         let postX = {
+    //             x :(update.x || token.x) + canvas.grid.size / 2 , 
+    //             y: (update.y || token.y) + canvas.grid.size / 2
+    //         };
 
-            let toAdd = [];
-            let toRemove = [];
+    //         let toAdd = [];
+    //         let toRemove = [];
 
-            let currentZoneEffects = token.actor?.currentZoneEffects || [];
+    //         let currentZoneEffects = token.actor?.currentZoneEffects || [];
 
-            let entered = [];
-            let left = [];
-            for (let drawing of drawings)
-            {
-                if (ZoneHelpers.isInDrawing(postX, drawing) && !ZoneHelpers.isInDrawing(preX, drawing)) // If entering Zone
-                {
-                    entered.push(drawing);
-                }
+    //         let entered = [];
+    //         let left = [];
+    //         for (let drawing of drawings)
+    //         {
+    //             if (ZoneHelpers.isInDrawing(postX, drawing) && !ZoneHelpers.isInDrawing(preX, drawing)) // If entering Zone
+    //             {
+    //                 entered.push(drawing);
+    //             }
 
-                if (!ZoneHelpers.isInDrawing(postX, drawing) && ZoneHelpers.isInDrawing(preX, drawing)) // If leaving Zone
-                {
-                    left.push(drawing);
-                }
-            }
+    //             if (!ZoneHelpers.isInDrawing(postX, drawing) && ZoneHelpers.isInDrawing(preX, drawing)) // If leaving Zone
+    //             {
+    //                 left.push(drawing);
+    //             }
+    //         }
 
-            // Take the drawings the token left, filter through the actor's zone effects to find the ones from those drawings, mark those for removal
-            // Note that some effects are denoted as "kept" and are not removed upon leaving the zone
-            for(let drawing of left)
-            {
-                toRemove = toRemove.concat(currentZoneEffects.filter(effect => effect.flags.impmal.fromZone == drawing.document.uuid && !effect.flags.impmal.applicationData?.keep));
-            }
+    //         // Take the drawings the token left, filter through the actor's zone effects to find the ones from those drawings, mark those for removal
+    //         // Note that some effects are denoted as "kept" and are not removed upon leaving the zone
+    //         for(let drawing of left)
+    //         {
+    //             toRemove = toRemove.concat(currentZoneEffects.filter(effect => effect.flags.impmal.fromZone == drawing.document.uuid && !effect.flags.impmal.applicationData?.keep));
+    //         }
 
-            for(let drawing of entered)
-            {
-                toAdd = toAdd.concat(ZoneHelpers.zoneEffects(drawing));
-            }
+    //         for(let drawing of entered)
+    //         {
+    //             toAdd = toAdd.concat(ZoneHelpers.zoneEffects(drawing));
+    //         }
 
 
-            await token.actor.deleteEmbeddedDocuments("ActiveEffect", toRemove.filter(e => e).map(e => e.id));
-            await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd.filter(e => e && e.flags.impmal?.following != token.uuid));
-            // Don't re-add following effect to the token that it's following
+    //         await token.actor.deleteEmbeddedDocuments("ActiveEffect", toRemove.filter(e => e).map(e => e.id));
+    //         await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd.filter(e => e && e.flags.impmal?.following != token.uuid));
+    //         // Don't re-add following effect to the token that it's following
 
-            // If the token that got updated has an effect following it
-            // Add it to the drawing entered, remove it from the drawings left
-            // This will trigger checkDrawingUpdate to apply and remove from actors
-            let followEffects = this.followEffects(token);
-            if (followEffects.length)
-            {
-                followEffects.forEach(e => setProperty(e, "flags.impmal.following", token.uuid));
-                for(let drawing of entered)
-                {
-                    let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-                    zoneEffects = zoneEffects.concat(followEffects);
-                    await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-                }
+    //         // If the token that got updated has an effect following it
+    //         // Add it to the drawing entered, remove it from the drawings left
+    //         // This will trigger checkDrawingUpdate to apply and remove from actors
+    //         let followEffects = this.followEffects(token);
+    //         if (followEffects.length)
+    //         {
+    //             followEffects.forEach(e => setProperty(e, "flags.impmal.following", token.uuid));
+    //             for(let drawing of entered)
+    //             {
+    //                 let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
+    //                 zoneEffects = zoneEffects.concat(followEffects);
+    //                 await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
+    //             }
 
-                for(let drawing of left)
-                {
-                    let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-                    zoneEffects = zoneEffects.filter(e => e.flags.impmal?.following != token.uuid);
-                    await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-                }
-            }   
-        }
-    }
+    //             for(let drawing of left)
+    //             {
+    //                 let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
+    //                 zoneEffects = zoneEffects.filter(e => e.flags.impmal?.following != token.uuid);
+    //                 await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
+    //             }
+    //         }   
+    //     }
+    // }
 
     /**
      * When a Drawing is updated (either moved, or an effect is added to it), remove all existing 
@@ -285,13 +277,7 @@ export default class ZoneHelpers
         }
 
         // Zone must have Text
-        let zones = canvas.scene.drawings.contents.filter(d => d.text).map(d => 
-        {
-            return {
-                name : d.text,
-                id : d.id
-            };
-        });
+        let zones = canvas.scene.regions.contents;
 
         if (zones.length == 0)
         {
@@ -300,7 +286,7 @@ export default class ZoneHelpers
 
         ItemDialog.create(zones, 1, {text : game.i18n.localize("WH.PickZone")}).then(choices => 
         {
-            this.applyEffectToZone(effectUuids, messageId, canvas.scene.drawings.get(choices[0].id));
+            this.applyEffectToZone(effectUuids, messageId, canvas.scene.regions.get(choices[0].id));
         });
     }
 
@@ -315,16 +301,17 @@ export default class ZoneHelpers
      * Case 1 is added to the zone flags, case 2 is applied to each token
      * @param {Sting} effectUuids UUIDS of effects being applied
      * @param {string} messageId ID of source message
-     * @param {Drawing} drawing Zone being applied to 
+     * @param {RegionDocument} region Zone being applied to 
      * @returns {Promise<null>} Promise to update drawing flags
      */
-    static async applyEffectToZone(effectUuids, messageId, drawing)
+    static async applyEffectToZone(effectUuids, messageId, region)
     {
-        let owningUser = getActiveDocumentOwner(drawing);
+        let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
-            let zoneEffects = deepClone(drawing.flags.impmal?.effects || []);
+            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []);
 
+            // One-time application effects that aren't added to a zone but instead added to tokens in the zone
             let tokenEffectUuids = [];
             for (let uuid of effectUuids)
             {
@@ -332,21 +319,21 @@ export default class ZoneHelpers
                 let message = game.messages.get(messageId);
                 let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(), {temporary : true, message : message?.id});
 
-                if (zoneEffect.system.transferData.zoneType == "tokens")
+                if (zoneEffect.system.zone.type == "tokens")
                 {
                     tokenEffectUuids.push(uuid);
                 }
-                else if (zoneEffect.system.transferData.zoneType == "zone")
+                else if (zoneEffect.system.zone.type == "zone")
                 {
                     zoneEffects.push(zoneEffect.toObject());
                 }
             }
-            let tokens = this.tokensInDrawing(drawing.object);
-            return Promise.all([drawing.setFlag("impmal", "effects", zoneEffects)].concat(tokens.map(t => t.actor.applyEffect({effectUuids : tokenEffectUuids, messageId}))));
+            let tokens = [...region.tokens];
+            return Promise.all([region.setFlag(game.system.id, "effects", zoneEffects)].concat(tokens.map(t => t.actor.applyEffect({effectUuids : tokenEffectUuids, messageId}))));
         }
         else 
         {
-            SocketHandlers.executeOnOwner(drawing, "applyZoneEffect", {effectUuids, drawingUuid : drawing.uuid, messageId});
+            SocketHandlers.executeOnOwner(region, "applyZoneEffect", {effectUuids, regionUuid : region.uuid, messageId});
         }
     }
 }

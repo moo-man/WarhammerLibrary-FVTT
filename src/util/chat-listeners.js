@@ -73,13 +73,10 @@ export default class WarhammerChatListeners
         let message = game.messages.get(el.parents(".message").attr("data-message-id"));
         let test = message.system.test;
         let effect = await fromUuid(ev.currentTarget.dataset.uuid);
-        if (ev.currentTarget.dataset.type == "zone")
+        if (!(await effect.runPreApplyScript({test})))
         {
-            if (!(await effect.runPreApplyScript({test})))
-            {
-                return;
-            }
-            ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid, message.id);
-        }            
+            return;
+        }
+        ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid, message.id);
     };
 }

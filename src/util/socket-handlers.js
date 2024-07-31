@@ -52,11 +52,11 @@ export class SocketHandlers
         }  
     }
 
-    static applyZoneEffect({effectUuids, drawingUuid, messageId}, userId)
+    static applyZoneEffect({effectUuids, regionUuid, messageId}, userId)
     {
         if (game.user.id == userId)
         {
-            return ZoneHelpers.applyEffectToZone(effectUuids, messageId, fromUuidSync(drawingUuid));
+            return ZoneHelpers.applyEffectToZone(effectUuids, messageId, fromUuidSync(regionUuid));
         }  
     }
 

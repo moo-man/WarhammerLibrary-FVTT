@@ -5,7 +5,9 @@
       <ol class="directory-list">
         {{#each items as |item i|}}
         <li class="directory-item document flexrow" data-index="{{i}}" data-id="{{item.id}}">
+          {{#if item.img}}
           <img class="thumbnail" title="{{item.name}}" src="{{item.img}}">
+          {{/if}}
           <h4 class="document-name"><a>{{item.name}}</a></h4>
         </li>
         {{/each}}

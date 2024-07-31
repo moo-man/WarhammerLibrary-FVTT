@@ -44,5 +44,10 @@ export default {
         "prePrepareOwnedItemDerivedData",
         "postPrepareOwnedItemDerivedData",
         "prepareOwnedItems",
-        "prepareOwnedData"],        
+        "prepareOwnedData"],     
+    
+    getZoneTraitEffects : (region) => 
+    {
+        return [];
+    }
 };

@@ -19,7 +19,7 @@ export class WarhammerTestMessageModel extends foundry.abstract.DataModel
         
         let test = new (systemConfig().rollClasses[this.context.rollClass])();
         test.data = {...this};
-        test.roll = Roll.fromData(test.testData.roll);
+        test.dice = Roll.fromData(test.testData.dice);
         if (test.context.rerolled)
         {
             test.rerolledDice = Roll.fromData(test.testData.reroll);

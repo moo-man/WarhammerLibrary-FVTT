@@ -14,6 +14,7 @@ export default class WarhammerBugReport extends Application
 
         this.endpoint = systemConfig().bugReporterConfig.endpoint;
         this.github = systemConfig().bugReporterConfig.githubURL;
+        this.troubleshootingURL = systemConfig().bugReporterConfig.troubleshootingURL;
 
         this.loadingIssues = this.loadIssues();
         this.latest = this.checkVersions();
@@ -48,6 +49,7 @@ export default class WarhammerBugReport extends Application
         data.domains = systemConfig().premiumModules;
         data.name = game.settings.get(game.system.id, "bugReportName");
         data.record = await this.buildRecord();
+        data.troubleshootingURL = this.troubleshootingURL;
         if (this.constructor.apiLimitReached)
         {
             ui.notifications.error(localize("WH.BugReporter.APIReached"), {permanent : true});

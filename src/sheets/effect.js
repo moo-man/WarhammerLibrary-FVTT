@@ -5,6 +5,7 @@ import WarhammerSheetMixin from "./mixin";
 
 export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(ActiveEffectConfig)
 {
+    systemTemplate = "";
     static get defaultOptions() 
     {
         const options = super.defaultOptions;
@@ -15,10 +16,9 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
     async _render(force, options)
     {
         await super._render(force, options);
-        console.log("render");
 
         let scriptHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-scripts.hbs", {scripts : this.object.system.scriptData});
-        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-application-config.hbs", this);
+        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-application-config.hbs", await this.getData());
 
         // Add Scripts Tab and tab section
         this.element.find("nav").append(`<a class='item' data-tab="scripts"><i class="fas fa-gavel"></i>${localize("WH.Script")}</a>`);
@@ -56,7 +56,12 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
     async getData()
     {
         let data = await super.getData();
+        data.system = this.object.system;
         data.configuration = this.object.constructor.CONFIGURATION;
+        if (this.systemTemplate)
+        {
+            data.systemTemplate = await renderTemplate(this.systemTemplate, data);
+        }
         return data;
     }
 

@@ -15,6 +15,11 @@ export class WarhammerTestBase
         return this.item.targetEffects;
     }
 
+    get damageEffects() 
+    {
+        return this.item.damageEffects;
+    }
+
     get zoneEffects() 
     {
         return this.item.zoneEffects;

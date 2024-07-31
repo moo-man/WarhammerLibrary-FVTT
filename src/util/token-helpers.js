@@ -1,3 +1,4 @@
+const {mergeObject} = foundry.utils;
 export default class TokenHelpers 
 {
     static highlightToken(tokenId)
@@ -12,23 +13,23 @@ export default class TokenHelpers
         token?.object?._onHoverOut({});
     }
 
-    static displayScrollingText(text, actor, {color="0xFFFFFF", stroke="0x000000"}={}) 
+    static displayScrollingText(text, actor, options={}) 
     {
         const tokens = actor.getActiveTokens();
 
         for ( let t of tokens ) 
         {
             if ( !t.visible || !t.renderable ) { continue; }
-            canvas.interface.createScrollingText(t.center, text, {
+            canvas.interface.createScrollingText(t.center, text, mergeObject({
                 anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
                 direction: CONST.TEXT_ANCHOR_POINTS.TOP,
                 distance: (2 * t.h),
                 fontSize: 36,
-                fill: color,
-                stroke,
+                fill: "0xFFFFFF",
+                stroke : "0x000000",
                 strokeThickness: 4,
                 jitter: 0.25
-            });
+            }, options));
         }
     }    
 }

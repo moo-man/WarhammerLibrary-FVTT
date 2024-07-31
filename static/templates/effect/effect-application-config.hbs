@@ -1,5 +1,4 @@
 <div class="wh-effect-config">
-    {{#with this.object}}
         <div class="form-group">
             <label>{{localize "WH.TransferData.TransferType"}}</label>
             <select name="system.transferData.type">
@@ -133,6 +132,26 @@
             {{/if}}
         {{/if}}
 
+        {{#if (eq system.transferData.type "zone")}}
+        
+            <div class="form-group">
+                <label>{{localize "WH.TransferData.ZoneType"}}</label>
+                <select name="system.transferData.zoneType">
+                    {{#select transferData.zoneType}}
+                        <option value="zone">{{localize "WH.ZoneEffect"}}</option>
+                        <option value="tokens">{{localize "WH.TokensInZone"}}</option>
+                        <option value="follow">{{localize "WH.FollowToken"}}</option>
+                    {{/select}}
+                </select>
+                <p class="notes">{{{localize "WH.TransferData.ZoneTypeHint"}}}</p>
+            </div>
+        {{/if}}
+
+
+        {{#if systemTemplate}}
+        {{{systemTemplate}}}
+        {{/if}}
+
         <div class="form-group">
             <label>{{localize "WH.TransferData.TestIndependent"}}</label>
             <input type="checkbox" name="system.transferData.testIndependent" {{checked
@@ -147,39 +166,30 @@
             <p class="notes">{{localize "WH.TransferData.PreApplyScriptHint"}}</p>
         </div>
 
-        {{#if (hasProperty this "transferData.equipTransfer")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.EquipTransfer"}}</label>
-                <input type="checkbox" name="system.transferData.equipTransfer" {{checked
-                    system.transferData.equipTransfer}}>
-                <p class="notes">{{localize "WH.TransferData.EquipTransferHint"}}</p>
-            </div>
-        {{/if}}
+        <div class="form-group">
+            <label>{{localize "WH.TransferData.EquipTransfer"}}</label>
+            <input type="checkbox" name="system.transferData.equipTransfer" {{checked
+                system.transferData.equipTransfer}}>
+            <p class="notes">{{localize "WH.TransferData.EquipTransferHint"}}</p>
+        </div>
 
-        {{#if (hasProperty this "transferData.enableConditionScript")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.EnableScript"}}<a class="script-config"
-                        data-path="system.transferData.enableConditionScript"><i
-                            class="fa-solid fa-gear-complex-code"></i></a></label>
-                <p class="notes">{{localize "WH.TransferData.EffectApplicationEnableScriptHint"}}</p>
-            </div>
-        {{/if}}
-        {{#if (hasProperty this "transferData.filter")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.Filter"}}
-                    <a class="script-config" data-path="system.transferData.filter">
-                        <i class="fa-solid fa-gear-complex-code"></i>
-                    </a>
-                </label>
-                <p class="notes">{{{localize "WH.TransferData.FilterHint"}}}</p>
-            </div>
-        {{/if}}
-        {{#if (hasProperty this "transferData.prompt")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.Prompt"}}</label>
-                <input type="checkbox" name="system.transferData.prompt" {{checked system.transferData.prompt}}>
-                <p class="notes">{{{localize "WH.TransferData.PromptHint"}}}</p>
-            </div>
-        {{/if}}
-    {{/with}}
+        <div class="form-group">
+            <label>{{localize "WH.TransferData.EnableScript"}}<a class="script-config"
+                    data-path="system.transferData.enableConditionScript"><i
+                        class="fa-solid fa-gear-complex-code"></i></a></label>
+            <p class="notes">{{localize "WH.TransferData.EnableScriptHint"}}</p>
+        </div>
+        <div class="form-group">
+            <label>{{localize "WH.TransferData.Filter"}}
+                <a class="script-config" data-path="system.transferData.filter">
+                    <i class="fa-solid fa-gear-complex-code"></i>
+                </a>
+            </label>
+            <p class="notes">{{{localize "WH.TransferData.FilterHint"}}}</p>
+        </div>
+        <div class="form-group">
+            <label>{{localize "WH.TransferData.Prompt"}}</label>
+            <input type="checkbox" name="system.transferData.prompt" {{checked system.transferData.prompt}}>
+            <p class="notes">{{{localize "WH.TransferData.PromptHint"}}}</p>
+        </div>
 </div>

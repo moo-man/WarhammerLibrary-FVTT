@@ -72,6 +72,15 @@ const WarhammerSheetMixin = (cls) => class extends cls
         return (uuid ? fromUuidSync(uuid) : this.object[collection].get(id));
     }
 
+    _getDocumentAsync(event)
+    {
+        let id = this._getId(event);
+        let collection = this._getCollection(event);
+        let uuid = this._getUUID(event);
+
+        return (uuid ? fromUuid(uuid) : this.object[collection].get(id));
+    }
+
     activateListeners(html)
     {
         super.activateListeners(html);
@@ -105,21 +114,21 @@ const WarhammerSheetMixin = (cls) => class extends cls
         this.object.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
 
-    _onEditEmbeddedDoc(ev)
+    async _onEditEmbeddedDoc(ev)
     {
-        let doc = this._getDocument(ev);
+        let doc = await this._getDocumentAsync(ev);
         doc?.sheet.render(true);
     }
 
-    _onDeleteEmbeddedDoc(ev)
+    async _onDeleteEmbeddedDoc(ev)
     {
-        let doc = this._getDocument(ev);
+        let doc = await this._getDocumentAsync(ev);
         doc?.delete();
     }
 
-    _onEffectToggle(ev)
+    async _onEffectToggle(ev)
     {
-        let doc = this._getDocument(ev);
+        let doc = await this._getDocumentAsync(ev);
         doc.update({"disabled" : !doc.disabled});
     }
 };
