@@ -60,7 +60,7 @@ export default class AreaTemplate extends MeasuredTemplate
         return new this(template);
     }
 
-    static async fromEffect(effectUuid, messageId, radius) 
+    static async fromEffect({effectUuid, effectData}, messageId, radius) 
     {
 
         let effect = await fromUuid(effectUuid);

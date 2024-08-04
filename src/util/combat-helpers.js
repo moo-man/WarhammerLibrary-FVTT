@@ -9,6 +9,11 @@ export class CombatHelpers
     static async updateCombat(combat, update, options, user) 
     {
 
+        for(let actor of combat.combatants.map(i => i.actor))
+        {
+            actor.runScripts("updateCombat", {combat}, true);
+        }
+
         if (options.direction == 1)
         {
             let previousCombatant = combat.combatants.get(combat.previous.combatantId);

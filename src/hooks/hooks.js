@@ -2,7 +2,7 @@ import { keepID } from "../util/utility";
 import combat from "./combat";
 import handlebars from "./handlebars";
 import init from "./init";
-import token from "./token";
+import zones from "./zones";
 
 /**
  *
@@ -12,7 +12,7 @@ export default function()
     handlebars();
     init();
     combat();
-    token();
+    zones();
 
     Hooks.on("preCreateJournalEntry", keepIDHook);
     Hooks.on("preCreateScene", keepIDHook);

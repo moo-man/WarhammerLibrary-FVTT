@@ -100,6 +100,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async handleImmediateScripts(data, options, user)
     {
 
+        // Block immediate scripts (when zone effect is placed it shouldn't run immediate scripts)
+        if (this.system.zone.blockImmediateOnPlacement && this.system.transferData.originalType == "zone")
+        {
+            return;
+        }
+
         let scripts = this.system.scripts.filter(i => i.trigger == "immediate");
         if (scripts.length == 0)
         {
@@ -321,6 +327,8 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     {
         let effect = this.toObject();
 
+        effect.system.transferData.originalType = effect.system.transferData.type;
+
         // An applied targeted aura should stay as an aura type, but it is no longer targeted
         if (effect.system.transferData.type == "aura" && effect.system.area.transferred)
         {
@@ -411,6 +419,10 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get manualScripts()
     {
+        if (this.disabled)
+        {
+            return [];
+        }
         return this.scripts.filter(i => i.trigger == "manual").map((script, index) => 
         {
             script.index = index; // When triggering manual scripts, need to know the index (listing all manual scripts on an actor is messy)

@@ -77,6 +77,6 @@ export default class WarhammerChatListeners
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid, message.id);
+        ZoneHelpers.promptZoneEffect({effectUuids: ev.currentTarget.dataset.uuid}, message.id);
     };
 }

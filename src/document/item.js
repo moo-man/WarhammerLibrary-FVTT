@@ -143,6 +143,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
     prepareBaseData()
     {
+        this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
         this.system.computeBase();
         this.runScripts("prePrepareData", { item: this });
         if (this.isOwned)

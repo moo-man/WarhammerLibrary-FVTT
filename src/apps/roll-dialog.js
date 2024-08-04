@@ -190,8 +190,6 @@ export default class WarhammerRollDialog extends Application
             return;
         }
 
-        let submitData = this._getSubmissionData();
-
         for(let script of this.data.scripts)
         {
             if (script.isActive)
@@ -199,6 +197,8 @@ export default class WarhammerRollDialog extends Application
                 script.submission(this);
             }
         }
+
+        let submitData = this._getSubmissionData();
 
         if (this.resolve)
         {

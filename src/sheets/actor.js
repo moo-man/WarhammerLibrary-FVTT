@@ -26,7 +26,6 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
 
     async _onApplyTargetEffect(ev) 
     {
-
         let applyData = {};
         let uuid = ev.target.dataset.uuid;
         let effect = await fromUuid(uuid);
@@ -42,7 +41,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         // let effect = actor.populateEffect(effectId, item, test)
     
         let targets = Array.from(game.user.targets).map(t => t.actor);    
-        if (!(await effect.runPreApplyScript({targets})))
+        if (!(await effect.runPreApplyScript({targets, effectData : applyData[0]})))
         {
             return;
         }
@@ -57,23 +56,41 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
     
     async _onPlaceAreaEffect(ev) 
     {
+        let effectData = {};
         let effectUuid = ev.currentTarget.dataset.uuid;
         let effect = await fromUuid(effectUuid);
-        if (!(await effect.runPreApplyScript()))
+        if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+        else 
+        {
+            return ui.notifications.error("Unable to find effect to apply");
+        }
+        if (!(await effect.runPreApplyScript({effectData})))
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect(effectUuid);
+        let template = await AreaTemplate.fromEffect({effectData});
         await template.drawPreview(ev);
     }
 
     async _onApplyZoneEffect(ev) 
     {
+        let effectData = {};
         let effect = await fromUuid(ev.currentTarget.dataset.uuid);
-        if (!(await effect.runPreApplyScript()))
+        if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+        else 
+        {
+            return ui.notifications.error("Unable to find effect to apply");
+        }
+        if (!(await effect.runPreApplyScript({effectData})))
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect(ev.currentTarget.dataset.uuid);
+        ZoneHelpers.promptZoneEffect({effectData : [effectData]});
     };
 }

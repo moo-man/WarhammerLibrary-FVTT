@@ -1,6 +1,8 @@
 import ItemDialog from "../apps/item-dialog";
+import zones from "../hooks/zones";
 import { SocketHandlers } from "./socket-handlers";
-import { getActiveDocumentOwner, systemConfig } from "./utility";
+import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
+const {hasProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
 
@@ -11,31 +13,60 @@ export default class ZoneHelpers
     {
         if (user == game.user.id)
         {
+            // If every current region ID exists in priorRegions, and every priorRegion ID existis in current, there was no region change 
+            let currentRegions = [...token.regions].map(i => i.id);
+            let priorRegions = options._priorRegions[token.id];
+            let changedRegion = !(currentRegions.every(rId => priorRegions.includes(rId)) && priorRegions.every(rId => currentRegions.includes(rId)));
 
-            let inZones = Array.from(token.regions);
-            let inZoneIds = inZones.map(i => i.uuid);
-            let effects = Array.from(token.actor.effects);
-            
-            let toAdd = [];
-            let toDelete = [];
-            
-            // Remove all zone effects that reference a zone the token is no longer in
-            toDelete = effects.filter(i => !inZoneIds.includes(i.system.sourceData.zone)).map(i => i.id);
-            
-            for(let zone of inZones)
+            if (changedRegion)
             {
-                let effects = this.getZoneEffects(zone);
-                toAdd = toAdd.concat(effects.filter(i => i.statuses[0] != [...token.actor.statuses][0]));
+                await this.checkTokenZoneEffects(token);
             }
-                
-            await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
-            await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
         }
     }
 
-    static checkZoneUpdate(region, update, options)
+    static async checkZoneUpdate(region, update, options, user)
+    {
+        if (user == game.user.id && !options?.skipZoneCheck)
+        {
+            let tokens = [...region.tokens];
+            for(let token of tokens)
+            {
+                await this.checkTokenZoneEffects(token);
+            }
+        }
+
+    }
+
+    static async checkTokenZoneEffects(token)
     {
 
+        let inZones = Array.from(token.regions);
+        let inZoneIds = inZones.map(i => i.uuid);
+        let effects = Array.from(token.actor.effects);
+        let zoneStatuses = [];
+        inZones.forEach(zone => 
+        {
+            for (let effect of this.getZoneEffects(zone))
+            {
+                zoneStatuses = zoneStatuses.concat(effect.statuses || []);
+            }
+        });
+
+        let toAdd = [];
+        let toDelete = [];
+        
+        // Remove all zone effects that reference a zone the token is no longer in
+        toDelete = effects.filter(e => e.system.sourceData.zone && e.statuses.every(s => !zoneStatuses.includes(s))).map(e => e.id);
+        
+        for(let zone of inZones)
+        {
+            let effects = this.getZoneEffects(zone);
+            toAdd = toAdd.concat(effects.filter(i => ![...token.actor.statuses].includes(i.statuses[0])));
+        }
+            
+        await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+        await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
     }
 
     /**
@@ -45,7 +76,7 @@ export default class ZoneHelpers
      */
     static getZoneEffects(zone)
     {
-        let effects = systemConfig().getZoneTraitEffects(zone);
+        let effects = systemConfig().getZoneTraitEffects(zone, this.getGreatestTrait);
 
         effects = effects.concat(zone.getFlag(game.system.id, "effects") || []);
 
@@ -130,12 +161,18 @@ export default class ZoneHelpers
     }
     
     // returns true if trait1 is greater than trait2
-    // trait1 = lightCover, trait2 = mediumCover, return false
-    // trait1 = heavyCover, trait2 = mediumCover, return true
-    static isGreaterTrait(trait1, trait2)
+    // If a Zone is configured to be some trait, and it has an effect that adds the same trait
+    // The "greater" trait should be used
+    static getGreatestTrait(traits)
     {
-        let effectList = ["lightCover", "mediumCover", "heavyCover", "lightlyObscured", "heavilyObscured", "minorHazard", "majorHazard", "deadlyHazard", "poorlyLit", "dark"];
-        return effectList.findIndex(i => i == trait1) > effectList.findIndex(i => i == trait2);
+        let effectList = systemConfig().traitOrder;
+        let maxIndex = -1;
+
+        traits.forEach(trait => 
+        {
+            maxIndex = Math.max(maxIndex, effectList.findIndex(t => t == trait));
+        });
+        return effectList[maxIndex];
     }
 
     // Follow Effects are tied to actors, but apply to the zone they are in
@@ -268,12 +305,49 @@ export default class ZoneHelpers
         }
     }
 
-
-    static promptZoneEffect(effectUuids, messageId)
+    static avgCoordinate(shape) 
     {
-        if (typeof effectUuids == "string")
+        let xTotal = 0;
+        let yTotal = 0;
+    
+        shape.points.forEach((p, i) => 
+        {
+            if (i % 2 == 0)
+            {
+                xTotal += p;   
+            }
+            else 
+            {
+                yTotal += p;
+            }
+        });
+        let x = xTotal / (shape.points.length / 2);
+        let y = yTotal / (shape.points.length / 2);
+    
+        return {x, y};
+    }
+
+    static displayScrollingTextForRegion(region, text)
+    {
+        let promises = [];
+        for(let shape of region.shapes)
+        {
+            promises.push(canvas.interface.createScrollingText(this.avgCoordinate(shape), text));
+        }
+        return promises;
+    }
+
+
+    static promptZoneEffect({effectUuids=[], effectData=[]}, messageId)
+    {
+        if (!(effectUuids instanceof Array))
         {
             effectUuids = [effectUuids];
+        }
+
+        if (!(effectData instanceof Array))
+        {
+            effectData = [effectData];
         }
 
         // Zone must have Text
@@ -286,7 +360,7 @@ export default class ZoneHelpers
 
         ItemDialog.create(zones, 1, {text : game.i18n.localize("WH.PickZone")}).then(choices => 
         {
-            this.applyEffectToZone(effectUuids, messageId, canvas.scene.regions.get(choices[0].id));
+            this.applyEffectToZone({effectUuids, effectData}, canvas.scene.regions.get(choices[0].id), messageId);
         });
     }
 
@@ -304,15 +378,27 @@ export default class ZoneHelpers
      * @param {RegionDocument} region Zone being applied to 
      * @returns {Promise<null>} Promise to update drawing flags
      */
-    static async applyEffectToZone(effectUuids, messageId, region)
+    static async applyEffectToZone({effectUuids=[], effectData=[]}, region, messageId)
     {
+        if (!(effectUuids instanceof Array))
+        {
+            effectUuids = [effectUuids];
+        }
+
+        if (!(effectData instanceof Array))
+        {
+            effectData = [effectData];
+        }
+
         let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
-            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []);
+            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
 
             // One-time application effects that aren't added to a zone but instead added to tokens in the zone
             let tokenEffectUuids = [];
+            let tokenEffectData = effectData.filter(i => i.system.zone.type == "tokens");
+            let newZoneEffectNames = effectData.filter(i => i.system.zone.type == "zone").map(i => i.name); // Used for scrolling text
             for (let uuid of effectUuids)
             {
                 let originalEffect = fromUuidSync(uuid);
@@ -326,10 +412,30 @@ export default class ZoneHelpers
                 else if (zoneEffect.system.zone.type == "zone")
                 {
                     zoneEffects.push(zoneEffect.toObject());
+                    newZoneEffectNames.push(zoneEffect.name);
                 }
             }
             let tokens = [...region.tokens];
-            return Promise.all([region.setFlag(game.system.id, "effects", zoneEffects)].concat(tokens.map(t => t.actor.applyEffect({effectUuids : tokenEffectUuids, messageId}))));
+            for(let name of newZoneEffectNames)
+            {
+                await this.displayScrollingTextForRegion(region, name);
+            }
+            let promises = await Promise.all([region.setFlag(game.system.id, "effects", zoneEffects)].concat(tokens.map(t => t.actor.applyEffect({effectUuids : tokenEffectUuids, effectData : tokenEffectData, messageId}))));
+
+            // When placing a zone effect that, mechanically, activates "when a token enters or starts its turn there", immediate effects shouldn't run
+            // for tokens that were already in that zone when it was placed, otherwise they'd get hit twice.
+            // Immediate scripts should only run for those entering the zone.
+            sleep(1000).then(() => 
+            {
+                let unblockedEffects = region.getFlag(game.system.id, "effects").map(e => 
+                {
+                    e.system.zone.blockImmediateOnPlacement = false; // This property blocks immediate scripts from running, so update the zone effect. 
+                    return e;                                        // Since the tokens in the zone already have the effect, they won't receive this change until the exit and leave. 
+                });
+
+                region.update({[`flags.${game.system.id}.effects`] : unblockedEffects}, {skipZoneCheck : true});
+            });
+            return promises;
         }
         else 
         {
