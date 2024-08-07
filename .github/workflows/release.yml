@@ -38,14 +38,14 @@ jobs:
       - name: Create ZIP
         run: |
           cd build
-          zip -r ../${{steps.packageID.outputs.prop}}.zip *
+          zip -r ../${{steps.moduleID.outputs.prop}}.zip *
           
       - name: Set Download Link
         uses: jossef/action-set-json-field@v2
         with:
           file: './module.json'
           field: 'download'
-          value: "https://github.com/${{github.repository}}/releases/download/${{steps.tag.outputs.tag}}/${{steps.packageID.outputs.prop}}.zip"
+          value: "https://github.com/${{github.repository}}/releases/download/${{steps.tag.outputs.tag}}/${{steps.moduleID.outputs.prop}}.zip"
 
       - name: Get mininum
         id: minimum
@@ -75,7 +75,7 @@ jobs:
           method: 'POST'
           preventFailureOnNoResponse: true
           customHeaders: '{"Content-Type": "application/json", "Authorization" : "${{ secrets.FOUNDRY_KEY }}"}'
-          data: '{"dry_run": false, "id" : "${{steps.packageID.outputs.prop}}", "release": {"version" :  "${{steps.tag.outputs.tag}}", "manifest": "https://raw.githubusercontent.com/${{github.repository}}/${{steps.tag.outputs.tag}}/module.json", "notes" : "https://github.com/${{github.repository}}/releases/tag/${{steps.tag.outputs.tag}}", "compatibility" : {"minimum": "${{steps.minimum.outputs.prop}}", "verified": "${{steps.verified.outputs.prop}}", "maximum": "${{steps.maximum.outputs.prop}}"} } }'
+          data: '{"dry_run": false, "id" : "${{steps.moduleID.outputs.prop}}", "release": {"version" :  "${{steps.tag.outputs.tag}}", "manifest": "https://raw.githubusercontent.com/${{github.repository}}/${{steps.tag.outputs.tag}}/module.json", "notes" : "https://github.com/${{github.repository}}/releases/tag/${{steps.tag.outputs.tag}}", "compatibility" : {"minimum": "${{steps.minimum.outputs.prop}}", "verified": "${{steps.verified.outputs.prop}}", "maximum": "${{steps.maximum.outputs.prop}}"} } }'
           
       # - name: Generate Changelog
       #   id: changelog
@@ -87,6 +87,6 @@ jobs:
         uses: ncipollo/release-action@v1.9.0
         with:
           token: ${{ secrets.PAT }}
-          artifacts: "./module.json, ./${{steps.packageID.outputs.prop}}.zip"
+          artifacts: "./module.json, ./${{steps.moduleID.outputs.prop}}.zip"
           draft : true
           generateReleaseNotes : true
