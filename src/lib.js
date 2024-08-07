@@ -27,7 +27,7 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { findKey, getActiveDocumentOwner, log } from "./util/utility";
+import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log } from "./util/utility";
 hooks();
 overrides();
 
@@ -47,7 +47,9 @@ warhammer = {};
 warhammer.utility = {
     log,
     findKey,
-    getActiveDocumentOwner
+    getActiveDocumentOwner,
+    findAllItems,
+    findItemId
 };
 
 warhammer.apps = {

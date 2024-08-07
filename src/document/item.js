@@ -112,11 +112,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
             return; // options.condition as true avoids this process
         }
     
-        let conditions = this.effects.filter(e => e.isCondition);
+        let conditions = this.effects.filter(e => e.isCondition && e.system.transferData.type == "document" && e.system.transferData.documentType == "Actor");
     
         // updateSource doesn't seem to work here for some reason: 
         // this.updateSource({effects : []})
-        this._source.effects = this.effects.filter(e => !e.isCondition).filter(e => e.toObject());
+        this._source.effects = this.effects.filter(e => !e.isCondition || e.system.transferData.type != "document" || e.system.transferData.documentType != "Actor").filter(e => e.toObject());
     
         this.actor?.createEmbeddedDocuments("ActiveEffect", conditions);
     }
@@ -145,7 +145,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     {
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
         this.system.computeBase();
-        this.runScripts("prePrepareData", { item: this });
+        this.runScripts("prepareBaseData", { item: this });
         if (this.isOwned)
         {
             this.actor.runScripts("prepareOwnedItemBaseData", {item : this});
@@ -164,12 +164,19 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
     prepareOwnedData()
     {
-        this.system.computeOwned();
+        this.system.computeOwned(this.actor);
         this.runScripts("prepareOwnedData", { item: this });
     }
 
+    get specifier() 
+    {
+        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")"));
+    }
 
-
+    get baseName() 
+    {
+        return this.name.split("(")[0];
+    }
 
     // If item.getScripts is called, filter scripts specifying "Item" document type
     // if the item was "Actor" document type, it would be transferred to the actor and 
@@ -227,7 +234,8 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get manualScripts() 
     {
-        return this.effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+        let effects = this.effects.filter(e => e.system.transferData.type == "document");
+        return effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
     }
 
     get testIndependentEffects()

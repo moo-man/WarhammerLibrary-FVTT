@@ -19,10 +19,16 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             testIndependent: new fields.BooleanField({ initial: false }),
             preApplyScript: new fields.StringField({}),  // A script that runs before an effect is applied - this runs on the source, not the target
             equipTransfer: new fields.BooleanField({ initial: false }),
+            selfOnly: new fields.BooleanField({ initial: false }),
             enableConditionScript: new fields.StringField({}),
             filter: new fields.StringField({}),
             prompt: new fields.BooleanField({ initial: false }),
-            itemTargetIDs: new fields.ArrayField(new fields.StringField({}, { nullable: true, initial : null }))
+
+        });
+
+        schema.itemTargetData = new fields.SchemaField({
+            ids: new fields.ArrayField(new fields.StringField({})),
+            allItems: new fields.BooleanField({ initial: false })
         });
 
         schema.scriptData = new fields.ArrayField(new fields.SchemaField({
@@ -42,7 +48,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         schema.zone = new fields.SchemaField({
             type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", or "follow"
             traits: new fields.ObjectField(),
-            blockImmediateOnPlacement : new fields.BooleanField({}) // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
+            skipImmediateOnPlacement : new fields.BooleanField({}) // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
             //TODO                                                  // Immediate scripts work for when they enter the zone, but that means they shouldn't run when the effect is added to the zone
         });
         
@@ -121,14 +127,13 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
     get itemTargets() 
     {
-        let ids = this.itemTargetsData;
-        if (ids.length == 0) 
+        if (this.itemTargetData.allItems)
         {
             return this.actor.items.contents;
         }
         else 
         {
-            return ids.map(i => this.actor.items.get(i));
+            return this.itemTargetData.ids.map(i => this.actor.items.get(i)).map(i => i);;
         }
     }
 

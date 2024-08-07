@@ -403,7 +403,7 @@ export default class ZoneHelpers
             {
                 let originalEffect = fromUuidSync(uuid);
                 let message = game.messages.get(messageId);
-                let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(), {temporary : true, message : message?.id});
+                let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(message?.system?.test), {temporary : true, message : message?.id});
 
                 if (zoneEffect.system.zone.type == "tokens")
                 {
@@ -429,7 +429,7 @@ export default class ZoneHelpers
             {
                 let unblockedEffects = region.getFlag(game.system.id, "effects").map(e => 
                 {
-                    e.system.zone.blockImmediateOnPlacement = false; // This property blocks immediate scripts from running, so update the zone effect. 
+                    e.system.zone.skipImmediateOnPlacement = false; // This property blocks immediate scripts from running, so update the zone effect. 
                     return e;                                        // Since the tokens in the zone already have the effect, they won't receive this change until the exit and leave. 
                 });
 
@@ -439,7 +439,7 @@ export default class ZoneHelpers
         }
         else 
         {
-            SocketHandlers.executeOnOwner(region, "applyZoneEffect", {effectUuids, regionUuid : region.uuid, messageId});
+            SocketHandlers.executeOnOwner(region, "applyZoneEffect", {effectUuids, effectData, regionUuid : region.uuid, messageId});
         }
     }
 }

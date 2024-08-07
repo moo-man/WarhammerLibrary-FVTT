@@ -62,7 +62,33 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         {
             data.systemTemplate = await renderTemplate(this.systemTemplate, data);
         }
+        data.hidden = this.hiddenProperties();
         return data;
+    }
+
+    hiddenProperties()
+    {
+        let hidden = {};
+        let effect = this.object;
+        let transferData = effect.system.transferData;
+        if (transferData.type == "document")
+        {
+            hidden.preApplyScript = true;
+            hidden.filter = true;
+            hidden.avoidTest = true;
+            hidden.prompt = true;
+            hidden.testIndependent = true;
+        }
+        if (transferData.type == "damage")
+        {
+            // TODO damage can probably work with Item document type
+            //      when damage,d provide automatically provide a prompt to select an item
+
+            // hidden.documentType = true;
+            // hidden.testIndependent = true;
+            // hidden.prompt = true;
+        }
+        return hidden;
     }
 
     activateListeners(html)

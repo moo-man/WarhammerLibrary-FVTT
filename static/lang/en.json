@@ -41,7 +41,7 @@
         "ScriptTrigger" : "Trigger",
         "Targeter" : "Targeter",
         "HideScript" : "Hide Script",
-        "ActivationScript" : "Activation Script",
+        "ActivateScript" : "Activate Script",
         "SubmissionScript" : "Submission Script",
         "ManualEffectKeys": "Manual Effect Keys",
         "DeleteEffect" : "Delete Effect",
@@ -56,10 +56,10 @@
             "OnCreate": "On Create",
             "PrepareBaseData": "Prepare Base Data",
             "PrePrepareDerivedData": "Pre-Prepare Derived Data",
-            "PostPrepareDerivedData": "Post Prepare Derived Data",
+            "PrepareDerivedData": "Prepare Derived Data",
             "PrepareOwnedItemBaseData": "Prepare Owned Item Base Data",
             "PrePrepareOwnedItemDerivedData": "Pre-Prepare Owned Item Derived Data",
-            "PostPrepareOwnedItemDerivedData": "Post Prepare Owned Item Derived Data",
+            "PrepareOwnedItemDerivedData": "Prepare Owned Item Derived Data",
             "PrepareOwnedItems": "Prepare Owned Items",
             "PrepareOwnedData": "Prepare Owned Data",
             "PreApplyDamage": "Pre-Apply Damage",
@@ -75,9 +75,12 @@
             "StartRound": "Start Round",
             "EndRound": "End Round",
             "StartTurn": "Start Turn",
-            "EndTurn": "End Turn"
+            "EndTurn": "End Turn",
+            "UpdateCombat": "Update Combat",
+            "StartCombat": "Start Combat",
+            "EndCombat": "End Combat"
+
         },
-        "UpdateCombat": "Update Combat",
         "Error.ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
@@ -91,14 +94,12 @@
             "AvoidTestItem": "Item",
             "AvoidTestCustom": "Custom",
             "AvoidTestScript": "Script",
-            "AvoidTestHint": "Hint",
+            "AvoidTestHint": "Define a Test that, if passed, prevents the effect from being added. <strong>Item</strong> indicates the effect should take test data defined by the Item (if available). <strong>Custom</strong> allows you to define the test properties here. <strong>Script</strong> lets you write an entirely custom script that, if it returns true, prevents the effect.",
             "Opposed": "Opposed",
             "Prevention": "Prevention",
-            "AvoidTestPrevention": "Prevention",
+            "PreventionHint": "Prevents this effect from being applied if the Test is passed.",
             "Reversed": "Reversed",
-            "AvoidTestReversed": "Reversed",
-            "Manual": "Manual",
-            "AvoidTestManual": "Manual",
+            "ReversedHint": "Instead, prevent this effect when the test is failed.",
             "AreaType": "AreaType",
             "AreaTypeInstantaneous": "Instantaneous",
             "AreaTypeSustained": "Sustained",
@@ -123,7 +124,13 @@
             "Filter": "Filter",
             "FilterHint": "Script to filter the Documents to apply Active Effect to. Should return <strong>true</strong> to prevent application.",
             "Prompt": "Prompt",
-            "PromptHint": "Provide a prompt and choose which document to Active Effect. Can be used with <strong>Filter</strong> to narrow the selection."
+            "PromptHint": "Provide a prompt and choose which document to Active Effect. Can be used with <strong>Filter</strong> to narrow the selection.",
+            "SelfOnly" : "Self Only",
+            "SelfOnlyHint" : "This effect should only be applied to the owning Actor, instead of Targets.",
+            "SkipImmediatePlacement" : "Skip Immediate on Placement",
+            "SkipImmediatePlacementHint" : "Prevents Immediate scripts from running when the effect is placed.",
+            "ZoneType" : "Zone Type",
+            "ZoneTypeHint" : "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in"
         },
         "TransferType" : {
             "Document" : "Owning Document",
@@ -135,7 +142,11 @@
             "Other" : "Other"
         },
         "Dialog.Modifiers": "Dialog Modifiers",
-        "PlaceEffect": "Place Effect",
-        "ApplyEffect" : "Apply {name}"
+        "PlaceEffect": "Place {name}",
+        "ApplyEffect" : "Apply {name}",
+        "ZoneEffect" : "Zone Effect",
+        "TokensInZone" : "Tokens in Zone",
+        "FollowToken" : "Follow Token",
+        "SendingSocketRequest" : "Sending Socket Request"
     }
 }

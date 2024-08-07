@@ -7,11 +7,11 @@ export default {
     
         prepareBaseData : "WH.Trigger.PrepareBaseData",
         prePrepareDerivedData : "WH.Trigger.PrePrepareDerivedData",
-        postPrepareDerivedData : "WH.Trigger.PostPrepareDerivedData",
+        prepareDerivedData : "WH.Trigger.PrepareDerivedData",
     
         prepareOwnedItemBaseData : "WH.Trigger.PrepareOwnedItemBaseData",
         prePrepareOwnedItemDerivedData : "WH.Trigger.PrePrepareOwnedItemDerivedData",
-        postPrepareOwnedItemDerivedData : "WH.Trigger.PostPrepareOwnedItemDerivedData",
+        prepareOwnedItemDerivedData : "WH.Trigger.PrepareOwnedItemDerivedData",
     
         prepareOwnedItems : "WH.Trigger.PrepareOwnedItems",
         prepareOwnedData : "WH.Trigger.PrepareOwnedData",
@@ -34,15 +34,17 @@ export default {
         endRound : "WH.Trigger.EndRound",
         startTurn : "WH.Trigger.StartTurn",
         endTurn : "WH.Trigger.EndTurn",
-        updateCombat  : "WH.UpdateCombat"
+        updateCombat  : "WH.Trigger.UpdateCombat",
+        startCombat  : "WH.Trigger.StartCombat",
+        endCombat  : "WH.Trigger.EndCombat"
     },
 
     syncTriggers : ["prepareBaseData",
         "prePrepareDerivedData",
-        "postPrepareDerivedData",
+        "prepareDerivedData",
         "prepareOwnedItemBaseData",
         "prePrepareOwnedItemDerivedData",
-        "postPrepareOwnedItemDerivedData",
+        "prepareOwnedItemDerivedData",
         "prepareOwnedItems",
         "prepareOwnedData"],     
     

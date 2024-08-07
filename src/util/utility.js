@@ -122,6 +122,29 @@ export function keepID(document)
 }
 
 /**
+ *
+ * @param id
+ * @param type
+ */
+export function findItemId(id, type) 
+{
+    if (id.includes("."))
+    {return fromUuid(id);}
+
+    if (game.items.has(id))
+    {return game.items.get(id);};
+
+    let packs = game.packs.contents;
+    for (let pack of packs) 
+    {
+        if (pack.index.has(id)) 
+        {
+            return pack.getDocument(id);
+        }
+    }
+}
+
+/**
  * Find the owner of a document, prioritizing non-GM users 
  * @param {object} document Document whose owner is being found
  * @returns {User} Owning user found
@@ -154,7 +177,103 @@ export function getActiveDocumentOwner(document)
     return owningUser;
 }
 
+/**
+ *
+ * @param ms
+ */
 export async function sleep(ms) 
 {
     await new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Add the source of a compendium link
+// e.g. Compendium.wfrp4e-core -> (WFRP4e Core Rulebook) tooltip
+/**
+ *
+ * @param html
+ */
+export function addLinkSources(html)
+{
+    html.find(".content-link").each((index, element) => 
+    {
+        let uuid = element.dataset.uuid;
+        let tooltip = element.dataset.tooltip || "";
+        if (uuid)
+        {
+            let moduleKey = uuid.split(".")[1];
+            if (systemConfig().premiumModules[moduleKey])
+            {
+                if (!tooltip)
+                {
+                    tooltip = `${systemConfig().premiumModules[moduleKey]}`;
+                }
+                else 
+                {
+                    tooltip += ` (${systemConfig().premiumModules[moduleKey]})`;
+                }
+            }
+        }
+
+        element.dataset.tooltip = tooltip;
+
+    });
+}
+
+// Since popout tokens display very small in HTML, try to replace them
+/**
+ *
+ * @param html
+ */
+export function replacePopoutTokens(html) 
+{
+
+    let replacePopoutPath = (path) => 
+    {
+        if (path.includes("tokens/popout/")) 
+        { 
+            log("Replacing popout token: " + path);
+        }
+        return path.replace("tokens/popout/", "tokens/");
+    };
+
+    // Try to replace popout tokens in chat
+    let images = html.find('img:not(.profile)'); // This is required to prevent saving the absolute actor image path
+    Array.from(images).forEach(async element => 
+    {
+        element.src = replacePopoutPath(element.src);
+    });
+}
+
+/**
+ *
+ * @param type
+ * @param loadingLabel
+ * @param index
+ */
+export async function findAllItems(type, loadingLabel = "", index=false) 
+{
+    let items = game.items.contents.filter(i => i.type == type);
+
+    let packCounter = 0;
+    let packs = [...game.packs];
+    let indexedItems = [];
+    for (let p of packs) 
+    {
+        if (loadingLabel)
+        {
+            packCounter++;
+            SceneNavigation.displayProgressBar({label: loadingLabel, pct: (packCounter / packs.length)*100 });
+        }
+        indexedItems = indexedItems.concat(p.index.filter(i => i.type == type)); 
+    }
+
+    if (!index)
+    {
+        items = items.concat(await Promise.all(indexedItems.map(i => fromUuid(i.uuid))));
+        return items.sort((a, b) => a.name > b.name ? 1 : -1);
+    }
+    else 
+    {
+        return indexedItems;
+    }
 }

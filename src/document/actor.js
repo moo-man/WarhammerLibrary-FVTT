@@ -30,7 +30,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         this.system.computeDerived();
         this.items.forEach(i => i.prepareOwnedData());
         this.runScripts("prepareOwnedItems", {actor : this});
-        this.runScripts("postPrepareDerivedData", {actor : this});
+        this.runScripts("prepareDerivedData", {actor : this});
     }
 
     /**
@@ -79,28 +79,12 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             {
                 return false;
             }
+            if(e.system.itemTargetData.allItems)
+            {
+                return true;
+            }
 
-            // An actor effects intended to apply to an item must have the itemTargets flag
-            // Empty array => all items
-            // No flag => Should not apply to items
-            // Array with IDs => Apply only to those IDs
-            let targeted = e.system.transferData.itemTargetIDs;
-            if (targeted) 
-            {
-                if (targeted.length) 
-                {
-                    return targeted.includes(item.id);
-                }
-                // If no items specified, apply to all items
-                else 
-                {
-                    return true;
-                }
-            }
-            else // If no itemTargets flag, it should not apply to items at all
-            {
-                return false;
-            }
+            return e.system.itemTargetData.ids.includes(item.id);
 
             // Create temporary effects that have the item as the parent, so the script context is correct
         }).map(i => new CONFIG.ActiveEffect.documentClass(i.toObject(), { parent: item }));
@@ -125,9 +109,14 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     {
         let owningUser = getActiveDocumentOwner(this);
 
-        if (typeof effectUuids == "string")
+        if (!(effectUuids instanceof Array))
         {
             effectUuids = [effectUuids];
+        }
+    
+        if (!(effectData instanceof Array))
+        {
+            effectData = [effectData];
         }
 
         if (owningUser?.id == game.user.id)
@@ -136,7 +125,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             {
                 let effect = fromUuidSync(uuid);
                 let message = game.messages.get(messageId);
-                await CONFIG.ActiveEffect.documentClass.create(effect.convertToApplied(), {parent: this, message : message?.id});
+                await CONFIG.ActiveEffect.documentClass.create(effect.convertToApplied(message?.system?.test), {parent: this, message : message?.id});
             }
             for(let data of effectData)
             {

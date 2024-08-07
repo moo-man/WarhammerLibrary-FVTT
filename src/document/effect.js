@@ -18,7 +18,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // Take a copy of the test result that this effect comes from, if any
         // We can't use simply take a reference to the message id and retrieve the test as
         // creating a Test object before actors are ready (scripts can execute before that) throws errors
-        this.updateSource({[`system.sourceData.test`] : game.messages.get(options.message)?.system?.test});
+        this.updateSource({[`system.sourceData.test`] : game.messages.get(options.message)?.system?.test || this.system.sourceData.test});
 
         let preventCreation = false;
         preventCreation = await this._handleFilter(data, options, user);
@@ -101,7 +101,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     {
 
         // Block immediate scripts (when zone effect is placed it shouldn't run immediate scripts)
-        if (this.system.zone.blockImmediateOnPlacement && this.system.transferData.originalType == "zone")
+        if (this.system.zone.skipImmediateOnPlacement && this.system.transferData.originalType == "zone")
         {
             return;
         }
@@ -180,14 +180,20 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         let transferData = this.system.transferData;
         if (transferData.documentType == "Item" && this.parent?.documentName == "Actor")
         {
-            let items = [];
+            let items = this.parent.items.contents;
             let filter = this.system.filterScript;
+
+            if (!filter && !transferData.prompt)
+            {
+                this.updateSource({"system.itemTargetData.allItems" : true});
+                return;
+            }
 
             // If this effect specifies a filter, narrow down the items according to it
             // TODO this filter only happens on creation, so it won't apply to items added later
             if (filter)
             {
-                items = this.parent.items.contents.filter(i => filter.execute(i)); // Ids of items being affected. If empty, affect all
+                items = items.filter(i => filter.execute(i)); // Ids of items being affected. If empty, affect all
             }
 
             // If this effect specifies a prompt, create an item dialog prompt to select the items
@@ -197,7 +203,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             }
 
 
-            this.updateSource({"system.itemTargets" : items.map(i => i.id)});
+            this.updateSource({"system.itemTargetData.ids" : items.map(i => i.id)});
         }
     }
 
@@ -410,6 +416,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get specifier() 
     {
         return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")"));
+    }
+
+    get baseName() 
+    {
+        return this.name.split("(")[0];
     }
 
     get isCondition() 

@@ -1,10 +1,16 @@
 import AreaTemplate from "../util/area-template";
-import { localize } from "../util/utility";
+import { addLinkSources, localize, replacePopoutTokens } from "../util/utility";
 
 const WarhammerSheetMixin = (cls) => class extends cls 
 {
-    // Shared listeners between different document sheets 
 
+    modifyHTML()
+    {
+        // replacePopoutTokens(this.element);
+        addLinkSources(this.element);
+    }
+
+    // Shared listeners between different document sheets 
     _getId(ev) 
     {
         return this._getDataAttribute(ev, "id");

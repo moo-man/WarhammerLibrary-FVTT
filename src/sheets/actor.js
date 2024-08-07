@@ -4,6 +4,11 @@ import WarhammerSheetMixin from "./mixin";
 
 export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet) 
 {
+    async _render(force, options)
+    {
+        await super._render(force, options);
+        this.modifyHTML();
+    }
 
     activateListeners(html)
     {
@@ -26,12 +31,12 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
 
     async _onApplyTargetEffect(ev) 
     {
-        let applyData = {};
         let uuid = ev.target.dataset.uuid;
         let effect = await fromUuid(uuid);
+        let effectData;
         if (effect) 
         {
-            applyData = { effectData: [effect.convertToApplied()] };
+            effectData = effect.convertToApplied();
         }
         else 
         {
@@ -41,7 +46,11 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         // let effect = actor.populateEffect(effectId, item, test)
     
         let targets = Array.from(game.user.targets).map(t => t.actor);    
-        if (!(await effect.runPreApplyScript({targets, effectData : applyData[0]})))
+        if (effectData.system.transferData.selfOnly)
+        {
+            targets = [effect.actor];
+        }
+        if (!(await effect.runPreApplyScript({targets, effectData})))
         {
             return;
         }
@@ -50,7 +59,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
     
         for (let target of targets) 
         {
-            await target.applyEffect(applyData);
+            await target.applyEffect({effectData});
         }
     }
     

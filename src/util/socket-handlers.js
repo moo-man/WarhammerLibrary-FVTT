@@ -52,11 +52,11 @@ export class SocketHandlers
         }  
     }
 
-    static applyZoneEffect({effectUuids, regionUuid, messageId}, userId)
+    static applyZoneEffect({effectUuids, effectData, regionUuid, messageId}, userId)
     {
         if (game.user.id == userId)
         {
-            return ZoneHelpers.applyEffectToZone(effectUuids, messageId, fromUuidSync(regionUuid));
+            return ZoneHelpers.applyEffectToZone({effectUuids, effectData}, fromUuidSync(regionUuid), messageId);
         }  
     }
 
@@ -77,7 +77,7 @@ export class SocketHandlers
         {
             return this[type](payload);
         }
-        ui.notifications.notify(game.i18n.format("WH.SendingSocketRequest", {name : ownerUser.name}));
+        // ui.notifications.notify(game.i18n.format("WH.SendingSocketRequest", {name : ownerUser.name}));
         this.call(type, payload, ownerUser.id);
     }
 

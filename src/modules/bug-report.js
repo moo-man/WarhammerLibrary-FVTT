@@ -357,9 +357,9 @@ export default class WarhammerBugReport extends Application
 
 
             if (!data.domain || !data.title || !data.description)
-            {return ui.notifications.error(localize("WH.BugReporter.ErrorBugReportForm"));}
+            {return ui.notifications.error(localize("WH.BugReporter.BugReportFormError"));}
             if (!data.issuer)
-            {return ui.notifications.error(localize("WH.BugReporter.ErrorBugReportName1"));}
+            {return ui.notifications.error(localize("WH.BugReporter.BugReportNameError"));}
 
 
             data.title = `[${systemConfig().premiumModules[data.domain]}] ${data.title}`;

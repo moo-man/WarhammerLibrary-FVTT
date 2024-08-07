@@ -36,10 +36,13 @@ export default class WarhammerChatListeners
             return ui.notifications.error("Unable to find effect to apply");
         }
     
-        // let effect = actor.populateEffect(effectId, item, test)
         
         let targets = (game.user.targets.size ? Array.from(game.user.targets) : test.targetTokens).map(t => t.actor);
-    
+        if (effect.system.transferData.selfOnly)
+        {
+            targets = [effect.actor];
+        }
+
         if (!(await effect.runPreApplyScript({test, targets})))
         {
             return;
