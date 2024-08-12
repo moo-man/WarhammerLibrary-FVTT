@@ -156,7 +156,7 @@ export function getActiveDocumentOwner(document)
     {
         document = document.actor;
     }
-    let activePlayers = game.users.contents.filter(u => u.active && u.role <= 2); // Not assistant or GM 
+    let activePlayers = game.users.contents.filter(u => u.active && u.role <= 2 && u.name != "Stream"); // Not assistant or GM 
     let owningUser;
 
     // First, prioritize if any user has this document as their assigned character

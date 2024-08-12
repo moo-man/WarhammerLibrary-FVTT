@@ -123,18 +123,24 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         {
             for (let uuid of effectUuids)
             {
-                let effect = fromUuidSync(uuid);
+                let effect = await fromUuid(uuid);
                 let message = game.messages.get(messageId);
-                await CONFIG.ActiveEffect.documentClass.create(effect.convertToApplied(message?.system?.test), {parent: this, message : message?.id});
+                effectData.push(effect.convertToApplied(message?.system?.test));
             }
-            for(let data of effectData)
+            for (let data of effectData)
             {
                 await CONFIG.ActiveEffect.documentClass.create(data, {parent: this, message : messageId});
             }
         }   
         else 
         {
-            SocketHandlers.executeOnOwner(this, "applyEffect", {effectUuids, effectData, actorUuid : this.uuid, messageId});
+            for (let uuid of effectUuids)
+            {
+                let effect = await fromUuid(uuid);
+                let message = game.messages.get(messageId);
+                effectData.push(effect.convertToApplied(message?.system?.test));
+            }
+            SocketHandlers.executeOnOwner(this, "applyEffect", {effectUuids: [], effectData, actorUuid : this.uuid, messageId});
         }
     }
 
