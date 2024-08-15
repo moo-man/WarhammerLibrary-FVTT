@@ -49,4 +49,9 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
     {
         
     }
+
+    getOtherEffects()
+    {
+        return [];
+    }
 }

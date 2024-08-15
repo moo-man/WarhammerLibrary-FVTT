@@ -4,6 +4,7 @@ import combat from "./combat";
 import handlebars from "./handlebars";
 import init from "./init";
 import journal from "./journal";
+import note from "./note";
 import zones from "./zones";
 
 /**
@@ -17,6 +18,7 @@ export default function()
     zones();
     chat();
     journal();
+    note();
 
     Hooks.on("preCreateJournalEntry", keepIDHook);
     Hooks.on("preCreateScene", keepIDHook);

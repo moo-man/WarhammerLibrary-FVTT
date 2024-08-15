@@ -6,7 +6,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
 
     async _preCreate(data, options, user) 
     {
-        if (data._id)
+        if (data._id && !this.isOwned)
         {
             options.keepId = keepID(this);
         }

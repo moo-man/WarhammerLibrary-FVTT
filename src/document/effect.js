@@ -425,7 +425,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get isCondition() 
     {
-        return !!systemConfig.conditions[this.key];
+        return !!systemConfig().conditions[this.key];
     }
 
     get manualScripts()
@@ -467,6 +467,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get sourceZone()
     {
         return fromUuidSync(this.system.sourceData.zone);
+    }
+
+    get sourceArea()
+    {
+        return fromUuidSync(this.system.sourceData.area);
     }
 
     static getCreateData(effectData, overlay=false)

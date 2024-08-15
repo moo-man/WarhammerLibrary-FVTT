@@ -1,15 +1,15 @@
 import WarhammerScript from "../system/script";
 import { AvoidTestModel } from "./embedded/avoidTest";
 
-let fields = foundry.data.fields;
 
 export class WarhammerActiveEffectModel extends foundry.abstract.DataModel 
 {
-
+    
     static _avoidTestModel = AvoidTestModel;
-
+    
     static defineSchema() 
     {
+        let fields = foundry.data.fields;
         let schema = {};
         schema.transferData = new fields.SchemaField({
             type: new fields.StringField({initial : "document"}),
@@ -53,19 +53,24 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         });
         
         schema.area = new fields.SchemaField({
-            aura: new fields.BooleanField({ initial: false }),
             radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
-            transferred : new fields.BooleanField({initial : false}),
-            render: new fields.BooleanField({ initial: true }), // Whether or not to render the measured template
             templateData: new fields.ObjectField(),
-
             keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
 
+            aura : new fields.SchemaField({
+                transferred : new fields.BooleanField({initial : false}),
+                render: new fields.BooleanField({ initial: true }), // Whether or not to render the measured template
+            }),
+
+            // Placed Template
             duration: new fields.StringField({ initial: "sustained" }), // Area - "instantaneous" or "sustained"
+
+
         });
 
         schema.sourceData = new fields.SchemaField({
             zone : new fields.StringField(),
+            area : new fields.StringField(),
             item: new fields.StringField(),
             test: new fields.ObjectField(),
         });

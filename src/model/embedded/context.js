@@ -1,9 +1,9 @@
-let fields = foundry.data.fields;
 
 export class WarhammerTestContextModel extends foundry.abstract.DataModel 
 {
     static defineSchema() 
     {
+        let fields = foundry.data.fields;
         let schema = {};
         schema.targetSpeakers = new fields.ArrayField({});
         schema.speaker = new fields.SchemaField({});

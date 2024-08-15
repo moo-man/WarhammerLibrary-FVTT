@@ -146,7 +146,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     *allApplicableEffects(includeItemEffects = false) 
     {
 
-        for (const effect of this.effects) 
+        for (const effect of this.effects.contents.concat(this.system.getOtherEffects())) 
         {
             if (effect.system.transferData.documentType == "Item" && includeItemEffects) // Some effects are intended to modify items, but are placed on the actor for ease of tracking
             {
@@ -172,6 +172,19 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             }
 
         }
+    }
+
+    /**
+     * Overriden from foundry to pass true to allApplicableEffects
+     */
+    get temporaryEffects() 
+    {
+        const effects = [];
+        for ( const effect of this.allApplicableEffects(true) ) 
+        {
+            if ( effect.active && effect.isTemporary ) {effects.push(effect);}
+        }
+        return effects;
     }
 
     sameSideAs(actor)
