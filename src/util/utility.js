@@ -25,7 +25,7 @@ export function log(message, force=false, args)
 {
     if (CONFIG.debug.warhammer || force)
     {
-        let format = systemConfig().logFormat;
+        let format = foundry.utils.deepClone(systemConfig().logFormat);
         format[0] = format[0].replace("@MESSAGE", message);
         console.log(...format, args || "");
     }

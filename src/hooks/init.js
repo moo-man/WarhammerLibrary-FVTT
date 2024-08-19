@@ -9,6 +9,18 @@ export default function ()
 
     Hooks.on("init", () => 
     {
+
+        CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
+        {
+            let effectData = this.getFlag("wfrp4e", "effectData");
+            if (effectData) 
+            {
+                let effect = new CONFIG.ActiveEffect.documentClass(effectData);
+                effect.updateSource({ "system.sourceData.area": this.uuid });
+                return effect;
+            }
+        };
+
         Handlebars.registerHelper("ifIsGM", function (options) 
         {
             return game.user.isGM ? options.fn(this) : options.inverse(this);

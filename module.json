@@ -24,6 +24,7 @@
       "extensions": ["css", "hbs", "json"]
     }
   },
+  "socket": true,
   "manifest": "https://raw.githubusercontent.com/moo-man/WarhammerLibrary-FVTT/master/module.json",
   "download": "https://github.com/moo-man/WarhammerLibrary-FVTT/releases/download/1.0.0/warhammer-lib.zip"
 }

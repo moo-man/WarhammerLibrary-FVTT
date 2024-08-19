@@ -1,3 +1,4 @@
+import { getActiveDocumentOwner } from "./utility";
 
 /**
  * Shamelessly copied from dnd5e's spell template implementation
@@ -60,12 +61,17 @@ export default class AreaTemplate extends MeasuredTemplate
         return new this(template);
     }
 
-    static async fromEffect({effectUuid, effectData}, messageId, radius) 
+    static async fromEffect(effectUuid, messageId, radius, mergeData={}) 
     {
 
         let effect = await fromUuid(effectUuid);
+        let effectData = effect.convertToApplied();
         // Sometimes, the radius needs to reference the test (usually overcasting)
-        foundry.utils.setProperty(effect, "flags.wfrp4e.sourceTest",  game.messages.get(messageId)?.system.test);
+        
+        foundry.utils.setProperty(effectData, "system.sourceData.test",  game.messages.get(messageId)?.system.test);
+
+        foundry.utils.mergeObject(effectData, mergeData);
+
         radius = radius || effect.radius; 
 
         // Prepare template data
@@ -79,10 +85,11 @@ export default class AreaTemplate extends MeasuredTemplate
             fillColor: game.user.color,
             flags: {
                 wfrp4e: {
-                    effectUuid: effectUuid,
+                    effectData: effectData,
                     messageId: messageId,
+                    aura: false,
                     round: game.combat?.round ?? -1,
-                    instantaneous : effect.system.area.duration == "instantaneous"
+                    instantaneous : effect.system.transferData.area.duration == "instantaneous"
                 }
             }
         };
@@ -94,6 +101,43 @@ export default class AreaTemplate extends MeasuredTemplate
         return new this(template);
     }
     /* -------------------------------------------- */
+
+    
+    static async fromAuraEffect(effectUuid, token) 
+    {
+
+        let effect = await fromUuid(effectUuid);
+        let effectData = effect.convertToApplied();
+        
+        // Prepare template data
+        const templateData = {
+            t: "circle",
+            user: game.user.id,
+            distance: effect.radius,
+            direction: 0,
+            x: token.object.center.x,
+            y: token.object.center.y,
+            fillColor: game.user.color,
+            hidden : !effectData.system.transferData.area.aura.render,
+            flags: {
+                wfrp4e: {
+                    effectData: effectData,
+                    aura : {
+                        owner : token.actor?.uuid,
+                        transferred : effect.system.transferData.area.aura.transferred
+                    },
+                    effectUuid : effectUuid,
+                    instantaneous: false
+                }
+            }
+        };
+
+        const cls = CONFIG.MeasuredTemplate.documentClass;
+        const template = new cls(templateData, {target: true, parent: canvas.scene });
+
+        // Return the template constructed from the item data
+        return new this(template);
+    }
 
     /**
      * Creates a preview of the spell template.

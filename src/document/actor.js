@@ -1,7 +1,10 @@
+import AreaHelpers from "../util/area-helpers";
 import { SocketHandlers } from "../util/socket-handlers";
+import TokenHelpers from "../util/token-helpers";
 import { getActiveDocumentOwner } from "../util/utility";
 import WarhammerActiveEffect from "./effect";
 import { WarhammerDocumentMixin } from "./mixin";
+const {hasProperty} = foundry.utils;
 
 export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 {
@@ -14,6 +17,29 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             this._itemTypes = super.itemTypes;
         }
         return this._itemTypes;
+    }
+
+    _onCreateDescendantDocuments(...args)
+    {
+        super._onCreateDescendantDocuments(...args);
+        // Edge case than needs a semaphore to handle properly: a targeted aura that adds a condition (immediate script) will create two auras
+        // When the condition is created, the aura template hasn't been created yet, so it gets created too
+        TokenHelpers.semaphore.add(TokenHelpers.updateAuras.bind(TokenHelpers), this.getActiveTokens()[0]?.document);
+    }
+
+    _onUpdateDescendantDocuments(...args)
+    {
+        super._onUpdateDescendantDocuments(...args);
+        if (args[1] == "effects" && args[3].some(update => (hasProperty(update, "disabled"))))
+        {
+            TokenHelpers.updateAuras(this.getActiveTokens()[0]?.document);
+        }
+    }
+
+    _onDeleteDescendantDocuments(...args)
+    {
+        super._onDeleteDescendantDocuments(...args);
+        TokenHelpers.updateAuras(this.getActiveTokens()[0]?.document);
     }
 
     prepareBaseData()
@@ -105,7 +131,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     // Handles applying effects to this actor, ensuring that the owner is the one to do so
     // This allows the owner of the document to roll tests and execute scripts, instead of the applying user
     // e.g. the players can actually test to avoid an effect, instead of the GM doing it
-    async applyEffect({effectUuids=[], effectData=[], messageId}={})
+    async applyEffect({effects=[], effectUuids=[], effectData=[], messageId}={})
     {
         let owningUser = getActiveDocumentOwner(this);
 
@@ -119,18 +145,25 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             effectData = [effectData];
         }
 
+        if (!(effects instanceof Array))
+        {
+            effects = [effects];
+        }
+    
+
+        let message = game.messages.get(messageId);
+        effectData = effectData.concat(effects.map(e => e.convertToApplied(message?.system?.test)));
+
         if (owningUser?.id == game.user.id)
         {
             for (let uuid of effectUuids)
             {
-                let effect = fromUuidSync(uuid);
-                let message = game.messages.get(messageId);
-                await CONFIG.ActiveEffect.documentClass.create(effect.convertToApplied(message?.system?.test), {parent: this, message : message?.id});
+                let effect = await fromUuid(uuid);
+                effectData.push(effect.convertToApplied(message?.system?.test), {parent: this, message : message?.id});
             }
-            for(let data of effectData)
-            {
-                await CONFIG.ActiveEffect.documentClass.create(data, {parent: this, message : messageId});
-            }
+
+            await CONFIG.ActiveEffect.documentClass.create(effectData, {parent: this, message : messageId});
+
         }   
         else 
         {
@@ -209,5 +242,9 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         }
     }
   
+    get auraEffects() 
+    {
+        return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
+    }
   
 }

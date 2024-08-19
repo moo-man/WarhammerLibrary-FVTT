@@ -15,7 +15,7 @@ export default class ZoneHelpers
         {
             // If every current region ID exists in priorRegions, and every priorRegion ID existis in current, there was no region change 
             let currentRegions = [...token.regions].map(i => i.id);
-            let priorRegions = options._priorRegions[token.id];
+            let priorRegions = options._priorRegions?.[token.id] || [];
             let changedRegion = !(currentRegions.every(rId => priorRegions.includes(rId)) && priorRegions.every(rId => currentRegions.includes(rId)));
 
             if (changedRegion)
@@ -64,9 +64,15 @@ export default class ZoneHelpers
             let effects = this.getZoneEffects(zone);
             toAdd = toAdd.concat(effects.filter(i => ![...token.actor.statuses].includes(i.statuses[0])));
         }
-            
-        await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
-        await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
+         
+        if (toDelete.length)
+        {
+            await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+        }
+        if (toAdd.length)
+        {
+            await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
+        }
     }
 
     /**
@@ -186,7 +192,7 @@ export default class ZoneHelpers
             .filter(t => t)
             .reduce((prev, current) => prev // Reduce them to just their "Follow" zone effects
                 .concat(Array.from(current.allApplicableEffects())
-                    .filter(e => e.system.area.zoneType == "follow")), [])
+                    .filter(e => e.system.transferData.area.zoneType == "follow")), [])
             .map(effect =>                  // Convert these effects to data  
             {
                 let data = effect.toObject();
@@ -196,113 +202,6 @@ export default class ZoneHelpers
                 }
                 return data;
             });
-    }
-
-    /**
-     * When a token is updated, check new position vs old and collect which zone effects
-     * to add or remove based on zones left and entered. 
-     * @param {Token} token Token being updated
-     * @param {object} update Token update data (new x and y)
-     * @param {Array} drawings Array of Drawing instances to check
-     */
-    // static async checkTokenUpdate(token, update, drawings)
-    // {
-    //     if (!(drawings instanceof Array))
-    //     {
-    //         drawings = [drawings];
-    //     }
-
-    //     if (update.x || update.y)
-    //     {
-    //         let preX = {x : token.object.center.x, y: token.object.center.y};
-    //         let postX = {
-    //             x :(update.x || token.x) + canvas.grid.size / 2 , 
-    //             y: (update.y || token.y) + canvas.grid.size / 2
-    //         };
-
-    //         let toAdd = [];
-    //         let toRemove = [];
-
-    //         let currentZoneEffects = token.actor?.currentZoneEffects || [];
-
-    //         let entered = [];
-    //         let left = [];
-    //         for (let drawing of drawings)
-    //         {
-    //             if (ZoneHelpers.isInDrawing(postX, drawing) && !ZoneHelpers.isInDrawing(preX, drawing)) // If entering Zone
-    //             {
-    //                 entered.push(drawing);
-    //             }
-
-    //             if (!ZoneHelpers.isInDrawing(postX, drawing) && ZoneHelpers.isInDrawing(preX, drawing)) // If leaving Zone
-    //             {
-    //                 left.push(drawing);
-    //             }
-    //         }
-
-    //         // Take the drawings the token left, filter through the actor's zone effects to find the ones from those drawings, mark those for removal
-    //         // Note that some effects are denoted as "kept" and are not removed upon leaving the zone
-    //         for(let drawing of left)
-    //         {
-    //             toRemove = toRemove.concat(currentZoneEffects.filter(effect => effect.flags.impmal.fromZone == drawing.document.uuid && !effect.flags.impmal.applicationData?.keep));
-    //         }
-
-    //         for(let drawing of entered)
-    //         {
-    //             toAdd = toAdd.concat(ZoneHelpers.zoneEffects(drawing));
-    //         }
-
-
-    //         await token.actor.deleteEmbeddedDocuments("ActiveEffect", toRemove.filter(e => e).map(e => e.id));
-    //         await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd.filter(e => e && e.flags.impmal?.following != token.uuid));
-    //         // Don't re-add following effect to the token that it's following
-
-    //         // If the token that got updated has an effect following it
-    //         // Add it to the drawing entered, remove it from the drawings left
-    //         // This will trigger checkDrawingUpdate to apply and remove from actors
-    //         let followEffects = this.followEffects(token);
-    //         if (followEffects.length)
-    //         {
-    //             followEffects.forEach(e => setProperty(e, "flags.impmal.following", token.uuid));
-    //             for(let drawing of entered)
-    //             {
-    //                 let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-    //                 zoneEffects = zoneEffects.concat(followEffects);
-    //                 await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-    //             }
-
-    //             for(let drawing of left)
-    //             {
-    //                 let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-    //                 zoneEffects = zoneEffects.filter(e => e.flags.impmal?.following != token.uuid);
-    //                 await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-    //             }
-    //         }   
-    //     }
-    // }
-
-    /**
-     * When a Drawing is updated (either moved, or an effect is added to it), remove all existing 
-     * effects from that zone, and add them back again to all tokens in that zone
-     * @param {Drawing} drawing Drawing being updated
-     */
-    static async checkDrawingUpdate(drawing)
-    {
-        let effects = this.zoneEffects(drawing);
-
-        for(let token of drawing.scene.tokens.map(t => t.object))
-        {
-            let currentZoneEffects = token.actor.currentZoneEffects.filter(e => e.system.sourceData.zone == drawing.document.uuid);
-
-            // Remove all effects originating from this zone
-            await token.actor.deleteEmbeddedDocuments("ActiveEffect", currentZoneEffects.map(i => i.id));
-
-            if (this.isInDrawing(token.center, drawing))
-            {
-                // Add them back to those still in the drawing
-                await token.actor?.createEmbeddedDocuments("ActiveEffect", effects.filter(e => e && e.flags.impmal?.following != token.document.uuid));
-            }
-        }
     }
 
     static avgCoordinate(shape) 

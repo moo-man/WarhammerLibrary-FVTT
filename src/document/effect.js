@@ -329,17 +329,16 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     // Convert type to document, as applying should always affect the document being applied
     // Set the origin as the actor's uuid
     // convert name to status so it shows up on the token
-    convertToApplied(test)
+    convertToApplied()
     {
         let effect = this.toObject();
 
         effect.system.transferData.originalType = effect.system.transferData.type;
 
-        // An applied targeted aura should stay as an aura type, but it is no longer targeted
-        if (effect.system.transferData.type == "aura" && effect.system.area.transferred)
+        // An applied transferred aura should stay as an aura type, but it is no longer transferred
+        if (effect.system.transferData.type == "aura" && effect.system.transferData.area.aura.transferred)
         {
-            effect.system.transferData.radius = effect.system.area.radius;
-            effect.system.transferData.targetedAura = false;
+            effect.system.transferData.area.aura.transferred = false;
         }
         else 
         {
@@ -357,7 +356,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             effect.system.sourceData.item = this.item.uuid;
         }
         
-        effect.origin = this.actor?.uuid;
+        effect.origin = this.actor?.uuid || effect.origin;
         effect.statuses = effect.statuses.length ? effect.statuses : [effect.name.slugify()];
 
         return effect;
@@ -407,6 +406,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return super.sourceName;
         }
     }
+
+    get radius()
+    {
+        return Roll.safeEval(Roll.getFormula(Roll.parse(this.system.transferData.area.radius, {effect : this, actor : this.actor, item : this.item})));
+    }
+
 
     get key () 
     {

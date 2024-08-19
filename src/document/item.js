@@ -213,7 +213,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
  
     get targetEffects() 
     {
-        return this._getTypedEffects("target").concat(this._getTypedEffects("aura").filter(e => e.system.area.transferred));
+        return this._getTypedEffects("target").concat(this._getTypedEffects("aura").filter(e => e.system.transferData.area.transferred));
     }
  
     get areaEffects() 
