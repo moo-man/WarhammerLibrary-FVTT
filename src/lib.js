@@ -27,7 +27,7 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutTokens } from "./util/utility";
+import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens } from "./util/utility";
 hooks();
 overrides();
 
@@ -50,7 +50,8 @@ warhammer.utility = {
     getActiveDocumentOwner,
     findAllItems,
     findItemId,
-    replacePopoutTokens
+    replacePopoutTokens,
+    replacePopoutPath
 };
 
 warhammer.apps = {

@@ -6,7 +6,6 @@ export default class AreaHelpers
 
     // If an actor has multiple auras, and they move, effect evaluation is calculated for each one, however each evaluation looks at ALL areas
     // So, we need to lock and prevent updates to only allow the first one to update. 
-    static locks = {};
     static semaphore = new Semaphore();
     /**
      * Determines if a coordinate is within a Template's strokes
@@ -119,11 +118,6 @@ export default class AreaHelpers
     static async checkTokenAreaEffects(token, newCenter)
     {
 
-        if (this.locks[token.id])
-        {
-            return;
-        }
-        this.locks[token.id] = true;
         let scene = token.parent;
         let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
         let effects = Array.from(token.actor.effects);
@@ -155,7 +149,6 @@ export default class AreaHelpers
         {
             await token.actor.applyEffect({effects : toAdd});
         }
-        delete this.locks[token.id];
         // If an effect from this area was not found, add it. otherwise ignore
     }
 
@@ -201,6 +194,33 @@ export default class AreaHelpers
     {                                                                                 // points are relative to origin of the template, needs to be origin of the map
         let polygon = new PIXI.Polygon(template.shape.points.map((coord, index) => coord += index % 2 == 0 ? template.document.x : template.document.y ));
         return polygon.contains(point.x, point.y);
+    }
+
+    static effectToTemplate(effect)
+    {
+        let token = effect.actor.getActiveTokens()[0];
+        let template = new MeasuredTemplate(new CONFIG.MeasuredTemplate.documentClass(foundry.utils.mergeObject({
+            t: "circle",
+            _id : effect.id,
+            user: game.user.id,
+            distance: effect.radius,
+            direction: 0,
+            x: token.center.x, // Using the token x/y will double the template's coordinates, as it's already a child of the token
+            y: token.center.y, // However, this is necessary to get tho correct grid highlighting. The template's position is corrected when it's rendered (see renderAura)
+            fillColor: game.user.color,
+            flags: {
+                wfrp4e: {
+                    effectUuid: effect.uuid
+                }
+            }
+        }, effect.flags.wfrp4e?.system.transferData.area?.templateData || {}), {parent : canvas.scene}));
+
+        // For some reason, these temporary templates have 0,0 as their coordinates
+        // instead of the ones provided by the document, so set them manually
+        template.x = template.document.x;
+        template.y = template.document.y;
+        template.auraEffect = effect;
+        return template;
     }
 
 }

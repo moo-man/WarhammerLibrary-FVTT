@@ -226,16 +226,6 @@ export function addLinkSources(html)
  */
 export function replacePopoutTokens(html) 
 {
-
-    let replacePopoutPath = (path) => 
-    {
-        if (path.includes("tokens/popout/")) 
-        { 
-            log("Replacing popout token: " + path);
-        }
-        return path.replace("tokens/popout/", "tokens/");
-    };
-
     // Try to replace popout tokens in chat
     let images = html.find('img:not(.profile)'); // This is required to prevent saving the absolute actor image path
     Array.from(images).forEach(async element => 
@@ -243,6 +233,19 @@ export function replacePopoutTokens(html)
         element.src = replacePopoutPath(element.src);
     });
 }
+
+/**
+ *
+ * @param path
+ */
+export function replacePopoutPath(path) 
+{
+    if (path.includes("tokens/popout/")) 
+    { 
+        log("Replacing popout token: " + path);
+    }
+    return path.replace("tokens/popout/", "tokens/");
+};
 
 /**
  *

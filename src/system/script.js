@@ -127,7 +127,7 @@ export default class WarhammerScript
 
     scriptMessage(...args)
     {
-        return this.scriptMessage(...args);
+        return this.message(...args);
     }
 
     getChatData(merge={})
