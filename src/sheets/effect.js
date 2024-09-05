@@ -71,6 +71,7 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         let hidden = {};
         let effect = this.object;
         let transferData = effect.system.transferData;
+        hidden.selfOnly = transferData.type != "target" && (transferData.type != "aura" || !transferData.area.aura.transferred);
         if (transferData.type == "document")
         {
             hidden.preApplyScript = true;

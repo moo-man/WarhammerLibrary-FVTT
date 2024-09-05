@@ -425,7 +425,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get baseName() 
     {
-        return this.name.split("(")[0];
+        return this.name.split("(")[0].trim();
     }
 
     get isCondition() 

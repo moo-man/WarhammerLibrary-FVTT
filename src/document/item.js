@@ -175,7 +175,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get baseName() 
     {
-        return this.name.split("(")[0];
+        return this.name.split("(")[0].trim();
     }
 
     // If item.getScripts is called, filter scripts specifying "Item" document type
@@ -213,7 +213,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
  
     get targetEffects() 
     {
-        return this._getTypedEffects("target").concat(this._getTypedEffects("aura").filter(e => e.system.transferData.area.transferred));
+        return this._getTypedEffects("target").concat(this._getTypedEffects("aura").filter(e => e.system.transferData.area.aura.transferred));
     }
  
     get areaEffects() 

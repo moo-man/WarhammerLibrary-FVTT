@@ -103,7 +103,7 @@
             "AreaDuration": "Area Effect Duration",
             "AreaDurationInstantaneous": "Instantaneous",
             "AreaDurationSustained": "Sustained",
-            "TransferredAura": "Targeted Aura",
+            "TransferredAura": "Transferred Aura",
             "TransferredAuraHint": "Apply this Aura to a target (or self) instead of constantly to self",
             "RenderAura": "Render Aura",
             "RenderAuraHint": "Render the aura on the Canvas as a Measured Template",

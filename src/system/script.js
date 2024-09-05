@@ -7,7 +7,7 @@ export default class WarhammerScript
     {
         this.script = data.script;
         this.label = data.label;
-        this.trigger = data.trigger;
+        this.trigger = systemConfig().triggerMapping[data.trigger] || data.trigger;
         this.options = data.options || {};
         this.async = this.trigger ? !systemConfig().syncTriggers.includes(this.trigger) : (data.async || false);
         this.context = context;

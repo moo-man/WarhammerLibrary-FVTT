@@ -116,7 +116,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
     get isTargetApplied() 
     {
-        return this.transferData.type == "target" || (this.transferData.type == "aura" && this.transferData.targetedAura);
+        return this.transferData.type == "target" || (this.transferData.type == "aura" && this.transferData.area.aura.transferred);
     }
 
     get isAreaApplied() 

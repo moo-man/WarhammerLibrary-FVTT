@@ -92,10 +92,10 @@
 
             {{#if (eq system.transferData.type "aura")}}
                 <div class="form-group">
-                    <label>{{localize "WH.TransferData.TargetedAura"}}</label>
+                    <label>{{localize "WH.TransferData.TransferredAura"}}</label>
                     <input type="checkbox" name="system.transferData.area.aura.transferred" {{checked
                         system.transferData.area.aura.transferred}}>
-                    <p class="notes">{{localize "WH.TransferData.TargetedAuraHint"}}</p>
+                    <p class="notes">{{localize "WH.TransferData.TransferredAuraHint"}}</p>
                 </div>
 
                 <div class="form-group">
@@ -128,13 +128,14 @@
             {{/if}}
         {{/if}}
 
-        {{#if (eq system.transferData.type "target")}} <!-- TODO this should also be for followed tokens and targeted auras -->
+        {{log this}}
+        {{#unless hidden.selfOnly}}
             <div class="form-group">
                 <label>{{localize "WH.TransferData.SelfOnly"}}</label>
                 <input type="checkbox" name="system.transferData.selfOnly" {{checked system.transferData.selfOnly}}>
                 <p class="notes">{{{localize "WH.TransferData.SelfOnlyHint"}}}</p>
             </div>
-        {{/if}}
+        {{/unless}}
 
         {{#if (eq system.transferData.type "zone")}}
         

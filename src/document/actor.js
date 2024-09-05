@@ -159,7 +159,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             for (let uuid of effectUuids)
             {
                 let effect = await fromUuid(uuid);
-                effectData.push(effect.convertToApplied(message?.system?.test), {parent: this, message : message?.id});
+                effectData.push(effect.convertToApplied(message?.system?.test));
             }
 
             await CONFIG.ActiveEffect.documentClass.create(effectData, {parent: this, message : messageId});
