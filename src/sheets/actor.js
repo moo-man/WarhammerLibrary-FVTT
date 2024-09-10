@@ -80,7 +80,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect({effectData});
+        let template = await AreaTemplate.fromEffect(effectUuid, null, null, foundry.utils.diffObject(effectData, effect.convertToApplied()));
         await template.drawPreview(ev);
     }
 

@@ -48,6 +48,10 @@ export default {
         "prepareOwnedItems",
         "prepareOwnedData"],     
     
+    triggerMapping : {
+
+    },
+
     getZoneTraitEffects : (region) => 
     {
         return [];

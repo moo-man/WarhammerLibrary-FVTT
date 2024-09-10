@@ -77,13 +77,13 @@
         {{else }}
             {{#if (eq system.transferData.type "area")}}
                 <div class="form-group">
-                    <label>{{localize "WH.TransferData.AreaType"}}</label>
+                    <label>{{localize "WH.TransferData.AreaDuration"}}</label>
                     <div class="form-fields">
-                        <select name="system.transferData.areaType">
-                            {{#select system.transferData.areaType}}
-                                <option value="instantaneous">{{localize "WH.TransferData.AreaTypeInstantaneous"}}
+                        <select name="system.transferData.area.duration">
+                            {{#select system.transferData.area.duration}}
+                                <option value="instantaneous">{{localize "WH.TransferData.AreaDurationInstantaneous"}}
                                 </option>
-                                <option value="sustained">{{localize "WH.TransferData.AreaTypeSustained"}}</option>
+                                <option value="sustained">{{localize "WH.TransferData.AreaDurationSustained"}}</option>
                             {{/select}}
                         </select>
                     </div>
@@ -92,16 +92,16 @@
 
             {{#if (eq system.transferData.type "aura")}}
                 <div class="form-group">
-                    <label>{{localize "WH.TransferData.TargetedAura"}}</label>
-                    <input type="checkbox" name="system.transferData.targetedAura" {{checked
-                        system.transferData.targetedAura}}>
-                    <p class="notes">{{localize "WH.TransferData.TargetedAuraHint"}}</p>
+                    <label>{{localize "WH.TransferData.TransferredAura"}}</label>
+                    <input type="checkbox" name="system.transferData.area.aura.transferred" {{checked
+                        system.transferData.area.aura.transferred}}>
+                    <p class="notes">{{localize "WH.TransferData.TransferredAuraHint"}}</p>
                 </div>
 
                 <div class="form-group">
                     <label>{{localize "WH.TransferData.RenderAura"}}</label>
-                    <input type="checkbox" name="system.transferData.renderAura" {{checked
-                        system.transferData.renderAura}}>
+                    <input type="checkbox" name="system.transferData.area.aura.render" {{checked
+                        system.transferData.area.aura.render}}>
                     <p class="notes">{{localize "WH.TransferData.RenderAuraHint"}}</p>
                 </div>
             {{/if}}
@@ -109,18 +109,18 @@
             {{#if (or (eq system.transferData.type "aura") (eq system.transferData.type "area"))}}
                 <div class="form-group">
                     <label>{{localize "WH.TransferData.Keep"}}</label>
-                    <input type="checkbox" name="system.transferData.keep" {{checked system.transferData.keep}}>
+                    <input type="checkbox" name="system.transferData.area.keep" {{checked system.transferData.area.keep}}>
                     <p class="notes">{{localize "WH.TransferData.KeepHint"}}</p>
                 </div>
                 <div class="form-group">
                     <label>{{localize "WH.TransferData.Radius"}}</label>
-                    <input type="text" name="system.transferData.radius" value="{{transferData.radius}}"
+                    <input type="text" name="system.transferData.area.radius" value="{{system.transferData.area.radius}}"
                         placeholder="Inherit">
                     <p class="notes">{{localize "WH.TransferData.RadiusHint"}}</p>
                 </div>
                 <div class="form-group">
                     <label>{{localize "WH.TransferData.TemplateData"}}
-                        <a class="configure-template" data-path="system.transferData.templateData"><i
+                        <a class="configure-template" data-path="system.transferData.area.templateData"><i
                                 class="fa-solid fa-gear"></i></a>
                     </label>
                     <p class="notes">{{{localize "WH.TransferData.TemplateDataHint"}}}</p>
@@ -128,13 +128,14 @@
             {{/if}}
         {{/if}}
 
-        {{#if (eq system.transferData.type "target")}} <!-- TODO this should also be for followed tokens and targeted auras -->
+        {{log this}}
+        {{#unless hidden.selfOnly}}
             <div class="form-group">
                 <label>{{localize "WH.TransferData.SelfOnly"}}</label>
                 <input type="checkbox" name="system.transferData.selfOnly" {{checked system.transferData.selfOnly}}>
                 <p class="notes">{{{localize "WH.TransferData.SelfOnlyHint"}}}</p>
             </div>
-        {{/if}}
+        {{/unless}}
 
         {{#if (eq system.transferData.type "zone")}}
         

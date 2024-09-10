@@ -1,12 +1,12 @@
 import { systemConfig } from "../util/utility";
 import { WarhammerTestContextModel } from "./embedded/context";
 
-let fields = foundry.data.fields;
 
 export class WarhammerTestMessageModel extends foundry.abstract.DataModel 
 {
     static defineSchema() 
     {
+        let fields = foundry.data.fields;
         let schema = {};
         schema.context = new fields.ObjectField();
         schema.testData = new fields.ObjectField();

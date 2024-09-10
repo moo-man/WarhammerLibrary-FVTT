@@ -1,5 +1,5 @@
 import WarhammerScript from "../system/script";
-import { DialogTooltips } from "../system/tooltips";
+import { BaseDialogTooltips } from "../system/tooltips";
 const {mergeObject, diffObject} = foundry.utils;
 
 export default class WarhammerRollDialog extends Application 
@@ -11,6 +11,9 @@ export default class WarhammerRollDialog extends Application
     #onKeyPress;            // Keep track of Enter key listener so it can be removed when submitted
     currentFocus;           // Keep track of current focused element to handle user submitting before the dialog has calculated the most recent input
     submitted = false;      // Flag that denotes the dialog has been submitted and should go through submission instead of rendering 
+    // tooltipConfig = {};
+    static tooltipClass = BaseDialogTooltips;
+
 
     static get defaultOptions() 
     {
@@ -41,9 +44,9 @@ export default class WarhammerRollDialog extends Application
     {
         super(options);
         this.data = data;
-        this.tooltips = new DialogTooltips();
+        this.tooltips = new this.constructor.tooltipClass();
 
-        this.initialFields = mergeObject(this._defaultFields(), fields);
+        this.initialFields = foundry.utils.mergeObject(this._defaultFields(), fields);
         this.fields = this._defaultFields();
         this.userEntry = {};
 
@@ -561,13 +564,7 @@ export default class WarhammerRollDialog extends Application
 
     createBreakdown()
     {
-        let breakdown = {
-            modifier: this.fields.modifier,
-            difficulty : this.fields.difficulty,
-            slBonus : this.fields.slBonus,
-            successBonus : this.fields.successBonus,
-            modifiersBreakdown : this.tooltips.getCollectedTooltips()
-        };
+        let breakdown = {};
         return breakdown;
     }
 

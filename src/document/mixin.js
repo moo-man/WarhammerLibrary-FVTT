@@ -6,19 +6,19 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
 
     async _preCreate(data, options, user) 
     {
-        if (data._id)
+        if (data._id && !this.isOwned)
         {
             options.keepId = keepID(this);
         }
 
         await super._preCreate(data, options, user);
-        await this.system._preCreate(data, options);
+        await this.system._preCreate(data, options, user);
     }
 
     async _preUpdate(data, options, user) 
     {
         await super._preUpdate(data, options, user);
-        await this.system._preUpdate(data, options);
+        await this.system._preUpdate(data, options, user);
     }
 
     async _preDelete(options, user)
@@ -63,6 +63,12 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
                 this._propagateDataModels(model[property], name, value);
             }
         }
+    }
+
+    hasCondition(conditionKey) 
+    {
+        let existing = this.effects.find(i => i.key == conditionKey);
+        return existing;
     }
 
     /**

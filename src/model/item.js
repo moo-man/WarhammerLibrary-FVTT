@@ -8,11 +8,6 @@ export class BaseWarhammerItemModel extends BaseWarhammerModel
         
     }
 
-    getOtherEffects()
-    {
-        return [];
-    }
-
     async allowCreation(data, options, user)
     {
         if (this.parent.actor)

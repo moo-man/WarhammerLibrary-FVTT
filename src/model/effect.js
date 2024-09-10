@@ -1,15 +1,15 @@
 import WarhammerScript from "../system/script";
 import { AvoidTestModel } from "./embedded/avoidTest";
 
-let fields = foundry.data.fields;
 
 export class WarhammerActiveEffectModel extends foundry.abstract.DataModel 
 {
-
+    
     static _avoidTestModel = AvoidTestModel;
-
+    
     static defineSchema() 
     {
+        let fields = foundry.data.fields;
         let schema = {};
         schema.transferData = new fields.SchemaField({
             type: new fields.StringField({initial : "document"}),
@@ -23,6 +23,20 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             enableConditionScript: new fields.StringField({}),
             filter: new fields.StringField({}),
             prompt: new fields.BooleanField({ initial: false }),
+
+            area : new fields.SchemaField({
+                radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
+                templateData: new fields.ObjectField(),
+                keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
+    
+                aura : new fields.SchemaField({
+                    transferred : new fields.BooleanField({initial : false}),
+                    render: new fields.BooleanField({ initial: true }), // Whether or not to render the measured template
+                }),
+    
+                // Placed Template
+                duration: new fields.StringField({ initial: "sustained" }), // Area - "instantaneous" or "sustained"
+            })
 
         });
 
@@ -45,27 +59,17 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             async: new fields.BooleanField()
         }));
 
+        // TODO move back into transferData
         schema.zone = new fields.SchemaField({
             type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", or "follow"
             traits: new fields.ObjectField(),
             skipImmediateOnPlacement : new fields.BooleanField({}) // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
             //TODO                                                  // Immediate scripts work for when they enter the zone, but that means they shouldn't run when the effect is added to the zone
         });
-        
-        schema.area = new fields.SchemaField({
-            aura: new fields.BooleanField({ initial: false }),
-            radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
-            transferred : new fields.BooleanField({initial : false}),
-            render: new fields.BooleanField({ initial: true }), // Whether or not to render the measured template
-            templateData: new fields.ObjectField(),
-
-            keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
-
-            duration: new fields.StringField({ initial: "sustained" }), // Area - "instantaneous" or "sustained"
-        });
 
         schema.sourceData = new fields.SchemaField({
             zone : new fields.StringField(),
+            area : new fields.StringField(),
             item: new fields.StringField(),
             test: new fields.ObjectField(),
         });
@@ -112,7 +116,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
     get isTargetApplied() 
     {
-        return this.transferData.type == "target" || (this.transferData.type == "aura" && this.transferData.targetedAura);
+        return this.transferData.type == "target" || (this.transferData.type == "aura" && this.transferData.area.aura.transferred);
     }
 
     get isAreaApplied() 

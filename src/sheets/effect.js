@@ -18,7 +18,7 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         await super._render(force, options);
 
         let scriptHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-scripts.hbs", {scripts : this.object.system.scriptData});
-        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-application-config.hbs", await this.getData());
+        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-transfer-config.hbs", await this.getData());
 
         // Add Scripts Tab and tab section
         this.element.find("nav").append(`<a class='item' data-tab="scripts"><i class="fas fa-gavel"></i>${localize("WH.Script")}</a>`);
@@ -71,6 +71,7 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         let hidden = {};
         let effect = this.object;
         let transferData = effect.system.transferData;
+        hidden.selfOnly = transferData.type != "target" && (transferData.type != "aura" || !transferData.area.aura.transferred);
         if (transferData.type == "document")
         {
             hidden.preApplyScript = true;
@@ -144,7 +145,7 @@ class EmbeddedMeasuredTemplateConfig extends MeasuredTemplateConfig
 {
     async _updateObject(event, formData)
     {
-        this.object.update({"system.transferData.templateData" : formData});
+        this.object.update({"system.transferData.area.templateData" : formData});
     }
 
     async _render(force, options)
@@ -162,7 +163,7 @@ class EmbeddedMeasuredTemplateConfig extends MeasuredTemplateConfig
     async getData()
     {
         let data = await super.getData();
-        data.data = this.object.system.transferData.templateData;
+        data.data = this.object.system.transferData.area.templateData;
         return data;
     }
 }

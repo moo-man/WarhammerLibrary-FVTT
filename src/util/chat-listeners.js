@@ -24,7 +24,7 @@ export default class WarhammerChatListeners
         if (effectPath)
         {
             effect = foundry.utils.getProperty(item, effectPath);
-            applyData = {effectData : [effect.toObject()]};
+            applyData = {effectData : [effect.convertToApplied()]};
         }
         else if (uuid)
         {
