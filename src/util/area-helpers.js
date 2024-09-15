@@ -6,7 +6,7 @@ export default class AreaHelpers
 
     // If an actor has multiple auras, and they move, effect evaluation is calculated for each one, however each evaluation looks at ALL areas
     // So, we need to lock and prevent updates to only allow the first one to update. 
-    static semaphore = new Semaphore();
+    static semaphore = new foundry.utils.Semaphore();
     /**
      * Determines if a coordinate is within a Template's strokes
      * @param {object} {x, y} object being tested
@@ -117,7 +117,6 @@ export default class AreaHelpers
 
     static async checkTokenAreaEffects(token, newCenter)
     {
-
         let scene = token.parent;
         let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
         let effects = Array.from(token.actor.effects);
@@ -134,7 +133,6 @@ export default class AreaHelpers
             }
         });
 
-        
         // Remove all area effects that reference an area the token is no longer in
         let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
 

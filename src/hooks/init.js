@@ -62,6 +62,11 @@ export default function ()
             return pct;
         });
 
+        Handlebars.registerHelper("add", function (a, b) 
+        {
+            return a + b; 
+        });
+
         Handlebars.registerHelper("array", function (array, cls) 
         {
             if (typeof cls == "string")
