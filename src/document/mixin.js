@@ -19,6 +19,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     {
         await super._preUpdate(data, options, user);
         await this.system._preUpdate(data, options, user);
+        await Promise.all(this.runScripts("preUpdateDocument", {data, options, user}));
     }
 
     async _preDelete(options, user)
