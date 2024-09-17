@@ -14,13 +14,18 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     static DEFAULT_OPTIONS = {
         classes: ["warhammer"],
         actions: {
-            editEmbedded : this._onEditEmbedded,
-            deleteEmbedded : this._onDeleteEmbedded,
-            toggleEffect : this._onToggleEffect,
+            editEmbedded : this._onEditEmbeddedDoc,
+            deleteEmbedded : this._onDeleteEmbeddedDoc,
+            toggleEffect : this._onEffectToggle,
             createEffect : this._onCreateEffect,
+            editProperty : this._onEditProperty,
+            toggleProperty : this._onToggleProperty
         },
         window: {
             resizable: true
+        },
+        form: {
+            submitOnChange: true,
         },
         dragDrop: [{ dragSelector: '[data-uuid]:not([data-nodrag])', dropSelector: null }],
     };
@@ -144,6 +149,14 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 this.document.update({ [`system.${ev.target.name}`]: ev.target.value });
             });
         });
+
+        this.element.querySelectorAll("input").forEach((editor) => 
+        {
+            editor.addEventListener("focusin", (ev) =>
+            {
+                ev.target.select();
+            });
+        });
     }
 
     async _prepareContext(options) 
@@ -196,7 +209,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         return {};
     }
 
-    async _onCreateEffect(ev) 
+    static async _onCreateEffect(ev) 
     {
         let type = ev.currentTarget.dataset.category;
         let effectData = { name: localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
@@ -218,22 +231,35 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
 
-    async _onEditEmbeddedDoc(ev)
+    static async _onEditEmbeddedDoc(ev)
     {
         let doc = await this._getDocumentAsync(ev);
         doc?.sheet.render(true);
     }
 
-    async _onDeleteEmbeddedDoc(ev)
+    static async _onDeleteEmbeddedDoc(ev)
     {
         let doc = await this._getDocumentAsync(ev);
         doc?.delete();
     }
 
-    async _onEffectToggle(ev)
+    static async _onEffectToggle(ev)
     {
         let doc = await this._getDocumentAsync(ev);
         doc.update({"disabled" : !doc.disabled});
+    }
+
+    static _onEditProperty(ev)
+    {
+  
+    }
+  
+    static async _onToggleProperty(ev)
+    {
+        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
+        let document = element.dataset.uuid ? await fromUuid(element.dataset.uuid) : this.document;
+        let path = element.dataset.path;
+        document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
 
     modifyHTML()
