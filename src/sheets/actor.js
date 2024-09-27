@@ -1,4 +1,5 @@
 import AreaTemplate from "../util/area-template";
+import { localize } from "../util/utility";
 import ZoneHelpers from "../util/zone-helpers";
 import WarhammerSheetMixin from "./mixin";
 
@@ -40,7 +41,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
         }
     
         // let effect = actor.populateEffect(effectId, item, test)
@@ -74,7 +75,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {
@@ -94,7 +95,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {

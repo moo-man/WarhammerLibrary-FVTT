@@ -1,5 +1,6 @@
 import WarhammerScript from "../system/script";
 import { BaseDialogTooltips } from "../system/tooltips";
+import { localize } from "../util/utility";
 const {mergeObject, diffObject} = foundry.utils;
 
 export default class WarhammerRollDialog extends Application 
@@ -271,7 +272,7 @@ export default class WarhammerRollDialog extends Application
 
         this.tooltips.start(this);
         mergeObject(this.fields, this.initialFields);
-        this.tooltips.finish(this, this.options.initialTooltip || "Initial");
+        this.tooltips.finish(this, this.options.initialTooltip || localize("WH.Dialog.Initial"));
 
         // For some reason cloning the scripts doesn't prevent isActive and isHidden from persisisting
         // So for now, just reset them manually
@@ -286,7 +287,7 @@ export default class WarhammerRollDialog extends Application
         {
             this.fields[key] = this.userEntry[key];
         }
-        this.tooltips.finish(this, "User Entry");
+        this.tooltips.finish(this, localize("WH.Dialog.UserEntry"));
 
         this._hideScripts();
         this._activateScripts();
