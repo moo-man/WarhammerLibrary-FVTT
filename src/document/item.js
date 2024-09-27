@@ -199,7 +199,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     *allApplicableEffects() 
     {
-        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()))//.filter(e => this.system.effectIsApplicable(e));
+        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()).filter(e => this.system.effectIsApplicable(e)))
         {
             if (!effect.disabled)
             {yield effect;};
