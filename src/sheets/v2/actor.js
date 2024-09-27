@@ -1,3 +1,5 @@
+import AreaTemplate from "../../util/area-template";
+import ZoneHelpers from "../../util/zone-helpers";
 import WarhammerSheetMixinV2 from "./mixin";
 
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -9,7 +11,8 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
     static DEFAULT_OPTIONS = {
         classes: ["actor"],
         actions: {
-            createItem : this._onCreateItem
+            createItem : this._onCreateItem,
+            triggerScript : this._onTriggerScript
         }
     };
 
@@ -17,10 +20,17 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
 
     };
 
-    async _onDropItem(data)
+    async _onDropItem(data, ev)
     {
         let document = await fromUuid(data.uuid);
-        return await this.document.createEmbeddedDocuments(data.type, [document]);
+        if (document.actor?.uuid == this.actor.uuid)
+        {
+            this._onSortItem(document, ev);
+        }
+        else 
+        {
+            return await this.document.createEmbeddedDocuments(data.type, [document]);
+        }
     }
 
     async _onDropActiveEffect(data)
@@ -29,11 +39,31 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         return await this.document.createEmbeddedDocuments(data.type, [document]);
     }
 
+    async _onSortItem(document, event)
+    {
+        let target = await this._getDocument(event);
+        if (target)
+        {
+            let siblings = Array.from(this._getParent(event.target, ".list-content").querySelectorAll(".list-row")).map(i => fromUuidSync(i.dataset.uuid)).filter(i => document.uuid != i.uuid);
+            let sorted = SortingHelpers.performIntegerSort(document, {target, siblings});
+            this.actor.updateEmbeddedDocuments(document.documentName, sorted.map(s => 
+            {
+                return foundry.utils.mergeObject({
+                    _id : s.target.id,
+                }, s.update);
+            }));
+        }
+    }
+
     async _prepareContext(options) 
     {
         let context = await super._prepareContext(options);
         context.actor = this.actor;
-        context.items = this.actor.itemTypes;
+        context.items = foundry.utils.deepClone(this.actor.itemTypes);
+        Object.keys(context.items).forEach(type => 
+        {
+            context.items[type] = context.items[type].sort((a, b) => a.sort > b.sort ? 1 : -1);
+        });
         return context;
     }
 
@@ -53,10 +83,6 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
             {
                 continue;
             }
-            if (e.isCondition) 
-            {
-                context.effects.conditions.push(e);
-            }
             else if (e.disabled) 
             {
                 context.effects.disabled.push(e);
@@ -72,7 +98,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
     }
 
-    _getConditionData(context) 
+    _getConditionData() 
     {
         try 
         {
@@ -95,11 +121,115 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
     }
 
-    async _onCreateItem(ev) 
+    static async _onTriggerScript(ev)
     {
-        let type = ev.currentTarget.dataset.type;
-        this.document.createEmbeddedDocuments("Item", [{type, name : `New ${CONFIG.Item.typeLabels[type]}`}]).then(item => item[0].sheet.render(true));
+        let effect = await this._getDocumentAsync(ev);
+
+        // Non-database effect
+        if (!effect && ev.target.dataset.path)
+        {
+            let item = fromUuidSync(ev.target.dataset.uuid.replace(".ActiveEffect.", ""));
+            if (item)
+            {
+                effect = foundry.utils.getProperty(item, ev.target.dataset.path);
+            }
+        }
+        if (ev.target.dataset.type == "manualScript")
+        {
+            let script = effect.manualScripts.find(i => i.index == Number(ev.target.dataset.index));
+            if (script)
+            {
+                script.execute({actor : this.actor});
+            }
+        }
+        else 
+        {
+            switch(ev.target.dataset.type)
+            {
+            case "target" : 
+                return this._onApplyTargetEffect(effect);
+            case "area" : 
+                return this._onPlaceAreaEffect(effect);
+            case "zone" : 
+                return this._onApplyZoneEffect(effect);
+            }
+        }
     }
+
+    static async _onCreateItem(ev) 
+    {
+        let type = this._getParent(ev.target, "[data-type]").dataset.type;
+        this.document.createEmbeddedDocuments("Item", [{type, name : `New ${game.i18n.localize(CONFIG.Item.typeLabels[type])}`}]).then(item => item[0].sheet.render(true));
+    }
+
+    async _onApplyTargetEffect(effect) 
+    {
+        let effectData;
+        if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+        else 
+        {
+            return ui.notifications.error("Unable to find effect to apply");
+        }
+    
+        // let effect = actor.populateEffect(effectId, item, test)
+    
+        let targets = Array.from(game.user.targets).map(t => t.actor);    
+        if (effectData.system.transferData.selfOnly)
+        {
+            targets = [effect.actor];
+        }
+        if (!(await effect.runPreApplyScript({targets, effectData})))
+        {
+            return;
+        }
+        game.user.updateTokenTargets([]);
+        game.user.broadcastActivity({ targets: [] });
+    
+        for (let target of targets) 
+        {
+            await target.applyEffect({effectData});
+        }
+    }
+    
+    async _onPlaceAreaEffect(effect) 
+    {
+        let effectData = {};
+        if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+        else 
+        {
+            return ui.notifications.error("Unable to find effect to apply");
+        }
+        if (!(await effect.runPreApplyScript({effectData})))
+        {
+            return;
+        }
+        let template = await AreaTemplate.fromEffect(effect.uuid, null, null, foundry.utils.diffObject(effectData, effect.convertToApplied()));
+        await template.drawPreview();
+    }
+
+    async _onApplyZoneEffect(effect) 
+    {
+        let effectData = {};
+        if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+        else 
+        {
+            return ui.notifications.error("Unable to find effect to apply");
+        }
+        if (!(await effect.runPreApplyScript({effectData})))
+        {
+            return;
+        }
+        ZoneHelpers.promptZoneEffect({effectData : [effectData]});
+    };
 
     //#endregion
 }

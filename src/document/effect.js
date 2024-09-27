@@ -446,6 +446,21 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         });
     }
 
+    get sheetButtons() 
+    {
+        let manualScripts = this.manualScripts;
+        return manualScripts.map(s => 
+        {
+            return {
+                label : s.label,
+                type : "manualScript",
+                uuid : s.effect.uuid,
+                path : s.effect.getFlag(game.system.id, "path"),
+                index : s.index
+            };
+        });
+    }
+
     get sourceTest() 
     {
         let test = this.system.sourceData.test;

@@ -232,9 +232,53 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         return effects;
     }
 
+    get sheetButtons() 
+    {
+        let manualScripts = this.manualScripts;
+        let effects = this.testIndependentEffects;
+        let buttons = [];
+        manualScripts.forEach(s => 
+        {
+            buttons.push({
+                label : s.label,
+                type : "manualScript",
+                uuid : s.effect.uuid,
+                path : s.effect.getFlag(game.system.id, "path"),
+                index : s.index
+            });
+        });
+        effects.forEach(e => 
+        {
+            let icon;
+            let type;
+            if (e.system.transferData.type == "target" || (e.system.transferData.type == "aura" && e.system.transferData.area.aura.transferred))
+            {
+                type = "target";
+                icon = "fa-solid fa-crosshairs";
+            }
+            if (e.system.transferData.type == "area")
+            {
+                type = "area";
+                icon = "fa-solid fa-ruler-combined";
+            }
+            if (e.system.transferData.type == "zone")
+            {
+                type = "zone";
+                icon = "fa-solid fa-game-board-simple";
+            }
+            buttons.push({
+                label : e.name,
+                icon,
+                type, 
+                uuid : e.uuid,
+            });
+        });
+        return buttons;
+    }
+
     get manualScripts() 
     {
-        let effects = this.effects.filter(e => e.system.transferData.type == "document");
+        let effects = Array.from(this.allApplicableEffects()).filter(e => e.system.transferData.type == "document");
         return effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
     }
 

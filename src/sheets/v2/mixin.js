@@ -18,8 +18,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             deleteEmbedded : this._onDeleteEmbeddedDoc,
             toggleEffect : this._onEffectToggle,
             createEffect : this._onCreateEffect,
-            editProperty : this._onEditProperty,
-            toggleProperty : this._onToggleProperty
+            toggleProperty : this._onToggleProperty,
+            stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
+            clickEffectButton : this._onClickEffectButton
         },
         window: {
             resizable: true
@@ -29,6 +30,12 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         },
         dragDrop: [{ dragSelector: '[data-uuid]:not([data-nodrag])', dropSelector: null }],
     };
+
+    async close(options={}) 
+    {
+        super.close(options);
+        ui.context?.close();
+    }
 
     /**
      * Returns an array of DragDrop instances
@@ -133,23 +140,28 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (data.type && typeof this["_onDrop" + data.type] == "function")
         {
-            this["_onDrop" + data.type](data);
+            this["_onDrop" + data.type](data, event);
         }
     }
 
     _onRender(_context, _options) 
     {
         this.#dragDrop.forEach((d) => d.bind(this.element));
-    
-        // TODO: Maybe this isn't needed in V13?
-        this.element.querySelectorAll("prose-mirror").forEach((editor) => 
-        {
-            editor.addEventListener("change", (ev) =>
-            {
-                this.document.update({ [`system.${ev.target.name}`]: ev.target.value });
-            });
-        });
 
+        this._addEventListeners();
+    }
+
+    _addEventListeners()
+    {
+        // // TODO: Maybe this isn't needed in V13?
+        // this.element.querySelectorAll("prose-mirror").forEach((editor) => 
+        // {
+        //     editor.addEventListener("change", (ev) =>
+        //     {
+        //         this.document.update({ [`system.${ev.target.name}`]: ev.target.value });
+        //     });
+        // });
+    
         this.element.querySelectorAll("input").forEach((editor) => 
         {
             editor.addEventListener("focusin", (ev) =>
@@ -157,8 +169,37 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 ev.target.select();
             });
         });
+    
+        if (!this._contextMenu)
+        {
+            this._contextMenu = this._setupContextMenus();
+        }
+        else 
+        {
+            this._contextMenu.forEach(menu => 
+            {
+                menu.element = this.element;
+                menu.bind();
+            });
+        }
+    
+        this.element.querySelectorAll("[data-action='editProperty']").forEach(element => 
+        {
+            element.addEventListener("change", this.constructor._onEditProperty.bind(this));
+        });
     }
 
+    _setupContextMenus()
+    {
+
+    }
+
+    _getEntryContextOptions() 
+    {
+
+    }
+
+    
     async _prepareContext(options) 
     {
         let context = await super._prepareContext(options);
@@ -211,7 +252,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     static async _onCreateEffect(ev) 
     {
-        let type = ev.currentTarget.dataset.category;
+        let type = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`).dataset.category;
         let effectData = { name: localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
         if (type == "temporary") 
         {
@@ -249,17 +290,36 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         doc.update({"disabled" : !doc.disabled});
     }
 
-    static _onEditProperty(ev)
+    static async _onEditProperty(ev)
     {
-  
+        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
+        let document = (await this._getDocument(ev)) || this.document;
+        let path = element.dataset.path;
+        document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
     static async _onToggleProperty(ev)
     {
         let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
-        let document = element.dataset.uuid ? await fromUuid(element.dataset.uuid) : this.document;
+        let document = (await this._getDocument(ev)) || this.document;
         let path = element.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
+    }
+
+    static async _onStepProperty(ev)
+    {
+        ev.stopPropagation();
+        ev.preventDefault();
+        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
+        let document = (await this._getDocument(ev)) || this.document;
+        let path = element.dataset.path;
+        let step = ev.button == 0 ? 1 : -1;
+        step = ev.target.dataset.reversed ? -1 * step : step;
+        if (ev.ctrlKey)
+        {
+            step *= 10;
+        }
+        document.update({[path] : foundry.utils.getProperty(document, path) + step});
     }
 
     modifyHTML()
@@ -330,6 +390,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _getParent(element, selector)
     {
+        if (element.matches(selector))
+        {
+            return element;
+        }
         if (!element.parentElement)
         {
             return null;
@@ -351,7 +415,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuidSync(uuid) : this.object[collection].get(id));
+        return (uuid ? fromUuidSync(uuid) : this.document[collection]?.get(id));
     }
 
     _getDocumentAsync(event)
@@ -360,7 +424,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuid(uuid) : this.object[collection].get(id));
+        return (uuid ? fromUuid(uuid) : this.document[collection]?.get(id));
     }
 };
 

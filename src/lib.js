@@ -31,6 +31,7 @@ import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replace
 import { ListModel } from "./model/components/list";
 import { DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
+import WarhammerContextMenu from "./apps/context-menu";
 hooks();
 overrides();
 
@@ -67,7 +68,7 @@ warhammer.apps = {
     WarhammerRollDialog,
     WarhammerActiveEffectConfig,
     WarhammerEffectScriptConfig,
-
+    WarhammerContextMenu,
     SocketHandlers,
     defaultWarhammerConfig,
     TokenHelpers,
