@@ -12,7 +12,8 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         classes: ["actor"],
         actions: {
             createItem : this._onCreateItem,
-            triggerScript : this._onTriggerScript
+            triggerScript : this._onTriggerScript,
+            editImage : this._onEditImage
         }
     };
 
@@ -22,7 +23,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
 
     async _onDropItem(data, ev)
     {
-        let document = await fromUuid(data.uuid);
+        let document = data.uuid ? await fromUuid(data.uuid) : data.data;
         if (document.actor?.uuid == this.actor.uuid)
         {
             this._onSortItem(document, ev);
@@ -230,6 +231,24 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         ZoneHelpers.promptZoneEffect({effectData : [effectData]});
     };
+
+    // TODO: Remove in V13
+    static async _onEditImage(event) 
+    {
+        const attr = event.target.dataset.edit;
+        const current = foundry.utils.getProperty(this.document, attr);
+        const fp = new FilePicker({
+            current,
+            type: "image",
+            callback: path => 
+            {
+                this.document.update({img : path});
+            },
+            top: this.position.top + 40,
+            left: this.position.left + 10
+        });
+        await fp.browse();
+    }
 
     //#endregion
 }

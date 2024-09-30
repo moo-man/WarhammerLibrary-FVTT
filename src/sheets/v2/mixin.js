@@ -1,3 +1,4 @@
+import { ListPropertyForm } from "../../apps/list-form";
 import { addLinkSources, localize} from "../../util/utility";
 
 const WarhammerSheetMixinV2 = (cls) => class extends cls  
@@ -19,6 +20,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             toggleEffect : this._onEffectToggle,
             createEffect : this._onCreateEffect,
             toggleProperty : this._onToggleProperty,
+            listCreate : this._onListCreate,
+            listDelete : this._onListDelete,
+            listForm : this._onListForm,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             clickEffectButton : this._onClickEffectButton
         },
@@ -142,6 +146,15 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         {
             this["_onDrop" + data.type](data, event);
         }
+        else if (data.type == "custom")
+        {
+            this._onDropCustom(data, event);
+        }
+    }
+
+    async _onDropCustom(data, event)
+    {
+        Hooks.call(`${game.system.id}:dropCustomData`, this, data, event);
     }
 
     _onRender(_context, _options) 
@@ -152,16 +165,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     }
 
     _addEventListeners()
-    {
-        // // TODO: Maybe this isn't needed in V13?
-        // this.element.querySelectorAll("prose-mirror").forEach((editor) => 
-        // {
-        //     editor.addEventListener("change", (ev) =>
-        //     {
-        //         this.document.update({ [`system.${ev.target.name}`]: ev.target.value });
-        //     });
-        // });
-    
+    {    
         this.element.querySelectorAll("input").forEach((editor) => 
         {
             editor.addEventListener("focusin", (ev) =>
@@ -186,6 +190,11 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.element.querySelectorAll("[data-action='editProperty']").forEach(element => 
         {
             element.addEventListener("change", this.constructor._onEditProperty.bind(this));
+        });
+
+        this.element.querySelectorAll("[data-action='editList']").forEach(element => 
+        {
+            element.addEventListener("change", this.constructor._onListEdit.bind(this));
         });
     }
 
@@ -322,6 +331,52 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         document.update({[path] : foundry.utils.getProperty(document, path) + step});
     }
 
+    static async _onListCreate(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+
+        if (list)
+        {
+            doc.update(list.add());
+        }
+    }
+
+    static async _onListDelete(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+        let index = this._getIndex(ev);
+
+        if (list)
+        {
+            doc.update(list.remove(index));
+        }
+    }
+
+    static async _onListEdit(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+        let index = this._getIndex(ev);
+        let internalPath = this._getDataAttribute(ev, "ipath");
+        let value = ev.target.value;
+
+        if (list)
+        {
+            doc.update(list.edit(index, value, internalPath));
+        }
+
+    }
+
+    static async _onListForm(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+        let index = this._getIndex(ev);
+        list.toForm(index, doc);
+    }
+
     modifyHTML()
     {
         // replacePopoutTokens(this.element);
@@ -363,6 +418,11 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     _getUUID(ev)
     {
         return this._getDataAttribute(ev, "uuid");
+    }
+
+    _getList(ev)
+    {
+        return foundry.utils.getProperty(this._getDocument(ev) || this.document, this._getPath(ev));
     }
 
 

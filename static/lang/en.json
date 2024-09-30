@@ -147,6 +147,9 @@
         "ZoneEffect" : "Zone Effect",
         "TokensInZone" : "Tokens in Zone",
         "FollowToken" : "Follow Token",
-        "SendingSocketRequest" : "Sending Socket Request"
+        "SendingSocketRequest" : "Sending Socket Request",
+        "Warning" : {
+            "RenderAuraChange" : "To reflect the change to Render Aura, disable and re-enable the source Effect, or replace the Token on the Scene."
+        }
     }
 }

@@ -70,6 +70,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             await Promise.all(this.parent.runScripts("updateDocument", {data, options, user}));
         }
+
+        if (foundry.utils.hasProperty(data, "system.transferData.area.aura.render") && this.actor && this.actor.getActiveTokens().length)
+        {
+            ui.notifications.warn("WH.Warning.RenderAuraChange", {permanent: true, localize : true});
+        }
     }
 
     async _onCreate(data, options, user)

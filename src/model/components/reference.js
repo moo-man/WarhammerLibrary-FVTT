@@ -30,9 +30,9 @@ export class DocumentReferenceListModel extends ListModel
 {
     static listSchema = DocumentReferenceModel;
 
-    add(value)
+    add(document)
     {
-        return this.list.concat({uuid : value.uuid, name : value.name});
+        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, name : document.name})};
     }
 
     get documents() 
