@@ -409,9 +409,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get radius()
     {
+        if (typeof this.system.transferData.area.radius === 'number') 
+        {
+            return this.system.transferData.area.radius;
+        }
         return Roll.safeEval(Roll.getFormula(Roll.parse(this.system.transferData.area.radius, {effect : this, actor : this.actor, item : this.item})));
     }
-
 
     get key () 
     {
