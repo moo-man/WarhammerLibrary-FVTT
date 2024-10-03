@@ -70,6 +70,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             await Promise.all(this.parent.runScripts("updateDocument", {data, options, user}));
         }
+
+        if (foundry.utils.hasProperty(data, "system.transferData.area.aura.render") && this.actor && this.actor.getActiveTokens().length)
+        {
+            ui.notifications.warn("WH.Warning.RenderAuraChange", {permanent: true, localize : true});
+        }
     }
 
     async _onCreate(data, options, user)
@@ -446,6 +451,21 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             script.index = index; // When triggering manual scripts, need to know the index (listing all manual scripts on an actor is messy)
             return script;
+        });
+    }
+
+    get sheetButtons() 
+    {
+        let manualScripts = this.manualScripts;
+        return manualScripts.map(s => 
+        {
+            return {
+                label : s.label,
+                type : "manualScript",
+                uuid : s.effect.uuid,
+                path : s.effect.getFlag(game.system.id, "path"),
+                index : s.index
+            };
         });
     }
 

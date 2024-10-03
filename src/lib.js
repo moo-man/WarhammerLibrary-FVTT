@@ -28,6 +28,10 @@ import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
 import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
+import { ListModel } from "./model/components/list";
+import { DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
+import WarhammerActorSheetV2 from "./sheets/v2/actor";
+import WarhammerContextMenu from "./apps/context-menu";
 hooks();
 overrides();
 
@@ -60,27 +64,39 @@ warhammer.apps = {
     ItemDialog,
     ValueDialog,
     WarhammerScriptConfig,
-    WarhammerActiveEffect,
     WarhammerBugReport,
     WarhammerRollDialog,
     WarhammerActiveEffectConfig,
     WarhammerEffectScriptConfig,
-    WarhammerActiveEffectModel,
-    WarhammerActor,
-    WarhammerItem,
-    BaseWarhammerModel,
-    BaseWarhammerActorModel,
-    BaseWarhammerItemModel,
+    WarhammerContextMenu,
     SocketHandlers,
     defaultWarhammerConfig,
     TokenHelpers,
     WarhammerTestBase,
     AreaTemplate,
     WarhammerChatListeners,
-    WarhammerTestMessageModel,
     WarhammerModuleInitializer,
     WarhammerActorSheet,
-    WarhammerItemSheet
+    WarhammerItemSheet,
+    WarhammerActorSheetV2
+};
+
+warhammer.models = {
+    BaseWarhammerModel,
+    BaseWarhammerActorModel,
+    BaseWarhammerItemModel,
+    ListModel,
+    DocumentReferenceModel,
+    DocumentReferenceListModel,
+    WarhammerActiveEffectModel,
+    WarhammerTestMessageModel,
+    WarhammerActiveEffect
+
+};
+
+warhammer.documents = {
+    WarhammerActor,
+    WarhammerItem,
 };
 
 globalThis.warhammer = warhammer;

@@ -12,6 +12,19 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
         return {};
     }
 
+    // This ensures automated form groups have `system` in their name
+    // This is built in with `TypeDataModels` but those aren't being used
+    static get schema() 
+    {
+        if ( this.hasOwnProperty("_schema") ) 
+        {
+            return this._schema;
+        }
+        const schema = super.schema;
+        schema.name = "system";
+        return schema;
+    }
+
     async _preCreate(data, options, user) 
     {
     }

@@ -68,10 +68,13 @@ export default function ()
             return a + b; 
         });
 
-        Handlebars.registerHelper("array", function (array, cls) 
+        Handlebars.registerHelper("array", function (array, cls, args) 
         {
             if (typeof cls == "string")
-            {return array.map((value, index) => `<a data-index=${index} class="${cls}">${value}</a>`).join(`<h1 class="${cls} comma">, </h1>`);}
+            {
+                let htmlProperties = Object.keys(args.hash).reduce((html, key) => html + " " + `data-${key}=${args.hash[key]}`, "");
+                return array.map((value, index) => `<a data-index=${index} class="${cls}" ${htmlProperties}>${value}</a>`).join(`<span class="separator ${cls}">, </span>`);
+            }
             else
             {return array.join(", ");}
         });

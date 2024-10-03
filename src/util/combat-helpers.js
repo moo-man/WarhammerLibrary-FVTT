@@ -32,8 +32,8 @@ export class CombatHelpers
             combatant.actor.runScripts("startCombat", {combat}, true);
             this.trackers[combat.id] = foundry.utils.deepClone(this._blankTracker);
             combatant.actor.runScripts("startRound", {combat}, true);
-            this.trackers[combat.id].startRound[combatant.id] = combat.round;
         }
+        this.trackers[combat.id].startRound = 1;
         this.startCombat.forEach(fn => fn(combat,  data));
     }
 

@@ -221,4 +221,15 @@ export default class AreaHelpers
         return template;
     }
 
+    static refreshArea(template, flags)
+    {   
+        let document = template.document;
+        let effect = document.areaEffect();
+        if (effect && !effect.system.transferData.area.aura.render)
+        {
+            template.visible = false;
+            canvas.interface.grid.clearHighlightLayer(template.highlightId);
+        }
+    }
+
 }

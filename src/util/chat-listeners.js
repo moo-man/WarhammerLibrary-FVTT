@@ -14,8 +14,8 @@ export default class WarhammerChatListeners
         let messageId = $(ev.currentTarget).parents('.message').attr("data-message-id");
         let message = game.messages.get(messageId);
         let test = message.system.test;
-        let actor = test.actor;
-        let item = test.item;
+        let actor = test?.actor ?? message.system.actor;
+        let item = test?.item ?? message.system.item;
         let effect;
     
         if (!actor.isOwner)
@@ -36,12 +36,15 @@ export default class WarhammerChatListeners
         {
             return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
         }
-    
         
-        let targets = (game.user.targets.size ? Array.from(game.user.targets) : test.targetTokens).map(t => t.actor);
+        let targets = [];
         if (effect.system.transferData.selfOnly)
         {
-            targets = [effect.actor];
+            targets = [effect.actor ?? test.actor];
+        }
+        else
+        {
+            targets = (game.user.targets.size ? Array.from(game.user.targets) : test.targetTokens).map(t => t.actor);
         }
 
         if (!(await effect.runPreApplyScript({test, targets})))
