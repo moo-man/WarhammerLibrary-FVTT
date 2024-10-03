@@ -5,6 +5,7 @@ import handlebars from "./handlebars";
 import init from "./init";
 import journal from "./journal";
 import note from "./note";
+import ready from "./ready";
 import template from "./template";
 import token from "./token";
 import zones from "./zones";
@@ -14,6 +15,7 @@ import zones from "./zones";
  */
 export default function() 
 {
+    ready();
     handlebars();
     init();
     combat();
