@@ -159,7 +159,6 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             for (let uuid of effectUuids)
             {
                 let effect = await fromUuid(uuid);
-                let message = game.messages.get(messageId);
                 effectData.push(effect.convertToApplied(message?.system?.test));
             }
             for (let data of effectData)
