@@ -29,9 +29,10 @@ import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
 import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
 import { ListModel } from "./model/components/list";
-import { DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
+import { DeferredReferenceListModel, DeferredReferenceModel, DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
+import { SingletonItemModel } from "./model/components/singleton-item";
 hooks();
 overrides();
 
@@ -86,11 +87,14 @@ warhammer.models = {
     BaseWarhammerActorModel,
     BaseWarhammerItemModel,
     ListModel,
+    SingletonItemModel,
     DocumentReferenceModel,
     DocumentReferenceListModel,
+    DeferredReferenceModel,
+    DeferredReferenceListModel,
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
-    WarhammerActiveEffect
+    WarhammerActiveEffect,
 
 };
 

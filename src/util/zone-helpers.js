@@ -1,5 +1,4 @@
 import ItemDialog from "../apps/item-dialog";
-import zones from "../hooks/zones";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
 const {hasProperty} = foundry.utils;
@@ -142,7 +141,7 @@ export default class ZoneHelpers
     {
         for(let effect of effects)
         {
-            let effectTraits = effect.flags.impmal.applicationData?.traits || {};
+            let effectTraits = effect.system.transferData.zone.traits;
 
             for(let key in effectTraits)
             {

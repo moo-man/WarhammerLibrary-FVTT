@@ -7,22 +7,56 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
         let fields = foundry.data.fields;
         let schema = {};
         schema.uuid = new fields.StringField();
+        schema.id = new fields.StringField({deprecated : true});
         schema.name = new fields.StringField();
         return schema;
     }
 
-    getDocument() 
+    get document() 
     {
-        if (!this.document)
+        if (!this._document && this.uuid)
         {
-            this.document = fromUuid(this.uuid);
+            this._document = fromUuidSync(this.uuid) || fromUuid(this.uuid);
         }
-        return this.document;
+        return this._document;
+    }
+
+    async awaitDocument()
+    {
+        this._document = await this.document;
     }
 
     set(document)
     {
-        return {uuid : document.uuid, name : document.name};
+        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, name : document.name}};
+    }
+}
+
+export class DeferredReferenceModel extends DocumentReferenceModel
+{
+    get document() 
+    {
+        if (this._document)
+        {
+            return this._document;
+        }
+        if (this.uuid)
+        {
+            let parsed = foundry.utils.parseUuid(this.uuid);
+            let id = parsed.id;
+            let type = parsed.type; 
+            this._document = game.collections.get(type)?.get(id) || fromUuid(this.uuid);;
+        }
+        else if (this.id)
+        {
+            this._document = warhammer.utility.findItemId(this.id);
+        }
+        return this._document;
+    }
+
+    set(document)
+    {
+        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, name : document.name}};
     }
 }
 
@@ -37,6 +71,31 @@ export class DocumentReferenceListModel extends ListModel
 
     get documents() 
     {
-        return this.list.map(i => i.getDocument());
+        return this.list.map(i => i.document).filter(i => i);
+    }
+
+    async awaitDocuments()
+    {
+        this.list.forEach(i => i.awaitDocument());
+    }
+}
+
+export class DeferredReferenceListModel extends ListModel 
+{
+    static listSchema = DeferredReferenceModel;
+
+    add(document)
+    {
+        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, name : document.name})};
+    }
+
+    get documents() 
+    {
+        return this.list.map(i => i.document).filter(i => i);
+    }
+
+    async awaitDocuments()
+    {
+        this.list.forEach(i => i.awaitDocument());
     }
 }

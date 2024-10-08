@@ -2,6 +2,7 @@ import ItemDialog from "../apps/item-dialog";
 import { format, log, systemConfig } from "../util/utility";
 import WarhammerScript from "../system/script";
 import { WarhammerTestBase } from "../system/test";
+import { SocketHandlers } from "../util/socket-handlers";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
@@ -39,6 +40,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return false;
         }
         await this._handleItemApplication(data, options, user);
+        await this._handleFollowedEffect(data, options);
 
         return await this.handleImmediateScripts(data, options, user);
     }
@@ -51,6 +53,9 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             return;
         }
+
+        await this._handleFollowedEffectDeletion();
+
 
         if (!options.skipDeletingItems)
         {
@@ -178,6 +183,40 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return true;
         }
     }
+
+    async _handleFollowedEffect(data, options)
+    {
+        if (this.parent?.documentName == "Actor" && this.system.transferData.zone.type == "follow")
+        {
+            let drawing = this.parent.currentZone[0];
+            if (drawing)
+            {
+                let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
+                this.updateSource({"flags.impmal.following" : this.parent.getActiveTokens()[0]?.document?.uuid});
+                zoneEffects.push(this.toObject());
+
+                // keep ID lets us remove it from the drawing when the source is removed, see _handleFollowedEffectDeletion
+                options.keepId = true;
+                await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
+            }
+        }
+    }
+
+    
+    async _handleFollowedEffectDeletion()
+    {
+        if (this.parent.documentName == "Actor" && this.system.transferData.zone.type == "follow")
+        {
+            let drawing = this.parent.currentZone[0];
+            if (drawing)
+            {
+                let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
+                zoneEffects = zoneEffects.filter(i => i._id != this.id);
+                await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
+            }
+        }
+    }
+
 
     /**
      * There is a need to support applying effects TO items, but I don't like the idea of actually
@@ -366,7 +405,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             effect.system.sourceData.item = this.item.uuid;
         }
-        
+
+        // When transferred to another actor, effects lose their reference to the item it was in
+        // So if a effect pulls its avoid test from the item data, it can't, so place it manually
+        if (this.system.transferData.avoidTest.value == "item")
+        {
+            effect.system.transferData.avoidTest.value = "custom";
+            foundry.utils.mergeObject(effect.system.transferData.avoidTest, this.item?.getTestData() || {});
+        }
+    
         effect.origin = this.actor?.uuid || effect.origin;
         effect.statuses = effect.statuses.length ? effect.statuses : [effect.name.slugify()];
 
@@ -418,6 +465,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
     }
 
+    
+    get originDocument() 
+    {
+        return fromUuidSync(this.origin);
+    }
+
     get radius()
     {
         return Roll.safeEval(Roll.getFormula(Roll.parse(this.system.transferData.area.radius, {effect : this, actor : this.actor, item : this.item})));
@@ -463,7 +516,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return manualScripts.map(s => 
         {
             return {
-                label : s.label,
+                label : s.Label,
                 type : "manualScript",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),

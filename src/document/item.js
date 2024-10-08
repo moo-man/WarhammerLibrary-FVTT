@@ -54,8 +54,9 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
                     await script.execute({data, options, user});
                 }
             }
+            await this.actor.system.updateSingleton(this);
+
         }
-    
     }
     
     async _onUpdate(data, options, user)
@@ -69,7 +70,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("update", {data, options, user, itemUpdated : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemUpdated : this}));
         }
     }
     
@@ -223,7 +224,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
     get zoneEffects() 
     {
-        return this._getTypedEffects("zone");
+        return this._getTypedEffects("zone").filter(e => e.system.transferData.zone.type != "follow");
     }
     _getTypedEffects(type)
     {

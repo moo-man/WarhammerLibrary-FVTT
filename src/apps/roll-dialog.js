@@ -217,7 +217,7 @@ export default class WarhammerRollDialog extends Application
     _getSubmissionData()
     {
         let submitData = mergeObject(this.data, this.fields);
-        // dialogData.context.breakdown = this.tooltips.getBreakdown(this);
+        submitData.context.breakdown = "";//this.tooltips.getBreakdown(this);
         submitData.options = diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
     }
@@ -284,7 +284,14 @@ export default class WarhammerRollDialog extends Application
         this.tooltips.start(this);
         for(let key in this.userEntry)
         {
-            this.fields[key] = this.userEntry[key];
+            if (["string", "boolean"].includes(typeof this.userEntry[key]))
+            {
+                this.fields[key] = this.userEntry[key];
+            }
+            else if (Number.isNumeric(this.userEntry[key]))
+            {
+                this.fields[key] = this.userEntry[key];
+            }
         }
         this.tooltips.finish(this, "User Entry");
 

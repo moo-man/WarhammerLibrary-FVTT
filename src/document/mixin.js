@@ -33,6 +33,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     {
         await super._onUpdate(data, options, user);
         await this.system._onUpdate(data, options, user);
+        await Promise.all(this.runScripts("updateDocument", {data, options, user}));
     }
 
     async _onCreate(data, options, user)

@@ -45,10 +45,7 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
-            if (obj[key])
-            {return obj[key];}
-            else 
-            {return getProperty(obj, key);};
+            return foundry.utils.getProperty(obj, key);
         });
     
 
