@@ -82,6 +82,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenImg", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 
@@ -93,6 +97,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenName", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 

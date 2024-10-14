@@ -7,7 +7,7 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
         let fields = foundry.data.fields;
         let schema = {};
         schema.uuid = new fields.StringField();
-        schema.id = new fields.StringField({deprecated : true});
+        schema.id = new fields.StringField({deprecated : true, nullable : true});
         schema.name = new fields.StringField();
         return schema;
     }
@@ -66,7 +66,17 @@ export class DocumentReferenceListModel extends ListModel
 
     add(document)
     {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, name : document.name})};
+        return this._add({uuid : document.uuid, name : document.name});
+    }
+
+    _add(value)
+    {
+        return {[this.schema.fields.list.fieldPath] : this.list.concat(value)};
+    }
+
+    removeId(uuid)
+    {
+        return super.remove(this.list.findIndex(i => i.uuid == uuid));
     }
 
     get documents() 

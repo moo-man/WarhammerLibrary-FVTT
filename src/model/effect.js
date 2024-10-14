@@ -41,7 +41,8 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             zone : new fields.SchemaField({
                 type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", "self" or "follow"
                 traits: new fields.ObjectField(),
-                skipImmediateOnPlacement : new fields.BooleanField({}) // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
+                skipImmediateOnPlacement : new fields.BooleanField({}), // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
+                keep: new fields.BooleanField({ initial: false }),      // should they keep the effect when leaving
                 //TODO                                                  // Immediate scripts work for when they enter the zone, but that means they shouldn't run when the effect is added to the zone
             })
         });

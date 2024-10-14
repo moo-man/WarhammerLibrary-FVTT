@@ -1,3 +1,4 @@
+import WarhammerContextMenu from "../../apps/context-menu";
 import { ListPropertyForm } from "../../apps/list-form";
 import { addLinkSources, localize} from "../../util/utility";
 
@@ -200,7 +201,12 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _setupContextMenus()
     {
-
+        // return  
+        return [
+            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getListContextOptions()), 
+            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getListContextOptions(), {eventName : "click"}),
+            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getListContextOptions())
+        ];
     }
 
     _getEntryContextOptions() 

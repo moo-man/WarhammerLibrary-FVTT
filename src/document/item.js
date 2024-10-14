@@ -241,7 +241,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         manualScripts.forEach(s => 
         {
             buttons.push({
-                label : s.label,
+                label : s.Label,
                 type : "manualScript",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),
