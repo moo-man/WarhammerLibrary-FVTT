@@ -25,6 +25,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             listDelete : this._onListDelete,
             listForm : this._onListForm,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
+            togglePip : this._onTogglePip,
             clickEffectButton : this._onClickEffectButton
         },
         window: {
@@ -203,13 +204,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         // return  
         return [
-            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getListContextOptions()), 
-            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getListContextOptions(), {eventName : "click"}),
-            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getListContextOptions())
+            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContetMenuOptions()), 
+            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContetMenuOptions(), {eventName : "click"}),
+            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContetMenuOptions())
         ];
     }
 
-    _getEntryContextOptions() 
+    _getContetMenuOptions() 
     {
 
     }
@@ -381,6 +382,23 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let list = this._getList(ev);
         let index = this._getIndex(ev);
         list.toForm(index, doc);
+    }
+
+    static async _onTogglePip(ev)
+    {
+        let path = this._getPath(ev);
+        let clicked = this._getIndex(ev);
+        let currentValue = foundry.utils.getProperty(this.document, path);
+        let newValue;
+        if (clicked + 1 == currentValue)
+        {
+            newValue = clicked;
+        }
+        else 
+        {
+            newValue = clicked + 1;
+        }
+        this.document.update({[path] : newValue});
     }
 
     modifyHTML()

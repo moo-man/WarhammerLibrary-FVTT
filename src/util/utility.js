@@ -10,6 +10,8 @@ export function systemConfig()
         return game.wng.config;
     case "age-of-sigmar-soulbound":
         return game.aos.config;
+    case "wfrp-tow" : 
+        return game.oldworld.config;
     default:
         return game[game.system.id].config;
     }
