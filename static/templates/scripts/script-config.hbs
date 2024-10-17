@@ -2,7 +2,7 @@
     <div>
         {{#if hasScriptReferences}}
         <div class="form-group">
-            <label>Script Lock</label>
+            <label>{{localize "WH.ScriptLock"}}</label>
             <input class="script-lock" type="checkbox" {{checked scriptLock}}>
         </div>
         {{/if}}
@@ -12,7 +12,7 @@
             <div class="ace-editor"></div>
         {{else}}
         <div class="form-group stacked">
-            <label>Script</label>
+            <label>{{localize "WH.Script"}}</label>
             <div>
                 {{#if lockedScripts.script}}
                 <textarea class="no-ace inactive" disabled name="script">{{dereferencedScripts.script}}</textarea>

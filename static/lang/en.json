@@ -3,6 +3,7 @@
         "Scripts": "Scripts",
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "ItemDialog": "Item Dialog",
+        "Initialize": "Initialize",
         "ScriptConfig": "Script Config",
         "AddScript": "Add Script",
         "EffectFiltered": "Effect Filtered",
@@ -37,6 +38,7 @@
             "DeleteModuleContentPrompt": "<p><strong>WARNING</strong>: This will delete all content associated with the <strong>{id}</strong> module that has been imported in this world.</p><p>Are you sure you wish to proceed?</p>",
             "ResolveDuplicates": "Resolve Duplicates"
         },
+        "ScriptLock": "Script Lock",
         "Script": "Script",
         "ScriptTrigger" : "Trigger",
         "Targeter" : "Targeter",
@@ -83,6 +85,7 @@
         },
         "Error.ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
+        "ErrorUnableToFindEffect": "Unable to find effect to apply.",
         "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
         "TransferData" : {
             "TransferType": "Transfer Type",
@@ -142,6 +145,8 @@
             "Other" : "Other"
         },
         "Dialog.Modifiers": "Dialog Modifiers",
+        "Dialog.UserEntry": "User Entry",
+        "Dialog.Initial": "Initial",
         "PlaceEffect": "Place {name}",
         "ApplyEffect" : "Apply {name}",
         "ZoneEffect" : "Zone Effect",

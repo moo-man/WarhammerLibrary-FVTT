@@ -13,7 +13,7 @@ export default class WarhammerModuleInitializer extends Dialog
             module: game.modules.get(module),
             buttons: {
                 initialize: {
-                    label: "Initialize",
+                    label: localize("WH.Initialize"),
                     callback: async () => 
                     {
                         game.settings.set(module, "initialized", true);
@@ -22,7 +22,7 @@ export default class WarhammerModuleInitializer extends Dialog
                     }
                 },
                 update: {
-                    label: "Update",
+                    label: localize("Update"),
                     condition : game.settings.get(module, "initialized"),
                     callback: async () => 
                     {
@@ -31,7 +31,7 @@ export default class WarhammerModuleInitializer extends Dialog
                     }
                 },
                 delete : {
-                    label: "Delete",
+                    label: localize("Delete"),
                     condition : game.settings.get(module, "initialized"),
                     callback: async () => 
                     {
@@ -39,7 +39,7 @@ export default class WarhammerModuleInitializer extends Dialog
                     }
                 },
                 no: {
-                    label: "No",
+                    label: localize("No"),
                     callback: () => 
                     {
                         game.settings.set(module, "initialized", true);

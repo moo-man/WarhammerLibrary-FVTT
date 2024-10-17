@@ -3,7 +3,7 @@ import AreaTemplate from "./area-template";
 const {mergeObject} = foundry.utils;
 export default class TokenHelpers 
 {
-    static semaphore = new Semaphore();
+    static semaphore = new foundry.utils.Semaphore();
 
     static highlightToken(tokenId)
     {

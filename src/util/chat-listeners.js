@@ -1,5 +1,6 @@
 import AreaTemplate from "./area-template";
 import ZoneHelpers from "./zone-helpers";
+import { localize } from "./utility";
 
 export default class WarhammerChatListeners 
 {
@@ -33,7 +34,7 @@ export default class WarhammerChatListeners
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
         }
         
         let targets = [];
