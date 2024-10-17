@@ -69,7 +69,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("update", {data, options, user, itemUpdated : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemUpdated : this}));
         }
     }
     

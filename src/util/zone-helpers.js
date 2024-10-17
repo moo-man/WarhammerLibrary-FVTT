@@ -1,5 +1,4 @@
 import ItemDialog from "../apps/item-dialog";
-import zones from "../hooks/zones";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
 const {hasProperty} = foundry.utils;

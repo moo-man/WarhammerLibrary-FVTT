@@ -46,6 +46,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onDelete(options, user)
     {
         await super._onDelete(options, user);
+        
+        if (game.user.id != user)
+        {
+            return;
+        }
+
         if (!options.skipDeletingItems)
         {
             await this.deleteCreatedItems();

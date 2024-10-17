@@ -155,6 +155,9 @@
         "SendingSocketRequest" : "Sending Socket Request",
         "Warning" : {
             "RenderAuraChange" : "To reflect the change to Render Aura, disable and re-enable the source Effect, or replace the Token on the Scene."
+        },
+        "Error" : {
+            "LibraryOutaded" : "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}."
         }
     }
 }
