@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-
+import "../styles/warhammer.scss";
 import WarhammerScript from "./system/script";
 import ItemDialog from "./apps/item-dialog";
 import ValueDialog from "./apps/value-dialog";
@@ -34,6 +34,7 @@ import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
 import { SingletonItemModel } from "./model/components/singleton-item";
 import WarhammerItemSheetV2 from "./sheets/v2/item";
+import addSheetHelpers from "./util/sheet-helpers";
 hooks();
 overrides();
 
@@ -59,6 +60,7 @@ warhammer.utility = {
     findItemId,
     replacePopoutTokens,
     replacePopoutPath,
+    addSheetHelpers,
     sleep
 };
 

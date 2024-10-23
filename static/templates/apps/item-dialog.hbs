@@ -1,15 +1,19 @@
+<div>
     {{#if text}}
-    <div class="dialog-text">{{text}}</div>
+      <div class="dialog-text">{{text}}</div>
     {{/if}}
-    <div class="directory">
-      <ol class="directory-list">
-        {{#each items as |item i|}}
-        <li class="directory-item document flexrow" data-index="{{i}}" data-id="{{item.id}}">
-          {{#if item.img}}
-          <img class="thumbnail" title="{{item.name}}" src="{{item.img}}">
+
+
+      <ol class="dialog-list">
+        {{#each items}}
+        <li class="dialog-item" data-action="clickItem" data-index="{{@key}}" data-uuid="{{this.uuid}}">
+          {{#if this.img}}
+          <img class="thumbnail" data-tooltip="{{this.name}}" src="{{this.img}}">
           {{/if}}
-          <h4 class="document-name"><a>{{item.name}}</a></h4>
+          <label><a>{{this.name}}</a></label>
         </li>
         {{/each}}
       </ol>
-  </div>
+
+  <button>Submit</button>
+</div>    

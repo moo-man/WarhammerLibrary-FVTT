@@ -4,7 +4,7 @@
   "description": "Common code used by the various Warhammer Systems",
   "version": "1.1.1",
   "authors": [{"name": "Moo Man", "id": "Moo Man", "discord": "moo.man"}],
-  "scripts" : ["warhammer.js"],
+  "scripts" : ["warhammer-lib.js"],
   "styles" : ["warhammer.css"],
   "languages": [
     {

@@ -1,0 +1,25 @@
+@use "./apps/item-dialog";
+@use "./apps/bug-reporter";
+
+.warhammer {
+
+  .active-effect-sheet.warhammer .key select {
+    width: 100%;
+  }
+
+
+  .warhammer#context-menu {
+    z-index: 9999;
+    width: unset;
+  }
+}
+
+.theme-light {
+
+}
+
+:root {
+  --sheet-border {
+    
+  }
+}
