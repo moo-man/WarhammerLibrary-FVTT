@@ -76,6 +76,11 @@ export default function ()
             {return array.join(", ");}
         });
 
+        Handlebars.registerHelper("includes", function(array=[], value) 
+        {
+            return array.includes(value);
+        });
+
         Handlebars.registerHelper("hasProperty", function (obj, key) 
         {
             return hasProperty(obj, key);

@@ -14,6 +14,7 @@ export default class WarhammerRollDialog extends Application
     submitted = false;      // Flag that denotes the dialog has been submitted and should go through submission instead of rendering 
     // tooltipConfig = {};
     static tooltipClass = BaseDialogTooltips;
+    static tooltipConfig = {};
 
 
     static get defaultOptions() 
@@ -45,7 +46,7 @@ export default class WarhammerRollDialog extends Application
     {
         super(options);
         this.data = data;
-        this.tooltips = new this.constructor.tooltipClass();
+        this.tooltips = new this.constructor.tooltipClass(this.constructor.tooltipConfig);
 
         this.initialFields = foundry.utils.mergeObject(this._defaultFields(), fields);
         this.fields = this._defaultFields();
@@ -218,7 +219,7 @@ export default class WarhammerRollDialog extends Application
     _getSubmissionData()
     {
         let submitData = mergeObject(this.data, this.fields);
-        submitData.context.breakdown = "";//this.tooltips.getBreakdown(this);
+        submitData.context.breakdown = this.createBreakdown();
         submitData.options = diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
     }
@@ -306,7 +307,7 @@ export default class WarhammerRollDialog extends Application
         return {
             data : this.data,
             fields : this.fields,
-            tooltips : this.tooltips,
+            tooltips : this.tooltips.getTooltips(),
             subTemplate : await this.getSubTemplate()
         };
     }
