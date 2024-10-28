@@ -205,22 +205,33 @@ export default class ZoneHelpers
 
     static avgCoordinate(shape) 
     {
-        let xTotal = 0;
-        let yTotal = 0;
-    
-        shape.points.forEach((p, i) => 
+
+        let x, y;
+        if (shape.points)
         {
-            if (i % 2 == 0)
+            let xTotal = 0;
+            let yTotal = 0;
+            shape.points.forEach((p, i) => 
             {
-                xTotal += p;   
-            }
-            else 
-            {
-                yTotal += p;
-            }
-        });
-        let x = xTotal / (shape.points.length / 2);
-        let y = yTotal / (shape.points.length / 2);
+                if (i % 2 == 0)
+                {
+                    xTotal += p;   
+                }
+                else 
+                {
+                    yTotal += p;
+                }
+            });
+
+            x = xTotal / (shape.points.length / 2);
+            y = yTotal / (shape.points.length / 2);
+        }
+        else 
+        {
+            x = shape.x + shape.width / 2;
+            y = shape.y + shape.height / 2;
+        }
+
     
         return {x, y};
     }
