@@ -3,6 +3,7 @@ import { format, log, systemConfig } from "../util/utility";
 import WarhammerScript from "../system/script";
 import { WarhammerTestBase } from "../system/test";
 import { SocketHandlers } from "../util/socket-handlers";
+import ZoneHelpers from "../util/zone-helpers";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
@@ -40,7 +41,6 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return false;
         }
         await this._handleItemApplication(data, options, user);
-        await this._handleFollowedEffect(data, options);
 
         return await this.handleImmediateScripts(data, options, user);
     }
@@ -48,14 +48,16 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onDelete(options, user)
     {
         await super._onDelete(options, user);
+
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
         
         if (game.user.id != user)
         {
             return;
         }
-
-        await this._handleFollowedEffectDeletion();
-
 
         if (!options.skipDeletingItems)
         {
@@ -75,6 +77,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onUpdate(data, options, user)
     {
         await super._onUpdate(data, options, user);
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
+
+        if (game.user.id != user)
+        {
+            return;
+        }
 
         // If an owned effect is updated, run parent update scripts
         if (this.parent)
@@ -91,6 +102,10 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onCreate(data, options, user)
     {
         await super._onCreate(data, options, user);
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
 
         if (game.user.id != user)
         {
@@ -183,40 +198,6 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return true;
         }
     }
-
-    async _handleFollowedEffect(data, options)
-    {
-        if (this.parent?.documentName == "Actor" && this.system.transferData.zone.type == "follow")
-        {
-            let drawing = this.parent.currentZone[0];
-            if (drawing)
-            {
-                let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-                this.updateSource({"flags.impmal.following" : this.parent.getActiveTokens()[0]?.document?.uuid});
-                zoneEffects.push(this.toObject());
-
-                // keep ID lets us remove it from the drawing when the source is removed, see _handleFollowedEffectDeletion
-                options.keepId = true;
-                await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-            }
-        }
-    }
-
-    
-    async _handleFollowedEffectDeletion()
-    {
-        if (this.parent.documentName == "Actor" && this.system.transferData.zone.type == "follow")
-        {
-            let drawing = this.parent.currentZone[0];
-            if (drawing)
-            {
-                let zoneEffects = foundry.utils.deepClone(drawing.document.flags.impmal?.effects || []);
-                zoneEffects = zoneEffects.filter(i => i._id != this.id);
-                await SocketHandlers.executeOnOwner(drawing.document, "updateDrawing", {uuid: drawing.document.uuid, data : {flags : {impmal: {effects : zoneEffects}}}});
-            }
-        }
-    }
-
 
     /**
      * There is a need to support applying effects TO items, but I don't like the idea of actually
@@ -390,6 +371,14 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             effect.system.transferData.area.aura.transferred = false;
         }
+
+        // An applied transferred follow zone effect should stay as a zone type, but it is no longer transferred
+        else if (effect.system.transferData.type == "zone" && effect.system.transferData.zone.type == "follow")
+        {
+            effect.system.transferData.zone.following = this.actor.getActiveTokens()[0]?.document?.uuid;
+            effect.system.transferData.zone.transferred = false;
+        }
+
         else 
         {
             if (effect.system.transferData.type == "damage" && effect.system.transferData.documentType == "Item")

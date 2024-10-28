@@ -40,6 +40,8 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
             zone : new fields.SchemaField({
                 type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", "self" or "follow"
+                following : new fields.StringField(), // For applied followed zone effects to keep track of what token it's sourced from
+                transferred: new fields.BooleanField({}),
                 traits: new fields.ObjectField(),
                 skipImmediateOnPlacement : new fields.BooleanField({}), // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
                 keep: new fields.BooleanField({ initial: false }),      // should they keep the effect when leaving
