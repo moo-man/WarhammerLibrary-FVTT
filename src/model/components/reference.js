@@ -16,7 +16,14 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
     {
         if (!this._document && this.uuid)
         {
-            this._document = fromUuidSync(this.uuid) || fromUuid(this.uuid);
+            if (this.uuid.includes("Compendium")) // Not sure I like this...
+            {
+                this._document = fromUuid(this.uuid);
+            }
+            else 
+            {
+                this._document = fromUuidSync(this.uuid);
+            }
         }
         return this._document;
     }
@@ -24,6 +31,7 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
     async awaitDocument()
     {
         this._document = await this.document;
+        return this._document;
     }
 
     set(document)
@@ -86,7 +94,7 @@ export class DocumentReferenceListModel extends ListModel
 
     async awaitDocuments()
     {
-        this.list.forEach(i => i.awaitDocument());
+        return await Promise.all(this.list.map(i => i.awaitDocument()));
     }
 }
 
@@ -106,6 +114,6 @@ export class DeferredReferenceListModel extends ListModel
 
     async awaitDocuments()
     {
-        this.list.forEach(i => i.awaitDocument());
+        return await Promise.all(this.list.map(i => i.awaitDocument()));
     }
 }

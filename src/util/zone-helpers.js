@@ -1,7 +1,7 @@
 import ItemDialog from "../apps/item-dialog";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty} = foundry.utils;
+const {hasProperty, getProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
 
@@ -92,7 +92,7 @@ export default class ZoneHelpers
             let effects = this.getZoneEffects(zone);
 
             // Only include effects that are not following this token (they already have the effect in the first place)
-            effects = effects.filter(e => e.system.transferData.zone.following != token.uuid);
+            effects = effects.filter(e => getProperty(e, "system.transferData.zone.following") != token.uuid);
 
             // Add any zone effects that aren't already on the token
             toAdd = toAdd.concat(effects.filter(i => ![...token.actor.statuses].includes(i.statuses[0])));
@@ -198,12 +198,6 @@ export default class ZoneHelpers
         // let tokens = Array.from(zone.tokens);
 
         effects = effects.concat(zone.getFlag(game.system.id, "effects") || []);
-
-        // for(let token of tokens)
-        // {
-        //     let followEffects = token.actor?.followedZoneEffects || [];
-        //     effects = effects.concat(followEffects);
-        // }
 
         effects.forEach(e => 
         {
