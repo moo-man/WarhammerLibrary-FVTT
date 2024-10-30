@@ -49,21 +49,31 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     }
 
     // Assigns a property to all datamodels and their embedded models
-    _propagateDataModels(model, name, value)
+    _propagateDataModels(model, name, value, modelSelector)
     {
         if (model instanceof foundry.abstract.DataModel && !model[name])
         {
-            Object.defineProperty(model, name, {
-                value, 
-                enumerable : false
-            });
+            if (!modelSelector || model instanceof modelSelector)
+            {
+                Object.defineProperty(model, name, {
+                    value, 
+                    enumerable : false
+                });
+            }
         }
 
         for(let property in model)
         {
-            if (model[property] instanceof foundry.abstract.DataModel)
+            if (model[property] instanceof Array)
             {
-                this._propagateDataModels(model[property], name, value);
+                for(let arrayProperty of model[property])
+                {
+                    this._propagateDataModels(arrayProperty, name, value, modelSelector);
+                }
+            }
+            else if (model[property] instanceof foundry.abstract.DataModel)
+            {
+                this._propagateDataModels(model[property], name, value, modelSelector);
             }
         }
     }

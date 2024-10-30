@@ -7,16 +7,20 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
         let fields = foundry.data.fields;
         let schema = {};
         schema.uuid = new fields.StringField();
-        schema.id = new fields.StringField({deprecated : true, nullable : true});
+        schema.id = new fields.StringField();
         schema.name = new fields.StringField();
         return schema;
     }
 
     get document() 
     {
-        if (!this._document && this.uuid)
+        if (this.schema.options.relative && this.id)
         {
-            if (this.uuid.includes("Compendium")) // Not sure I like this...
+            return foundry.utils.getProperty(this, this.schema.options.relative).get(this.id);
+        }
+        if (!this._document && (this.uuid || this.id))
+        {
+            if (this.uuid?.includes("Compendium"))
             {
                 this._document = fromUuid(this.uuid);
             }
@@ -24,6 +28,14 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
             {
                 this._document = fromUuidSync(this.uuid);
             }
+
+        }
+        if (this._document instanceof Promise)
+        {
+            this._document.then(document => 
+            {
+                this._document = document;
+            });
         }
         return this._document;
     }
@@ -36,7 +48,12 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
 
     set(document)
     {
-        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, name : document.name}};
+        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, id : document.id, name : document.name}};
+    }
+
+    unset() 
+    {
+        return {[`${this.schema.fieldPath}`] : {uuid : null, id : null, name : ""}};
     }
 }
 
@@ -53,18 +70,32 @@ export class DeferredReferenceModel extends DocumentReferenceModel
             let parsed = foundry.utils.parseUuid(this.uuid);
             let id = parsed.id;
             let type = parsed.type; 
-            this._document = game.collections.get(type)?.get(id) || fromUuid(this.uuid);;
+            this._document = game.collections.get(type)?.get(id) || fromUuid(this.uuid);
         }
         else if (this.id)
         {
             this._document = warhammer.utility.findItemId(this.id);
         }
+
+        if (this._document instanceof Promise)
+        {
+            this._document.then(document => 
+            {
+                this._document = document;
+            });
+        }
+
         return this._document;
     }
 
     set(document)
     {
-        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, name : document.name}};
+        return {[`${this.schema.fieldPath}`] : {uuid : document.uuid, id : document.id, name : document.name}};
+    }
+
+    unset() 
+    {
+        return {[`${this.schema.fieldPath}`] : {uuid : null, id : null, name : ""}};
     }
 }
 
@@ -74,7 +105,7 @@ export class DocumentReferenceListModel extends ListModel
 
     add(document)
     {
-        return this._add({uuid : document.uuid, name : document.name});
+        return this._add({uuid : document.uuid, id : document.id, name : document.name});
     }
 
     _add(value)
@@ -104,7 +135,7 @@ export class DeferredReferenceListModel extends ListModel
 
     add(document)
     {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, name : document.name})};
+        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, id : document.id, name : document.name})};
     }
 
     get documents() 

@@ -1,3 +1,4 @@
+import { DocumentReferenceModel } from "../model/components/reference";
 import { WarhammerDocumentMixin } from "./mixin";
 
 export class WarhammerItem extends WarhammerDocumentMixin(Item)
@@ -145,6 +146,8 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     prepareBaseData()
     {
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+        this._propagateDataModels(this.system, "effects", this.effects, DocumentReferenceModel);
+
         this.system.computeBase();
         this.runScripts("prepareBaseData", { item: this });
         if (this.isOwned)

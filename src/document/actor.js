@@ -1,3 +1,4 @@
+import { DocumentReferenceModel } from "../model/components/reference";
 import AreaHelpers from "../util/area-helpers";
 import { SocketHandlers } from "../util/socket-handlers";
 import TokenHelpers from "../util/token-helpers";
@@ -45,6 +46,13 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     prepareBaseData()
     {
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+        this._propagateDataModels(this.system, "items", this.items, DocumentReferenceModel);
+        this._propagateDataModels(this.system, "effects", this.effects, DocumentReferenceModel);
+        for(let item of this.items)
+        {
+            this._propagateDataModels(item.system, "actor", this, DocumentReferenceModel);
+        }
+
         this._itemTypes = null; 
         this.system.computeBase();
         this.runScripts("prepareBaseData", {actor : this});
