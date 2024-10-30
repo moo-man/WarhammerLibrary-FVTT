@@ -8,13 +8,25 @@ export class SingletonItemModel extends DocumentReferenceModel
     {
         let schema = {};
         schema.uuid = new foundry.data.fields.StringField();
+        schema.id = new foundry.data.fields.StringField();
         schema.name = new foundry.data.fields.StringField();
         return schema;
     }
 
     get document()
     {
-        return fromUuidSync(this.uuid);
+        let document;
+        if (this.id)
+        {
+            document = this.items?.get(this.id);
+        }
+        else 
+        {
+            document = fromUuidSync(this.uuid);
+        }
+
+        this.name = document?.name || "";
+        return document;
     }
 
     set(item)
@@ -30,6 +42,6 @@ export class SingletonItemModel extends DocumentReferenceModel
 
     delete()
     {
-        return {[`${this.schema.fieldPath}`] : {uuid : "", name : ""}};
+        return {[`${this.schema.fieldPath}`] : {id : "", uuid : "", name : ""}};
     }
 }
