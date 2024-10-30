@@ -45,8 +45,14 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
-            if (!obj) {return "lookup failed for key: " + key;}
-            return foundry.utils.getProperty(obj, key);
+            if (!obj) 
+            {
+                return null;
+            }
+            else 
+            {
+                return foundry.utils.getProperty(obj, key);
+            }
         });
     
 
