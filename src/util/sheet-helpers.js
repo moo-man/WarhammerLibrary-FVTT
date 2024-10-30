@@ -1,42 +1,42 @@
 class SheetHelpers 
 {
     // Shared listeners between different document sheets 
-    static _getId = (ev) => 
+    static _getId = function (ev) 
     {
         return this._getDataAttribute(ev, "id");
     };
 
-    static _getIndex = (ev) => 
+    static _getIndex = function (ev) 
     {
         return Number(this._getDataAttribute(ev, "index"));
     };
 
-    static _getKey = (ev) => 
+    static _getKey = function (ev) 
     {
         return this._getDataAttribute(ev, "key");
     };
 
-    static _getType = (ev) => 
+    static _getType = function (ev) 
     {
         return this._getDataAttribute(ev, "type");
     };
 
-    static _getPath = (ev) => 
+    static _getPath = function (ev) 
     {
         return this._getDataAttribute(ev, "path");
     };
 
-    static _getCollection = (ev) => 
+    static _getCollection = function (ev) 
     {
         return this._getDataAttribute(ev, "collection") || "items";
     };
 
-    static _getUUID = (ev) => 
+    static _getUUID = function (ev) 
     {
         return this._getDataAttribute(ev, "uuid");
     };
 
-    static _getList = (ev) => 
+    static _getList = function (ev) 
     {
         return foundry.utils.getProperty(this._getDocument(ev) || this.document, this._getPath(ev));
     };
@@ -49,7 +49,7 @@ class SheetHelpers
      * @param {string} property data-<property> being searched for
      * @returns {object} property found
      */
-    static _getDataAttribute = (ev, property) => 
+    static _getDataAttribute = function (ev, property) 
     {
         let value = ev.target.dataset[property];
 
@@ -64,7 +64,7 @@ class SheetHelpers
         return value;
     };
 
-    static _getParent = (element, selector) => 
+    static _getParent = function (element, selector) 
     {
         if (element.matches(selector)) 
         {
@@ -85,7 +85,7 @@ class SheetHelpers
 
     };
 
-    static _getDocument = (event) => 
+    static _getDocument = function (event) 
     {
         let id = this._getId(event);
         let collection = this._getCollection(event);
@@ -94,7 +94,7 @@ class SheetHelpers
         return (uuid ? fromUuidSync(uuid) : this.document[collection]?.get(id));
     };
 
-    static _getDocumentAsync = (event) => 
+    static _getDocumentAsync = function (event) 
     {
         let id = this._getId(event);
         let collection = this._getCollection(event);
@@ -111,4 +111,5 @@ class SheetHelpers
 export default function addSheetHelpers(obj)
 {
     Object.assign(obj, SheetHelpers);
+    return;
 }
