@@ -25,7 +25,7 @@ export class SingletonItemModel extends DocumentReferenceModel
             document = fromUuidSync(this.uuid);
         }
 
-        this.name = document?.name || "";
+        this.name = document?.name || this.name || "";
         return document;
     }
 
