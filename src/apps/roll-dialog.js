@@ -219,6 +219,10 @@ export default class WarhammerRollDialog extends Application
     _getSubmissionData()
     {
         let submitData = mergeObject(this.data, this.fields);
+        if (!submitData.context)
+        {
+            submitData.context = {};
+        }
         submitData.context.breakdown = this.createBreakdown();
         submitData.options = diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
