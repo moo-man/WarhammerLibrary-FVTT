@@ -14,9 +14,9 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
 
     get document() 
     {
-        if (this.schema.options.relative && this.id)
+        if (this.relative && this.id)
         {
-            return foundry.utils.getProperty(this, this.schema.options.relative).get(this.id);
+            return this.relative.get(this.id);
         }
         if (!this._document && (this.uuid || this.id))
         {

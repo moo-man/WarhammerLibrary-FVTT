@@ -18,9 +18,9 @@ export class SingletonItemModel extends DocumentReferenceModel
         let document;
         if (this.id)
         {
-            document = this.items?.get(this.id);
+            document = this.relative?.get(this.id);
         }
-        else 
+        if (!document && this.uuid)
         {
             document = fromUuidSync(this.uuid);
         }

@@ -45,13 +45,8 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 
     prepareBaseData()
     {
+        super.prepareBaseData();
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
-        this._propagateDataModels(this.system, "items", this.items, DocumentReferenceModel);
-        this._propagateDataModels(this.system, "effects", this.effects, DocumentReferenceModel);
-        for(let item of this.items)
-        {
-            this._propagateDataModels(item.system, "actor", this, DocumentReferenceModel);
-        }
 
         this._itemTypes = null; 
         this.system.computeBase();

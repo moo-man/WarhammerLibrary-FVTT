@@ -1,7 +1,6 @@
 
 export class BaseWarhammerModel extends foundry.abstract.DataModel 
 {
-
     get id () 
     {
         return this.parent.id;
@@ -55,12 +54,17 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
 
     computeBase() 
     {
-
+        this._addModelProperties();
     }
 
     computeDerived() 
     {
         
+    }
+
+    _addModelProperties()
+    {
+
     }
 
     getOtherEffects()
