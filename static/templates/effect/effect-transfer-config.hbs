@@ -137,18 +137,33 @@
         {{/unless}}
 
         {{#if (eq system.transferData.type "zone")}}
-        
             <div class="form-group">
                 <label>{{localize "WH.TransferData.ZoneType"}}</label>
-                <select name="system.zone.type">
-                    {{#select system.zone.type}}
+                <select name="system.transferData.zone.type">
+                    {{#select system.transferData.zone.type}}
                         <option value="zone">{{localize "WH.ZoneEffect"}}</option>
                         <option value="tokens">{{localize "WH.TokensInZone"}}</option>
-                        {{!-- <option value="follow">{{localize "WH.FollowToken"}}</option> --}}
+                        <option value="follow">{{localize "WH.FollowToken"}}</option>
                     {{/select}}
                 </select>
                 <p class="notes">{{{localize "WH.TransferData.ZoneTypeHint"}}}</p>
             </div>
+
+            {{#unless (eq system.transferData.zone.type "tokens")}}
+            <div class="form-group">
+                <label>{{localize "WH.TransferData.Keep"}}</label>
+                <input type="checkbox" name="system.transferData.zone.keep" {{checked system.transferData.zone.keep}}>
+                <p class="notes">{{localize "WH.TransferData.KeepHint"}}</p>
+            </div>
+            {{/unless}}
+
+            {{#if (eq system.transferData.zone.type "follow")}}
+            <div class="form-group">
+                <label>{{localize "WH.TransferData.TransferredFollow"}}</label>
+                <input type="checkbox" name="system.transferData.zone.transferred" {{checked system.transferData.zone.transferred}}>
+                <p class="notes">{{localize "WH.TransferData.TransferredFollowHint"}}</p>
+            </div>
+            {{/if}}
         {{/if}}
 
         {{#if (and (eq system.transferData.type "zone") (ne system.zone.type "tokens"))}}

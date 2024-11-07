@@ -1,0 +1,78 @@
+@use "./apps/item-dialog";
+@use "./apps/bug-reporter";
+@use "./apps//roll-dialog";
+@use "./sheets/sheets";
+@use "./sheets/list";
+
+.warhammer {
+  --tab-color : var(--color-cool-3);
+
+  &.application {
+    a {
+        cursor: pointer
+    }
+
+    img {
+        border: none;
+        object-fit: contain;
+    }
+
+    .inactive:not(.prosemirror) {
+        opacity: 0.5;
+    }
+
+    .disabled {
+        pointer-events: none;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .centered {
+        text-align: center;
+    }
+
+    .align-left {
+        text-align: left;
+    }
+
+    input[type="number"] {
+        text-align: center;
+    }
+
+    nav.sheet-tabs {
+        
+        border-top: 1px solid var(--tab-color);
+        border-bottom: 1px solid var(--tab-color);
+        gap: 0px;
+        a {
+            flex: 1
+        }
+        .active {
+            background-color: var(--tab-color);
+            text-shadow: none;
+        }
+
+        > [data-tab]
+        {
+            padding: 8px 0px;
+            flex: 1;
+        }
+    }
+  }
+
+  &.active-effect-sheet .key select {
+    width: 100%;
+  }
+
+
+  &#context-menu {
+    z-index: 9999;
+    width: unset;
+  }
+}
+
+.theme-light .warhammer.application {
+  --tab-color : var(--color-border-light-primary);
+}

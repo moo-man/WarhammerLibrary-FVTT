@@ -60,6 +60,21 @@ export class SocketHandlers
         }  
     }
 
+    static createActor(data) 
+    {
+        if (game.user.id == game.users.activeGM?.id)
+        {
+            let id = data.fromId;
+            let actorData = data.actor;
+            // Give ownership to requesting actor
+            actorData.ownership = {
+                default: 0,
+                [id]: 3
+            };
+            return Actor.implementation.create(actorData, {keepId : true});
+        }
+    }
+
 
     /**
      * Not used by sockets directly, but is called when a socket handler should be executed by

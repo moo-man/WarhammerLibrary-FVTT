@@ -1,27 +1,71 @@
+import addSheetHelpers from "../util/sheet-helpers";
 import { localize, systemConfig } from "../util/utility";
 const {getProperty} = foundry.utils;
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-export default class ItemDialog extends Dialog 
+export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2) 
 {
 
-    constructor(data)
-    {
-        super(data);
-        this.chosen = 0;
-    }
+    static DEFAULT_OPTIONS = {
+        classes: ["item-dialog", "warhammer"],
+        tag : "form",
+        form : {
+            handler : this.submit,
+            submitOnChange : false,
+            closeOnSubmit : true
+        },
+        window: {
+            resizable : true,
+            title : "WH.ItemDialog",
+        },
+        position : {
+            height: 500,
+            width: 400
+        },
+        actions : {
+            clickItem : {buttons : [0, 2], handler: this._onClickItem}
+        }
+    };
 
-    static get defaultOptions() 
+    static PARTS = {
+        form: {
+            template: "modules/warhammer-lib/templates/apps/item-dialog.hbs",
+            scrollable : [".dialog-list"]
+        }
+    };
+
+    constructor(data, options)
     {
-        const options = super.defaultOptions;
-        options.resizable = true;
-        options.height = 500;
-        options.classes.push("item-dialog");
-        return options;
+        super(options);
+        addSheetHelpers(this);
+        this.items = data.items || [];
+        this.count = data.count || 1;
+        this.chosen = [];
     }
 
     static _items = [];
 
-    static async create(items, count = 1, {title, text}={})
+    async _prepareContext(options)
+    {
+        let context = await super._prepareContext(options);
+        context.items = this.items;
+        context.text = this.options.text;
+        context.title = this.options.title;
+        context.chosen = this.chosen;
+        return context;
+    }
+
+    static async submit(event, form, fromData)
+    {
+        let items = this.items.filter((_, index) => this.chosen.includes(index));
+        if (this.options.resolve)
+        {
+            this.options.resolve(items);
+        }
+        return items;
+    }
+
+    static async create(items, count = 1, {title, text, skipSingularItemPrompt}={})
     {
 
         if (typeof items == "object" && !Array.isArray(items) && !(items instanceof Collection))
@@ -34,51 +78,36 @@ export default class ItemDialog extends Dialog
             return [];
         }
 
-        let html = await renderTemplate("modules/warhammer-lib/templates/apps/item-dialog.hbs", {items, count, text});
+        if (items.length == 1 && skipSingularItemPrompt)
+        {
+            return items;
+        }
+
         return new Promise((resolve) => 
         {
-            new ItemDialog({
-                title : title || localize("WH.ItemDialog"),
-                content : html,
-                system : {items, count, text},
-                buttons : {
-                    submit : {
-                        label : localize("Submit"),
-                        callback: (html) => 
-                        {
-                            resolve(Array.from(html.find(".active")).map(element => items[element.dataset.index]));
-                        }
-                    }                
-                }
-            }).render(true);
+            new this({items, count}, {text, resolve}).render(true, {window : {title}});
         });
     }
 
-    static async createFromFilters(filters, count, text, items)
+    static async createFromFilters(filters, count, {title, text, items}={})
     {
         items = await ItemDialog.filterItems(filters, items);
-        return ItemDialog.create(items, count, text);    
+        return ItemDialog.create(items, count, {title, text});    
     }
 
     
     // simulate document structure with key as the ID and the value as the name
-    static objectToArray(object, img = systemConfig().blankItemImage)
+    static objectToArray(object, img = systemConfig().blankItemImage, namePath)
     {
         return Object.keys(foundry.utils.deepClone(object)).map(key => 
         {
             return {
                 id : key,
-                name : object[key],
+                name : namePath ? foundry.utils.getProperty(object[key], namePath) : object[key],
                 img
             };
         });
 
-    }
-
-    async getData() 
-    {
-        let data = super.getData();
-        return data;
     }
 
     static async filterItems(filters=[], items)
@@ -90,7 +119,29 @@ export default class ItemDialog extends Dialog
 
         for (let f of filters)
         {
-            if (f.regex)
+            // Choice filters
+            if (f.path && f.operation)
+            {
+                let op = f.operation;
+                if (op == "=")
+                {
+                    op = "==";
+                }
+                items = items.filter(i => 
+                {
+                    let property = foundry.utils.getProperty(i, f.path);
+                    if (f.operation == "includes")
+                    {
+                        return property.includes(f.value);
+                    }
+                    else 
+                    {
+                        return Roll.safeEval(`"${property}"${op}"${f.value}"`);
+                    }
+                });
+            }
+            // WFRP4e Template Filters
+            else if (f.regex)
             {
                 items = items.filter(i => Array.from(getProperty(i, f.property).matchAll(f.value)).length);
             }
@@ -114,49 +165,63 @@ export default class ItemDialog extends Dialog
         // This causes a slight bug in that new items won't be shown without refreshing
         if (this._items.length)
         {
-            return this._items;
+            return [...this._items]; // Copy array so items don't get filtered
         }
+
+        let items = game.items.contents;
         
-        this._items = game.items.contents;
-            
         for (let p of game.packs) 
         {
             if (p.metadata.type == "Item") 
             {
-                this._items = this._items.concat((await p.getDocuments()).filter(i => !this._items.find(existing => existing.id == i.id)));
+                items = items.concat((await p.getDocuments()).filter(i => !this._items.find(existing => existing.id == i.id)));
             }
         }
+
+        this._items = items; // Delay setting this so multiple item dialogs rendering don't return early
+
         return this._items;
     }
 
-
-    activateListeners(html) 
+    static async _onClickItem(ev)
     {
-        super.activateListeners(html);
-        html.find(".document-name").click(ev => 
+        if (ev.button == 0)
         {
 
-
-            let document = $(ev.currentTarget).parents(".document")[0];
-            if (document.classList.contains("active"))
+            let index = this._getIndex(ev);
+            if (this.chosen.includes(index))
             {
-                document.classList.remove("active");
-                this.chosen--;
+                this.chosen = this.chosen.filter(i => i != index);
             }
-            else if (this.data.system.count == "unlimited" || (this.data.system.count - this.chosen > 0)) 
+            else if (this.count == "unlimited" || this.chosen.length < this.count)
             {
-                document.classList.add("active");
-                this.chosen++;
-            } 
+                this.chosen.push(index);
+            }
 
-        });
-
-        html.find(".document-name").contextmenu(ev => 
+            this._highlightChosen();
+        }
+        else if (ev.button == 2)
         {
-            let document = $(ev.currentTarget).parents(".document");
-            let id = document.attr("data-id");
+            let uuid = this._getUUID(ev);
+            if (uuid)
+            {
+                let item = await fromUuid(uuid);
+                item?.sheet.render(true);
+            }
+        }
+    }
 
-            game.items.get(id).sheet.render(true, {editable: false});
+    _highlightChosen()
+    {
+        let items = Array.from(this.element.querySelectorAll(".dialog-item"));
+        items.filter(i => i.classList.contains("selected")).forEach(i => 
+        {
+            i.classList.remove("selected");
         });
+
+        for(let chosen of this.chosen)
+        {
+            items[chosen].classList.add("selected");
+        }
     }
 }

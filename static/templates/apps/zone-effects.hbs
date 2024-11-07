@@ -1,0 +1,28 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="{{tab.id}}">
+ 
+    <div class="sheet-list zone-effects">
+        <div class="list-header row-content">
+            <div class="list-name">{{localize "WH.ZoneEffects"}}</div>
+            <div class="list-controls">
+                <a data-action="createEffect" class="item-control">   
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </div>
+        <div class="list-content">
+            {{#each effects}}
+                <div class="list-row" data-index="{{@key}}"}}>
+                    <div class="row-content">
+                        <div class="list-name">
+                            <img src="{{this.img}}">
+                            <a class="label" data-action="openEffect">{{this.name}}</a>
+                        </div>
+                        <div class="list-controls">
+                            <a class="list-control" data-action="deleteEffect" data-index="{{@key}}"><i class="fa-regular fa-xmark"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>

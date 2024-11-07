@@ -1,3 +1,4 @@
+import { DocumentReferenceModel } from "../model/components/reference";
 import { WarhammerDocumentMixin } from "./mixin";
 
 export class WarhammerItem extends WarhammerDocumentMixin(Item)
@@ -54,8 +55,9 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
                     await script.execute({data, options, user});
                 }
             }
+            await this.actor.system.updateSingleton(this);
+
         }
-    
     }
     
     async _onUpdate(data, options, user)
@@ -144,6 +146,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     prepareBaseData()
     {
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+
         this.system.computeBase();
         this.runScripts("prepareBaseData", { item: this });
         if (this.isOwned)
@@ -213,7 +216,9 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
  
     get targetEffects() 
     {
-        return this._getTypedEffects("target").concat(this._getTypedEffects("aura").filter(e => e.system.transferData.area.aura.transferred));
+        return this._getTypedEffects("target")
+            .concat(this._getTypedEffects("aura").filter(e => e.system.transferData.area.aura.transferred))
+            .concat(this._getTypedEffects("zone").filter(e => e.system.transferData.zone.transferred));
     }
  
     get areaEffects() 
@@ -223,7 +228,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
     get zoneEffects() 
     {
-        return this._getTypedEffects("zone");
+        return this._getTypedEffects("zone").filter(e => e.system.transferData.zone.type != "follow");
     }
     _getTypedEffects(type)
     {
@@ -240,7 +245,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         manualScripts.forEach(s => 
         {
             buttons.push({
-                label : s.label,
+                label : s.Label,
                 type : "manualScript",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),

@@ -45,11 +45,14 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
-            if (!obj) {return "lookup failed for key: " + key;}
-            if (obj[key])
-            {return obj[key];}
+            if (!obj) 
+            {
+                return null;
+            }
             else 
-            {return getProperty(obj, key);};
+            {
+                return foundry.utils.getProperty(obj, key);
+            }
         });
     
 
@@ -79,6 +82,11 @@ export default function ()
             {return array.join(", ");}
         });
 
+        Handlebars.registerHelper("includes", function(array=[], value) 
+        {
+            return array.includes(value);
+        });
+
         Handlebars.registerHelper("hasProperty", function (obj, key) 
         {
             return hasProperty(obj, key);
@@ -86,6 +94,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenImg", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 
@@ -97,6 +109,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenName", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 
