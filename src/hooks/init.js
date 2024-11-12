@@ -1,5 +1,4 @@
 import { systemConfig } from "../util/utility";
-const {hasProperty, getProperty} = foundry.utils;
 
 /**
  *
@@ -49,7 +48,7 @@ export default function ()
             if (obj[key])
             {return obj[key];}
             else 
-            {return getProperty(obj, key);};
+            {return foundry.utils.getProperty(obj, key);};
         });
     
 
@@ -81,7 +80,7 @@ export default function ()
 
         Handlebars.registerHelper("hasProperty", function (obj, key) 
         {
-            return hasProperty(obj, key);
+            return foundry.utils.hasProperty(obj, key);
         });    
 
         Handlebars.registerHelper("tokenImg", function(actor) 

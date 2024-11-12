@@ -1,5 +1,4 @@
 import { localize, log, systemConfig } from "../util/utility";
-const {isNewerVersion} = foundry.utils;
 
 export default class WarhammerBugReport extends Application 
 {
@@ -237,7 +236,7 @@ export default class WarhammerBugReport extends Application
                     console.error("Could not fetch latest versions: " + e);
                     return latest;
                 });
-                latest[key] = !isNewerVersion(release.tag_name, game.system.version);
+                latest[key] = !foundry.utils.isNewerVersion(release.tag_name, game.system.version);
             }
             else if (game.modules.get(key)) 
             {
@@ -246,7 +245,7 @@ export default class WarhammerBugReport extends Application
                     console.error("Could not fetch latest versions: " + e);
                     return latest;
                 });
-                latest[key] = !isNewerVersion(manifest.version, game.modules.get(key).version);
+                latest[key] = !foundry.utils.isNewerVersion(manifest.version, game.modules.get(key).version);
             }
             log(key + ": " + latest[key]);
         }

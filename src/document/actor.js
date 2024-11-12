@@ -4,7 +4,6 @@ import TokenHelpers from "../util/token-helpers";
 import { getActiveDocumentOwner } from "../util/utility";
 import WarhammerActiveEffect from "./effect";
 import { WarhammerDocumentMixin } from "./mixin";
-const {hasProperty} = foundry.utils;
 
 export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 {
@@ -30,7 +29,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     _onUpdateDescendantDocuments(...args)
     {
         super._onUpdateDescendantDocuments(...args);
-        if (args[1] == "effects" && args[3].some(update => (hasProperty(update, "disabled"))))
+        if (args[1] == "effects" && args[3].some(update => (foundry.utils.hasProperty(update, "disabled"))))
         {
             TokenHelpers.updateAuras(this.getActiveTokens()[0]?.document);
         }

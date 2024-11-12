@@ -1,7 +1,6 @@
 import WarhammerScript from "../system/script";
 import { BaseDialogTooltips } from "../system/tooltips";
 import { localize } from "../util/utility";
-const {mergeObject, diffObject} = foundry.utils;
 
 export default class WarhammerRollDialog extends Application 
 {
@@ -217,9 +216,9 @@ export default class WarhammerRollDialog extends Application
      */
     _getSubmissionData()
     {
-        let submitData = mergeObject(this.data, this.fields);
+        let submitData = foundry.utils.mergeObject(this.data, this.fields);
         // dialogData.context.breakdown = this.tooltips.getBreakdown(this);
-        submitData.options = diffObject(this.constructor.defaultOptions, this.options);
+        submitData.options = foundry.utils.diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
     }
 
@@ -271,7 +270,7 @@ export default class WarhammerRollDialog extends Application
         this.fields = this._defaultFields();
 
         this.tooltips.start(this);
-        mergeObject(this.fields, this.initialFields);
+        foundry.utils.mergeObject(this.fields, this.initialFields);
         this.tooltips.finish(this, this.options.initialTooltip || localize("WH.Dialog.Initial"));
 
         // For some reason cloning the scripts doesn't prevent isActive and isHidden from persisisting
@@ -313,7 +312,7 @@ export default class WarhammerRollDialog extends Application
      */
     _createScripts(scriptData = [])
     {
-        return scriptData.map(i => new WarhammerScript(mergeObject(i, {
+        return scriptData.map(i => new WarhammerScript(foundry.utils.mergeObject(i, {
             options : {
                 dialog : {
                     hideScript : i.hide, 

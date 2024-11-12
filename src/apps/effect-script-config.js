@@ -1,6 +1,5 @@
 import { systemConfig } from "../util/utility";
 import ScriptConfig from "./script-config";
-const {setProperty, getProperty, deepClone, hasProperty, isEmpty} = foundry.utils;
 
 export default class WarhammerEffectScriptConfig extends ScriptConfig
 {
@@ -47,9 +46,9 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
     {
         let data = {};
         data.script = this._dereference("script");
-        setProperty(data, "options.hideScript", this._dereference("options.hideScript"));
-        setProperty(data, "options.activateScript", this._dereference("options.activateScript"));
-        setProperty(data, "options.submissionScript", this._dereference("options.submissionScript"));
+        foundry.utils.setProperty(data, "options.hideScript", this._dereference("options.hideScript"));
+        foundry.utils.setProperty(data, "options.activateScript", this._dereference("options.activateScript"));
+        foundry.utils.setProperty(data, "options.submissionScript", this._dereference("options.submissionScript"));
         return data;
     }
 
@@ -57,10 +56,10 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
     {
         let object = this._getScriptObject();
         let regex = /\[Script.([a-zA-Z0-9]{16})\]/gm;
-        let matches = Array.from((getProperty(object, scriptProperty) || "").matchAll(regex));
+        let matches = Array.from((foundry.utils.getProperty(object, scriptProperty) || "").matchAll(regex));
         let id = matches[0]?.[1];
 
-        return systemConfig().effectScripts[id] || getProperty(object, scriptProperty);
+        return systemConfig().effectScripts[id] || foundry.utils.getProperty(object, scriptProperty);
     }
 
     _renderExtraFields(dereferencedScripts, lockedScripts)
@@ -75,7 +74,7 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
 
     _getScriptObject()
     {
-        let data = deepClone(this.object.system.scriptData[this.options.index]);
+        let data = foundry.utils.deepClone(this.object.system.scriptData[this.options.index]);
         return data;
     }
 
@@ -89,7 +88,7 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
         }
         else 
         {
-            return !!(getProperty(object, "options." + type) || "").match(regex);
+            return !!(foundry.utils.getProperty(object, "options." + type) || "").match(regex);
         }
     }
 
@@ -102,26 +101,26 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
     {
         let script = (this.aceActive && !this.editor.getReadOnly()) ? this.editor.getValue() : formData.script; 
 
-        let array = deepClone(this.object.system.scriptData);
+        let array = foundry.utils.deepClone(this.object.system.scriptData);
         let scriptObject = array[this.options.index];
         scriptObject.label = formData.label;
         scriptObject.trigger = formData.trigger;
-        if (hasProperty(formData, "hideScript"))
+        if (foundry.utils.hasProperty(formData, "hideScript"))
         {
-            setProperty(scriptObject, "options.hideScript", formData.hideScript);
+            foundry.utils.setProperty(scriptObject, "options.hideScript", formData.hideScript);
         }
-        if (hasProperty(formData, "activateScript"))
+        if (foundry.utils.hasProperty(formData, "activateScript"))
         {
-            setProperty(scriptObject, "options.activateScript", formData.activateScript);
+            foundry.utils.setProperty(scriptObject, "options.activateScript", formData.activateScript);
         }
-        if (hasProperty(formData, "submissionScript"))
+        if (foundry.utils.hasProperty(formData, "submissionScript"))
         {
-            setProperty(scriptObject, "options.submissionScript", formData.submissionScript);
+            foundry.utils.setProperty(scriptObject, "options.submissionScript", formData.submissionScript);
         }
         
-        setProperty(scriptObject, "options.targeter", formData.targeter);
-        setProperty(scriptObject, "options.deleteEffect", formData.deleteEffect);
-        if(!isEmpty(script))
+        foundry.utils.setProperty(scriptObject, "options.targeter", formData.targeter);
+        foundry.utils.setProperty(scriptObject, "options.deleteEffect", formData.deleteEffect);
+        if(!foundry.utils.isEmpty(script))
         {
             scriptObject.script = script;
         }

@@ -1,5 +1,4 @@
 import { localize, systemConfig } from "../util/utility";
-const {getProperty} = foundry.utils;
 
 export default class ItemDialog extends Dialog 
 {
@@ -92,7 +91,7 @@ export default class ItemDialog extends Dialog
         {
             if (f.regex)
             {
-                items = items.filter(i => Array.from(getProperty(i, f.property).matchAll(f.value)).length);
+                items = items.filter(i => Array.from(foundry.utils.getProperty(i, f.property).matchAll(f.value)).length);
             }
             else 
             {
@@ -101,7 +100,7 @@ export default class ItemDialog extends Dialog
                 {
                     value = [value];
                 }
-                items = items.filter(i => value.includes(getProperty(i, f.property)));
+                items = items.filter(i => value.includes(foundry.utils.getProperty(i, f.property)));
             }
         }
 

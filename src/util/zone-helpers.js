@@ -2,9 +2,6 @@ import ItemDialog from "../apps/item-dialog";
 import zones from "../hooks/zones";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty} = foundry.utils;
-
-const {setProperty, deepClone} = foundry.utils;
 
 export default class ZoneHelpers 
 {
@@ -88,7 +85,7 @@ export default class ZoneHelpers
 
         effects.forEach(e => 
         {
-            setProperty(e, "system.sourceData.zone", zone.uuid);
+            foundry.utils.setProperty(e, "system.sourceData.zone", zone.uuid);
             e.origin = zone.uuid;
         });
 
@@ -124,13 +121,13 @@ export default class ZoneHelpers
         }
         
         // Return trait effects and any other added effects
-        return traits.map(i => deepClone(systemConfig().zoneEffects[i]))
+        return traits.map(i => foundry.utils.deepClone(systemConfig().zoneEffects[i]))
             .concat(zoneEffects || [])
             .map(effect => 
             {
             // Designate all zone effects with a flag to easily be distinguished
-                setProperty(effect, `system.sourceData.zone`, drawing.document.uuid);
-                setProperty(effect, `system.transferData.zoneType`,  "");
+                foundry.utils.setProperty(effect, `system.sourceData.zone`, drawing.document.uuid);
+                foundry.utils.setProperty(effect, `system.transferData.zoneType`,  "");
                 effect.origin = drawing.document.uuid;
                 return effect;
             });
@@ -292,7 +289,7 @@ export default class ZoneHelpers
         let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
-            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
+            let zoneEffects = foundry.utils.deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
 
             // One-time application effects that aren't added to a zone but instead added to tokens in the zone
             let tokenEffectUuids = [];
