@@ -1,0 +1,87 @@
+.theme-light .warhammer.actor.application,
+    .theme-light .warhammer.item.application {
+    --form-label : rgba(0, 0, 0, 0.1);//var(--color-dark-6);
+    --form-input : transparent;
+    --form-input-border : transparent;
+    --form-group-border : var(--color-dark-6);
+
+    --editor-header : rgba(0, 0, 0, 0.1);
+    --editor-header-border : var(--color-dark-6);
+
+    --hover-bg : var(--color-cool-5);
+}
+
+.warhammer.actor.application,
+.warhammer.item.application {
+    --form-label : transparent;
+    --form-input : var(--color-cool-4);
+    --form-input-border : transparent;
+    --form-group-border : var(--color-cool-3);
+
+    --editor-header : var(--color-cool-3);
+    --editor-header-border : transparent;
+
+    --hover-bg : transparent;
+
+    .positive {
+        color: var(--color-level-success)
+    }
+
+    .negative {
+        color: var(--color-level-error)
+    }
+
+    .rollable {
+        > * {
+            cursor: pointer;
+        }
+        &:hover {
+            img {
+                box-shadow: 0px 0px 10px var(--color-cool-3) inset;
+                background: var(--hover-bg)
+            }
+        }
+    }
+
+
+    .form-group {
+        select,
+        input {
+            border-radius: 0px;
+            background: var(--form-input);
+            border-color: var(--form-input-border);
+        }
+        label {
+            border-right: 1px solid var(--form-group-border);
+            height: var(--input-height);
+            line-height: var(--input-height);
+            text-align: center;
+            background: var(--form-label)
+        }
+        border: 1px solid var(--form-group-border);
+    }
+
+    .editor-section {
+        .header {
+            height: 1.5rem;
+            line-height: 1.5rem;
+            padding-left: 5px;
+            background: var(--editor-header);
+            border: 1px solid var(--editor-header-border);
+        }
+        min-height: 100px;
+        .editor-content {
+        }
+    }
+
+    
+    .sheet-effect-buttons {
+        margin: 3px 0px;
+        height: 1rem;
+        display: flex;
+        button {
+            flex : 0 0 content;
+            font-size: var(--font-size-12);
+        } 
+    }
+}

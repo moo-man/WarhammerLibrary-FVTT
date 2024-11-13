@@ -10,6 +10,8 @@ export function systemConfig()
         return game.wng.config;
     case "age-of-sigmar-soulbound":
         return game.aos.config;
+    case "wfrp-tow" : 
+        return game.oldworld.config;
     default:
         return game[game.system.id].config;
     }
@@ -21,13 +23,37 @@ export function systemConfig()
  * @param force
  * @param args
  */
-export function log(message, force=false, args) 
+export function log(message, force=false, args, options={}) 
 {
     if (CONFIG.debug.warhammer || force)
     {
         let format = foundry.utils.deepClone(systemConfig().logFormat);
         format[0] = format[0].replace("@MESSAGE", message);
-        console.log(...format, args || "");
+        if (options.groupCollapsed)
+        {
+            console.groupCollapsed(...format, args || "");
+        }
+        else 
+        {
+            console.log(...format, args || "");
+        }
+    }
+}
+
+
+/**
+ *
+ * @param message
+ * @param force
+ * @param args
+ */
+export function error(message, force=false, args) 
+{
+    if (CONFIG.debug.warhammer || force)
+    {
+        let format = foundry.utils.deepClone(systemConfig().logFormat);
+        format[0] = format[0].replace("@MESSAGE", message);
+        console.error(...format, args || "");
     }
 }
 

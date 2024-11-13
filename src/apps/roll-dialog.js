@@ -13,6 +13,7 @@ export default class WarhammerRollDialog extends Application
     submitted = false;      // Flag that denotes the dialog has been submitted and should go through submission instead of rendering 
     // tooltipConfig = {};
     static tooltipClass = BaseDialogTooltips;
+    static tooltipConfig = {};
 
 
     static get defaultOptions() 
@@ -44,7 +45,7 @@ export default class WarhammerRollDialog extends Application
     {
         super(options);
         this.data = data;
-        this.tooltips = new this.constructor.tooltipClass();
+        this.tooltips = new this.constructor.tooltipClass(this.constructor.tooltipConfig);
 
         this.initialFields = foundry.utils.mergeObject(this._defaultFields(), fields);
         this.fields = this._defaultFields();
@@ -217,7 +218,11 @@ export default class WarhammerRollDialog extends Application
     _getSubmissionData()
     {
         let submitData = foundry.utils.mergeObject(this.data, this.fields);
-        // dialogData.context.breakdown = this.tooltips.getBreakdown(this);
+        if (!submitData.context)
+        {
+            submitData.context = {};
+        }
+        submitData.context.breakdown = this.createBreakdown();
         submitData.options = foundry.utils.diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
     }
@@ -284,7 +289,14 @@ export default class WarhammerRollDialog extends Application
         this.tooltips.start(this);
         for(let key in this.userEntry)
         {
-            this.fields[key] = this.userEntry[key];
+            if (["string", "boolean"].includes(typeof this.userEntry[key]))
+            {
+                this.fields[key] = this.userEntry[key];
+            }
+            else if (Number.isNumeric(this.userEntry[key]))
+            {
+                this.fields[key] = this.userEntry[key];
+            }
         }
         this.tooltips.finish(this, localize("WH.Dialog.UserEntry"));
 
@@ -298,7 +310,7 @@ export default class WarhammerRollDialog extends Application
         return {
             data : this.data,
             fields : this.fields,
-            tooltips : this.tooltips,
+            tooltips : this.tooltips.getTooltips(),
             subTemplate : await this.getSubTemplate()
         };
     }

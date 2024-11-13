@@ -33,6 +33,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     {
         await super._onUpdate(data, options, user);
         await this.system._onUpdate(data, options, user);
+        await Promise.all(this.runScripts("updateDocument", {data, options, user}));
     }
 
     async _onCreate(data, options, user)
@@ -48,21 +49,35 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
     }
 
     // Assigns a property to all datamodels and their embedded models
-    _propagateDataModels(model, name, value)
+    _propagateDataModels(model, name, value, modelSelector)
     {
-        if (model instanceof foundry.abstract.DataModel && !model[name])
+        if (model instanceof foundry.abstract.Document)
         {
-            Object.defineProperty(model, name, {
-                value, 
-                enumerable : false
-            });
+            return;
         }
-
-        for(let property in model)
+        if (model instanceof foundry.abstract.DataModel)
         {
-            if (model[property] instanceof foundry.abstract.DataModel)
+            if (!model[name] && (!modelSelector || model instanceof modelSelector))
             {
-                this._propagateDataModels(model[property], name, value);
+                Object.defineProperty(model, name, {
+                    value, 
+                    enumerable : false
+                });
+            }
+
+            for(let property in model)
+            {
+                if (model[property] instanceof Array)
+                {
+                    for(let arrayProperty of model[property])
+                    {
+                        this._propagateDataModels(arrayProperty, name, value, modelSelector);
+                    }
+                }
+                else if (model[property] instanceof foundry.abstract.DataModel)
+                {
+                    this._propagateDataModels(model[property], name, value, modelSelector);
+                }
             }
         }
     }

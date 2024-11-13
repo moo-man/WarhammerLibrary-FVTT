@@ -36,8 +36,17 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
     
                 // Placed Template
                 duration: new fields.StringField({ initial: "sustained" }), // Area - "instantaneous" or "sustained"
-            })
+            }),
 
+            zone : new fields.SchemaField({
+                type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", "self" or "follow"
+                following : new fields.StringField(), // For applied followed zone effects to keep track of what token it's sourced from
+                transferred: new fields.BooleanField({}),
+                traits: new fields.ObjectField(),
+                skipImmediateOnPlacement : new fields.BooleanField({}), // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
+                keep: new fields.BooleanField({ initial: false }),      // should they keep the effect when leaving
+                //TODO                                                  // Immediate scripts work for when they enter the zone, but that means they shouldn't run when the effect is added to the zone
+            })
         });
 
         schema.itemTargetData = new fields.SchemaField({
@@ -61,7 +70,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
         // TODO move back into transferData
         schema.zone = new fields.SchemaField({
-            type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", or "follow"
+            type: new fields.StringField({initial: "zone"}), // previously "Zone type", "zone", "tokens", "self" or "follow"
             traits: new fields.ObjectField(),
             skipImmediateOnPlacement : new fields.BooleanField({}) // Very specific property, some zone effects do things "when they enter or when they start their turn" in the zone
             //TODO                                                  // Immediate scripts work for when they enter the zone, but that means they shouldn't run when the effect is added to the zone
@@ -139,6 +148,11 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         {
             return this.itemTargetData.ids.map(i => this.actor.items.get(i)).map(i => i);;
         }
+    }
+
+    migrateData()
+    {
+        
     }
 
 }

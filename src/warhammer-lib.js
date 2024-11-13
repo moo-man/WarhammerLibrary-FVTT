@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-
+import "../styles/warhammer.scss";
 import WarhammerScript from "./system/script";
 import ItemDialog from "./apps/item-dialog";
 import ValueDialog from "./apps/value-dialog";
@@ -27,11 +27,15 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
+import { error, findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
 import { ListModel } from "./model/components/list";
-import { DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
+import { DeferredReferenceListModel, DeferredReferenceModel, DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
+import { SingletonItemModel } from "./model/components/singleton-item";
+import WarhammerItemSheetV2 from "./sheets/v2/item";
+import addSheetHelpers from "./util/sheet-helpers";
+import { WarhammerZoneConfig } from "./apps/zone-config";
 hooks();
 overrides();
 
@@ -39,12 +43,14 @@ warhammer = {};
 
 warhammer.utility = {
     log,
+    error,
     findKey,
     getActiveDocumentOwner,
     findAllItems,
     findItemId,
     replacePopoutTokens,
     replacePopoutPath,
+    addSheetHelpers,
     sleep
 };
 
@@ -67,7 +73,9 @@ warhammer.apps = {
     WarhammerModuleInitializer,
     WarhammerActorSheet,
     WarhammerItemSheet,
-    WarhammerActorSheetV2
+    WarhammerActorSheetV2,
+    WarhammerItemSheetV2,
+    WarhammerZoneConfig
 };
 
 warhammer.models = {
@@ -75,11 +83,14 @@ warhammer.models = {
     BaseWarhammerActorModel,
     BaseWarhammerItemModel,
     ListModel,
+    SingletonItemModel,
     DocumentReferenceModel,
     DocumentReferenceListModel,
+    DeferredReferenceModel,
+    DeferredReferenceListModel,
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
-    WarhammerActiveEffect
+    WarhammerActiveEffect,
 
 };
 

@@ -1,0 +1,60 @@
+.theme-light .warhammer.item-dialog {
+  --border: var(--color-dark-6);
+  --selected: var(--color-warm-1);
+}
+
+.warhammer.item-dialog {
+
+    --border: var(--color-cool-3);
+    --selected: var(--color-warm-3);
+
+    display: flex;
+    flex-direction: column;
+
+    .window-content>div {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-text {
+      text-align: center;
+    }
+
+    .list-container {
+      flex: 1;
+    }
+
+    .dialog-list {
+      flex: 1;
+      list-style: none;
+      padding: 0px;
+      overflow: auto;
+    }
+
+    .dialog-item {
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      width: 100%;
+      margin: 0px;
+      line-height: var(--sidebar-item-height);
+
+      &.selected {
+        background-color: var(--selected);
+      }
+
+      label {
+        margin-left: 8px;
+      }
+
+      img {
+        flex: 0 0 var(--sidebar-item-height);
+        height: var(--sidebar-item-height);
+        width: var(--sidebar-item-height);
+        object-fit: cover;
+        border: none;
+      }
+    }
+  }

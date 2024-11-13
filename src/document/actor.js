@@ -1,3 +1,4 @@
+import { DocumentReferenceModel } from "../model/components/reference";
 import AreaHelpers from "../util/area-helpers";
 import { SocketHandlers } from "../util/socket-handlers";
 import TokenHelpers from "../util/token-helpers";
@@ -43,7 +44,9 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 
     prepareBaseData()
     {
+        super.prepareBaseData();
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+
         this._itemTypes = null; 
         this.system.computeBase();
         this.runScripts("prepareBaseData", {actor : this});
@@ -247,6 +250,11 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     get auraEffects() 
     {
         return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
+    }
+
+    get followedZoneEffects()
+    {
+        return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "zone" && e.system.transferData.zone.type == "follow" && !e.system.transferData.zone.transferred).filter(i => i.active);
     }
   
 }
