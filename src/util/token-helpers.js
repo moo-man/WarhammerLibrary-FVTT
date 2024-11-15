@@ -1,7 +1,6 @@
 import AreaTemplate from "./area-template";
 
-const {mergeObject} = foundry.utils;
-export default class TokenHelpers 
+export default class TokenHelpers
 {
     static semaphore = new foundry.utils.Semaphore();
 
@@ -24,7 +23,7 @@ export default class TokenHelpers
         for ( let t of tokens ) 
         {
             if ( !t.visible || !t.renderable ) { continue; }
-            canvas.interface.createScrollingText(t.center, text, mergeObject({
+            canvas.interface.createScrollingText(t.center, text, foundry.utils.mergeObject({
                 anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
                 direction: CONST.TEXT_ANCHOR_POINTS.TOP,
                 distance: (2 * t.h),

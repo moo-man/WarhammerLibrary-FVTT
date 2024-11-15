@@ -1,9 +1,8 @@
 import addSheetHelpers from "../util/sheet-helpers";
 import { localize, systemConfig } from "../util/utility";
-const {getProperty} = foundry.utils;
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2) 
+export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2)
 {
 
     static DEFAULT_OPTIONS = {
@@ -92,7 +91,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
     static async createFromFilters(filters, count, {title, text, items}={})
     {
         items = await ItemDialog.filterItems(filters, items);
-        return ItemDialog.create(items, count, {title, text});    
+        return ItemDialog.create(items, count, {title, text});
     }
 
     
@@ -127,14 +126,14 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
                 {
                     op = "==";
                 }
-                items = items.filter(i => 
+                items = items.filter(i =>
                 {
                     let property = foundry.utils.getProperty(i, f.path);
                     if (f.operation == "includes")
                     {
                         return property.includes(f.value);
                     }
-                    else 
+                    else
                     {
                         return Roll.safeEval(`"${property}"${op}"${f.value}"`);
                     }
@@ -143,7 +142,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
             // WFRP4e Template Filters
             else if (f.regex)
             {
-                items = items.filter(i => Array.from(getProperty(i, f.property).matchAll(f.value)).length);
+                items = items.filter(i => Array.from(foundry.utils.getProperty(i, f.property).matchAll(f.value)).length);
             }
             else 
             {
@@ -152,7 +151,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
                 {
                     value = [value];
                 }
-                items = items.filter(i => value.includes(getProperty(i, f.property)));
+                items = items.filter(i => value.includes(foundry.utils.getProperty(i, f.property)));
             }
         }
 
@@ -169,7 +168,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         }
 
         let items = game.items.contents;
-        
+
         for (let p of game.packs) 
         {
             if (p.metadata.type == "Item") 
@@ -214,7 +213,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
     _highlightChosen()
     {
         let items = Array.from(this.element.querySelectorAll(".dialog-item"));
-        items.filter(i => i.classList.contains("selected")).forEach(i => 
+        items.filter(i => i.classList.contains("selected")).forEach(i =>
         {
             i.classList.remove("selected");
         });

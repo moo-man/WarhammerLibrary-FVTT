@@ -39,17 +39,6 @@ import { WarhammerZoneConfig } from "./apps/zone-config";
 hooks();
 overrides();
 
-// This prevents namespace conflicts when files destructure foundry.utils
-// Can be removed in v13
-mergeObject = foundry.utils.mergeObject;
-setProperty = foundry.utils.setProperty;
-getProperty = foundry.utils.getProperty;
-hasProperty = foundry.utils.hasProperty;
-deepClone = foundry.utils.deepClone;
-isNewerVersion = foundry.utils.isNewerVersion;
-diffObject = foundry.utils.isNewerVersion;
-isEmpty = foundry.utils.isEmpty;
-
 warhammer = {};
 
 warhammer.utility = {

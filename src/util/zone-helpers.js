@@ -1,9 +1,6 @@
 import ItemDialog from "../apps/item-dialog";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty, getProperty} = foundry.utils;
-
-const {setProperty, deepClone} = foundry.utils;
 
 export default class ZoneHelpers 
 {
@@ -57,9 +54,9 @@ export default class ZoneHelpers
     /**
      * This function handles a token's zone effects, it is meant to be called when the token or any zone is updated.
      * When a token or zone is updated, it re-evaluates what zone effects the provided token should have given what
-     * zone(s) it is in. 
-     * 
-     * @param {TokenDocument} token 
+     * zone(s) it is in.
+     *
+     * @param {TokenDocument} token
      */
     static async checkTokenZoneEffects(token)
     {
@@ -69,7 +66,7 @@ export default class ZoneHelpers
         // Zone effects will always be applied (non-grandchild) effects
         let effects = Array.from(token.actor.effects);
 
-        // Compile the status effects from the effects of all the zones the token is in. Used later to prevent adding multiple of the same effect. 
+        // Compile the status effects from the effects of all the zones the token is in. Used later to prevent adding multiple of the same effect.
         let zoneStatuses = [];
         inZones.forEach(zone => 
         {
@@ -92,7 +89,7 @@ export default class ZoneHelpers
             let effects = this.getZoneEffects(zone);
 
             // Only include effects that are not following this token (they already have the effect in the first place)
-            effects = effects.filter(e => getProperty(e, "system.transferData.zone.following") != token.uuid);
+            effects = effects.filter(e => foundry.utils.getProperty(e, "system.transferData.zone.following") != token.uuid);
 
             // Add any zone effects that aren't already on the token
             toAdd = toAdd.concat(effects.filter(i => ![...token.actor.statuses].includes(i.statuses[0])));
@@ -111,13 +108,13 @@ export default class ZoneHelpers
 
     /**
      * Given a token, update all regions on a scene to have the correct zone effects
-     * i.e. removing or adding any followed effects based on token positions. 
-     * 
+     * i.e. removing or adding any followed effects based on token positions.
+     *
      * Note: This function might be doing too much, it goes through each region, regardless
      * of whether it was part of the token movement.
-     * 
-     * 
-     * @param {TokenDocument} token 
+     *
+     *
+     * @param {TokenDocument} token
      */
     static async _handleFollowedEffects(token)
     {
@@ -144,7 +141,7 @@ export default class ZoneHelpers
                     {
                         this.displayScrollingTextForRegion(region, "+" + fe.name);
                         let followedEffectData = fe.convertToApplied();
-                        // Followed effects, when added to the zone's flags, turn into normal Zone effects, they are 
+                        // Followed effects, when added to the zone's flags, turn into normal Zone effects, they are
                         // distinguished from other effects by having a `following` property that points to the token it came from
                         followedEffectData.system.transferData.zone.type = "zone";
                         effects = effects.concat(followedEffectData);
@@ -201,7 +198,7 @@ export default class ZoneHelpers
 
         effects.forEach(e => 
         {
-            setProperty(e, "system.sourceData.zone", zone.uuid);
+            foundry.utils.setProperty(e, "system.sourceData.zone", zone.uuid);
             e.origin = zone.uuid;
         });
 
@@ -262,13 +259,13 @@ export default class ZoneHelpers
         {
             let xTotal = 0;
             let yTotal = 0;
-            shape.points.forEach((p, i) => 
+            shape.points.forEach((p, i) =>
             {
                 if (i % 2 == 0)
                 {
-                    xTotal += p;   
+                    xTotal += p;
                 }
-                else 
+                else
                 {
                     yTotal += p;
                 }
@@ -277,7 +274,7 @@ export default class ZoneHelpers
             x = xTotal / (shape.points.length / 2);
             y = yTotal / (shape.points.length / 2);
         }
-        else 
+        else
         {
             x = shape.x + shape.width / 2;
             y = shape.y + shape.height / 2;
@@ -353,7 +350,7 @@ export default class ZoneHelpers
         let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
-            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
+            let zoneEffects = foundry.utils.deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
 
             // One-time application effects that aren't added to a zone but instead added to tokens in the zone
             let tokenEffectUuids = [];

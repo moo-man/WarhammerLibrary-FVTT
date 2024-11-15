@@ -1,5 +1,4 @@
 import { systemConfig } from "../util/utility";
-const {hasProperty, getProperty} = foundry.utils;
 
 /**
  *
@@ -45,7 +44,7 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
-            if (!obj) 
+            if (!obj)
             {
                 return null;
             }
@@ -82,14 +81,14 @@ export default function ()
             {return array.join(", ");}
         });
 
-        Handlebars.registerHelper("includes", function(array=[], value) 
+        Handlebars.registerHelper("includes", function(array=[], value)
         {
             return array.includes(value);
         });
 
-        Handlebars.registerHelper("hasProperty", function (obj, key) 
+        Handlebars.registerHelper("hasProperty", function (obj, key)
         {
-            return hasProperty(obj, key);
+            return foundry.utils.hasProperty(obj, key);
         });    
 
         Handlebars.registerHelper("tokenImg", function(actor) 

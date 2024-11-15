@@ -1,6 +1,4 @@
-const {hasProperty} = foundry.utils;
-
-export class CombatHelpers 
+export class CombatHelpers
 {
     static startCombat = [];
     static endCombat = [];
@@ -48,7 +46,7 @@ export class CombatHelpers
 
     static async updateCombat(combat, update, options, user) 
     {
-        if (hasProperty(update, "turn") || hasProperty(update, "round"))
+        if (foundry.utils.hasProperty(update, "turn") || foundry.utils.hasProperty(update, "round"))
         {
             for(let actor of combat.combatants.map(i => i.actor))
             {

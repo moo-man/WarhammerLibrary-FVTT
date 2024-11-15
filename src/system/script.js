@@ -1,5 +1,4 @@
 import { log, systemConfig } from "../util/utility";
-const {mergeObject} = foundry.utils;
 
 export default class WarhammerScript
 {
@@ -117,7 +116,7 @@ export default class WarhammerScript
 
     message(content, chatData={})
     {
-        return CONFIG.ChatMessage.documentClass.create(mergeObject({content}, this.getChatData(chatData)));
+        return CONFIG.ChatMessage.documentClass.create(foundry.utils.mergeObject({content}, this.getChatData(chatData)));
     }
 
     scriptNotification(...args)
@@ -132,7 +131,7 @@ export default class WarhammerScript
 
     getChatData(merge={})
     {
-        return mergeObject({
+        return foundry.utils.mergeObject({
             speaker : {alias : this.context.actor?.name || this.context?.item.name},
             flavor : this.context.effect.name || this.context.item.name || ""
         }, merge);
