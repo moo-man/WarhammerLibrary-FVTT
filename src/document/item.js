@@ -173,7 +173,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get specifier() 
     {
-        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")"));
+        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")")).trim();
     }
 
     get baseName() 
@@ -247,6 +247,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
             buttons.push({
                 label : s.Label,
                 type : "manualScript",
+                class : "trigger-script",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),
                 index : s.index
@@ -256,25 +257,30 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         {
             let icon;
             let type;
+            let cls;
             if (e.system.transferData.type == "target" || (e.system.transferData.type == "aura" && e.system.transferData.area.aura.transferred))
             {
                 type = "target";
                 icon = "fa-solid fa-crosshairs";
+                cls = "apply-target";
             }
             if (e.system.transferData.type == "area")
             {
                 type = "area";
                 icon = "fa-solid fa-ruler-combined";
+                cls = "place-area";
             }
             if (e.system.transferData.type == "zone")
             {
                 type = "zone";
                 icon = "fa-solid fa-game-board-simple";
+                cls = "apply-zone";
             }
             buttons.push({
                 label : e.name,
                 icon,
                 type, 
+                class : cls,
                 uuid : e.uuid,
             });
         });

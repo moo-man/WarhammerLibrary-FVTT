@@ -14,7 +14,9 @@ export default function ()
             effectButtons: "modules/warhammer-lib/templates/partials/effect-buttons.hbs",
             scriptButtons: "modules/warhammer-lib/templates/partials/manual-scripts.hbs",
             independentButtons: "modules/warhammer-lib/templates/partials/independent-effects.hbs",
-            sheetTabs: "modules/warhammer-lib/templates/partials/sheet-tabs.hbs"
+            sheetTabs: "modules/warhammer-lib/templates/partials/sheet-tabs.hbs",
+            sheetButtons: "modules/warhammer-lib/templates/partials/sheet-effect-buttons.hbs",
+            sheetButtonsV1: "modules/warhammer-lib/templates/partials/sheet-effect-buttonsV1.hbs",
         });
     });
 }

@@ -77,12 +77,23 @@ export class BaseDialogTooltips
         this._computeDiff(source);
     }
 
+    // Record a modification to a field (add/subtract)
     add(type, value, source)
     {
         let field = this[`_${type}`];
         if (field && value && source)
         {
             field.list.push({value, source});
+        }
+    }
+
+    // Resets a field's values to the provided value
+    set(type, value, source)
+    {
+        let field = this[`_${type}`];
+        if (field && value && source)
+        {
+            field.list = [{value, source, set: true}].concat(field.list);
         }
     }
 
@@ -135,8 +146,8 @@ export class BaseDialogTooltips
             {
                 if (i.value)
                 {
-                    // Add sign to positive numbers
-                    return `&#8226; ${i.source} (${HandlebarsHelpers.numberFormat(i.value, {hash : {sign: true}})}${(!hideLabel && field.label) ? " " + field.label : ""})`;
+                    // Add sign to positive numbers (unless the value was "set")
+                    return `&#8226; ${i.source} (${HandlebarsHelpers.numberFormat(i.value, {hash : {sign: !i.set}})}${(!hideLabel && field.label) ? " " + field.label : ""})`;
                 }
                 else 
                 { 

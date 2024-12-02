@@ -12,7 +12,7 @@ export default function ()
 
         CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
         {
-            let effectData = this.getFlag("wfrp4e", "effectData");
+            let effectData = this.getFlag(game.system.id, "effectData");
             if (effectData) 
             {
                 let effect = new CONFIG.ActiveEffect.documentClass(effectData);
@@ -33,7 +33,7 @@ export default function ()
 
         Handlebars.registerHelper("config", function (key) 
         {
-            return systemConfig()[key];
+            return foundry.utils.getProperty(systemConfig(), key);
         });
 
         Handlebars.registerHelper("configLookup", function (obj, key) 
@@ -45,13 +45,17 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
+            if (key === 0)
+            {
+                key = "0"; // getProperty doesn't like 0 if using an array
+            }
             if (!obj) 
             {
                 return null;
             }
             else 
             {
-                return foundry.utils.getProperty(obj, key);
+                return foundry.utils.getProperty(obj, key.toString());
             }
         });
     

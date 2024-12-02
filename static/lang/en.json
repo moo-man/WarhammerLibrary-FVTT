@@ -28,7 +28,7 @@
             "Warning": "<b>Be aware</b>: This information is posted on the GitHub issues page, which is public, so Discord tag is preferred. Otherwise, contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
             "MatchingIssues": "Has your issue already been posted?",
             "DescriptionPlaceholder": "What happened, how to reproduce, etc.",
-            "ManyModules": "You have non-WFRP4e modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
+            "ManyModules": "You have non-Warhammer modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
             "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
             "NeedsAttention": "NEEDS ATTENTION",
             "Resolved": "RESOLVED"

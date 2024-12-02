@@ -16,6 +16,10 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         if (!this._itemTypes) 
         {
             this._itemTypes = super.itemTypes;
+            for(let type in this._itemTypes)
+            {
+                this._itemTypes[type] = this._itemTypes[type].sort((a, b) => a.sort - b.sort);
+            }
         }
         return this._itemTypes;
     }
@@ -73,7 +77,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      */
     async _setupTest(dialogClass, testClass, data, options = {}, roll = true) 
     {
-        let dialogData = dialogClass.setupData(data, this, options);
+        let dialogData = await dialogClass.setupData(data, this, options);
         let setupData;
         if (options.skipDialog) 
         {
@@ -83,13 +87,16 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         {
             setupData = await dialogClass.awaitSubmit(dialogData);
         }
-        let test = testClass.fromData(setupData);
-        if (roll) 
+        if (setupData)
         {
-            await test.roll();
-            test.sendToChat();
+            let test = testClass.fromData(setupData);
+            if (roll) 
+            {
+                await test[testClass.rollFunction || "roll"]();
+                test.sendToChat();
+            }
+            return test;
         }
-        return test;
     }
 
     /**
@@ -245,6 +252,25 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         else // If neither are owned by a player, only same side if they have the same disposition
         {
             return self.disposition == target.disposition;
+        }
+    }
+
+    speakerData(token) 
+    {
+        if (this.isToken || token) 
+        {
+            return {
+                token: token?.id || this.token.id,
+                scene: token?.parent.id || this.token.parent.id
+            };
+        }
+        else 
+        {
+            return {
+                actor: this.id,
+                token: token?.id,
+                scene: token?.parent.id
+            };
         }
     }
   

@@ -13,7 +13,8 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         actions: {
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
-            editImage : this._onEditImage
+            editImage : this._onEditImage,
+            sortItems : this._onSortItemTypes
         }
     };
 
@@ -45,7 +46,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         let target = await this._getDocument(event);
         if (target)
         {
-            let siblings = Array.from(this._getParent(event.target, ".list-content").querySelectorAll(".list-row")).map(i => fromUuidSync(i.dataset.uuid)).filter(i => document.uuid != i.uuid);
+            let siblings = Array.from(this._getParent(event.target, ".list-content").querySelectorAll(".list-row")).map(i => fromUuidSync(i.dataset.uuid)).filter(i => i).filter(i => document.uuid != i.uuid);
             let sorted = SortingHelpers.performIntegerSort(document, {target, siblings});
             this.actor.updateEmbeddedDocuments(document.documentName, sorted.map(s => 
             {
@@ -103,7 +104,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
     {
         try 
         {
-            let conditions = foundry.utils.duplicate(game.wfrp4e.config.statusEffects).map(e => new CONFIG.ActiveEffect.documentClass(e));
+            let conditions = foundry.utils.duplicate(CONFIG.statusEffects).map(e => new CONFIG.ActiveEffect.documentClass(e));
             let currentConditions = this.actor.effects.filter(e => e.isCondition);
       
             for (let condition of conditions) 
@@ -120,6 +121,28 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         {
             ui.notifications.error("Error Adding Condition Data: " + e);
         }
+    }
+
+    static async _onSortItemTypes(ev, target)
+    {
+        let type = target.dataset.type;
+  
+        type = type.includes(",") ? type.split(",") : [type];
+  
+        let items = type.reduce((sorted, current) => sorted.concat(this.actor.itemTypes[current].map(i => i.toObject())), []);
+        items = items.sort((a,b) => a.name < b.name ? -1 : 1);
+        let sortValues = items.map(i => i.sort).sort((a, b) => a - b);
+        sortValues.forEach((val, index) => 
+        {
+            if (index != 0 && val <= sortValues[index-1])
+            {
+                sortValues[index] = sortValues[index-1] + 10000;
+            }
+        });
+
+        items.forEach((i, index) => i.sort = sortValues[index]);
+
+        return this.actor.updateEmbeddedDocuments("Item", items);
     }
 
     static async _onTriggerScript(ev)
@@ -159,8 +182,24 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
 
     static async _onCreateItem(ev) 
     {
-        let type = this._getParent(ev.target, "[data-type]").dataset.type;
+        let type = this._getType(ev);
         this.document.createEmbeddedDocuments("Item", [{type, name : `New ${game.i18n.localize(CONFIG.Item.typeLabels[type])}`}]).then(item => item[0].sheet.render(true));
+    }
+
+    static async _onCreateEffect(ev)
+    {
+        let type = ev.target.dataset.category;
+        let effectData = { name: game.i18n.localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
+        if (type == "temporary")
+        {
+            effectData["duration.rounds"] = 1;
+        }
+        else if (type == "disabled")
+        {
+            effectData.disabled = true;
+        }
+        
+        this.object.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
 
     async _onApplyTargetEffect(effect) 
@@ -231,24 +270,6 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         ZoneHelpers.promptZoneEffect({effectData : [effectData]});
     };
-
-    // TODO: Remove in V13
-    static async _onEditImage(event) 
-    {
-        const attr = event.target.dataset.edit;
-        const current = foundry.utils.getProperty(this.document, attr);
-        const fp = new FilePicker({
-            current,
-            type: "image",
-            callback: path => 
-            {
-                this.document.update({img : path});
-            },
-            top: this.position.top + 40,
-            left: this.position.left + 10
-        });
-        await fp.browse();
-    }
 
     //#endregion
 }

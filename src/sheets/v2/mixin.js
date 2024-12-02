@@ -27,7 +27,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             listForm : this._onListForm,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             togglePip : this._onTogglePip,
-            clickEffectButton : this._onClickEffectButton
+            clickEffectButton : this._onClickEffectButton,
+            editImage : this._onEditImage
         },
         window: {
             resizable: true
@@ -190,6 +191,11 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             });
         }
     
+        this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
+        {
+            element.addEventListener("change", this.constructor._onListCreateWithValue.bind(this));
+        });
+
         this.element.querySelectorAll("[data-action='editProperty']").forEach(element => 
         {
             element.addEventListener("change", this.constructor._onEditProperty.bind(this));
@@ -267,9 +273,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         return {};
     }
 
-    static async _onCreateEffect(ev) 
+    static async _onCreateEffect(ev, target) 
     {
-        let type = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`).dataset.category;
+        let type = target.dataset.category;
         let effectData = { name: localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
         if (type == "temporary") 
         {
@@ -309,27 +315,24 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     static async _onEditProperty(ev)
     {
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = ev.target.dataset.path;
         document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
-    static async _onToggleProperty(ev)
+    static async _onToggleProperty(ev, target)
     {
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = target.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
 
-    static async _onStepProperty(ev)
+    static async _onStepProperty(ev, target)
     {
         ev.stopPropagation();
         ev.preventDefault();
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = target.dataset.path;
         let step = ev.button == 0 ? 1 : -1;
         step = ev.target.dataset.reversed ? -1 * step : step;
         if (ev.ctrlKey)
@@ -350,6 +353,21 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
+    static async _onListCreateWithValue(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+
+        if (list)
+        {
+            if (list instanceof Array)
+            {
+                return this._handleArrayCreate(doc, ev);
+            }
+            doc.update(list.add(ev.target.value));
+        }
+    }
+
     static async _onListDelete(ev)
     {
         let doc = await this._getDocumentAsync(ev) || this.document;
@@ -358,6 +376,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (list)
         {
+            if (list instanceof Array)
+            {
+                return this._handleArrayDelete(doc, ev);
+            }
             doc.update(list.remove(index));
         }
     }
@@ -372,6 +394,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (list)
         {
+            if (list instanceof Array)
+            {
+                return this._handleArrayEdit(doc, ev);
+            }
             doc.update(list.edit(index, value, internalPath));
         }
 
@@ -402,10 +428,80 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.update({[path] : newValue});
     }
 
+    
+    // TODO: Remove in V13
+    static async _onEditImage(event) 
+    {
+        const attr = event.target.dataset.edit;
+        const current = foundry.utils.getProperty(this.document, attr);
+        const fp = new FilePicker({
+            current,
+            type: "image",
+            callback: path => 
+            {
+                this.document.update({img : path});
+            },
+            top: this.position.top + 40,
+            left: this.position.left + 10
+        });
+        await fp.browse();
+    }
+
     modifyHTML()
     {
         // replacePopoutTokens(this.element);
         addLinkSources(this.element);
+    }
+
+    
+    // Compatibilty with array properties that don't use the ListModel
+    _handleArrayCreate(doc, ev)
+    {
+        let list = this._getPath(ev);
+        let arr = foundry.utils.getProperty(doc, list);
+
+        // Not very good probably but it will do for now
+        let value = parseInt(ev.target.value) || ev.target.value;
+        
+        if (arr)
+        {
+            doc.update({[list] : arr.concat(value)});
+        }
+    }
+    _handleArrayDelete(doc, ev)
+    {
+        let list = this._getPath(ev);
+        let index = this._getIndex(ev);
+        let arr = foundry.utils.getProperty(doc, list);
+        
+        if (arr)
+        {
+            doc.update({[list] : arr.filter((_, i) => i != index)});
+        }
+    }
+    _handleArrayEdit(doc, ev)
+    {
+        let list = this._getPath(ev);
+        let index = this._getIndex(ev);
+        let arr = foundry.utils.getProperty(doc, list);
+
+        // Not very good probably but it will do for now
+        let value = parseInt(ev.target.value) || ev.target.value;
+
+        if (arr)
+        {
+            doc.update({[list] : arr.map((val, i) => 
+            {
+                if (i == index)
+                {
+                    return value;
+                }
+                else 
+                {
+                    return val;
+                }
+            })});
+        }
     }
 };
 

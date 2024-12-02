@@ -42,7 +42,7 @@ export default class TokenHelpers
         let actor = token?.actor;
         if (actor && game.users.activeGM.id == game.user.id)
         {
-            let existingAuraTemplates = token.parent.templates.contents.filter(i => i.getFlag("wfrp4e", "aura")?.owner == actor.uuid);
+            let existingAuraTemplates = token.parent.templates.contents.filter(i => i.getFlag(game.system.id, "aura")?.owner == actor.uuid);
             if (token._destroyed)
             {
                 return await token.parent.deleteEmbeddedDocuments("MeasuredTemplate", existingAuraTemplates.map(i => i.id));
@@ -55,9 +55,9 @@ export default class TokenHelpers
             
 
             // Filter to keep any templates that need to be created 
-            let newAuraTemplates = allAuraTemplates.filter(t => !existingAuraTemplates.find(existing => existing.getFlag("wfrp4e", "effectUuid") == t.getFlag("wfrp4e", "effectUuid")));
+            let newAuraTemplates = allAuraTemplates.filter(t => !existingAuraTemplates.find(existing => existing.getFlag(game.system.id, "effectUuid") == t.getFlag(game.system.id, "effectUuid")));
 
-            let toDelete = existingAuraTemplates.filter(existing => !auraEffects.find(e => e.uuid == existing.getFlag("wfrp4e", "effectUuid")));
+            let toDelete = existingAuraTemplates.filter(existing => !auraEffects.find(e => e.uuid == existing.getFlag(game.system.id, "effectUuid")));
             
             // Create those templates
             if (toDelete.length)
@@ -79,7 +79,7 @@ export default class TokenHelpers
             let hidden = token.hidden;
             if (update.x || update.y || update.hidden)
             {
-                let auraTemplates = token.parent.templates.contents.filter(i => i.getFlag("wfrp4e", "aura")?.owner == token.actor.uuid);
+                let auraTemplates = token.parent.templates.contents.filter(i => i.getFlag(game.system.id, "aura")?.owner == token.actor.uuid);
 
                 for(let t of auraTemplates)
                 {

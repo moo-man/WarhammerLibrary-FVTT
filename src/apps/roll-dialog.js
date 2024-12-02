@@ -12,10 +12,11 @@ export default class WarhammerRollDialog extends Application
     #onKeyPress;            // Keep track of Enter key listener so it can be removed when submitted
     currentFocus;           // Keep track of current focused element to handle user submitting before the dialog has calculated the most recent input
     submitted = false;      // Flag that denotes the dialog has been submitted and should go through submission instead of rendering 
-    // tooltipConfig = {};
     static tooltipClass = BaseDialogTooltips;
-    static tooltipConfig = {};
-
+    get tooltipConfig() 
+    {
+        return {};
+    }
 
     static get defaultOptions() 
     {
@@ -46,7 +47,7 @@ export default class WarhammerRollDialog extends Application
     {
         super(options);
         this.data = data;
-        this.tooltips = new this.constructor.tooltipClass(this.constructor.tooltipConfig);
+        this.tooltips = new this.constructor.tooltipClass(this.tooltipConfig || {});
 
         this.initialFields = foundry.utils.mergeObject(this._defaultFields(), fields);
         this.fields = this._defaultFields();
@@ -94,7 +95,7 @@ export default class WarhammerRollDialog extends Application
 
         dialogData.data.actor = actor;
         dialogData.data.speaker = CONFIG.ChatMessage.documentClass.getSpeaker({actor});
-        dialogData.data.targets = (options.skipTargets) ? [] : Array.from(game.user.targets).filter(t => t.document.id != dialogData.data.speaker.token); // Remove self from targets
+        dialogData.data.targets = (options.skipTargets) ? [] : options.targets || Array.from(game.user.targets).filter(t => t.document.id != dialogData.data.speaker.token); // Remove self from targets
         if (actor && !actor?.token)
         {
             // getSpeaker retrieves tokens even if this sheet isn't a token's sheet
@@ -118,7 +119,6 @@ export default class WarhammerRollDialog extends Application
             dialogData.data.scripts = actor?.getScripts("dialog", (s) => !s.options?.targeter); // Don't use our own targeter dialog effects
         }
 
-        this._constructTitle(dialogData);
         return dialogData;
     }
 
@@ -223,6 +223,10 @@ export default class WarhammerRollDialog extends Application
         {
             submitData.context = {};
         }
+        if (!this.options.skipTargets)
+        {
+            submitData.targets = Array.from(submitData.targets).map(t => t.actor.speakerData(t.document));
+        }
         submitData.context.breakdown = this.createBreakdown();
         submitData.options = diffObject(this.constructor.defaultOptions, this.options);
         return submitData;
@@ -255,6 +259,10 @@ export default class WarhammerRollDialog extends Application
     close() 
     {
         super.close();
+        if (this.options.resolveClose)
+        {
+            this.resolve();
+        }
         document.removeEventListener("keypress", this.#onKeyPress);
     }
 
@@ -273,12 +281,6 @@ export default class WarhammerRollDialog extends Application
         // Reset values so they don't accumulate 
         this.tooltips.clear();
         this.flags = {};
-        this.fields = this._defaultFields();
-
-        this.tooltips.start(this);
-        mergeObject(this.fields, this.initialFields);
-        this.tooltips.finish(this, this.options.initialTooltip || localize("WH.Dialog.Initial"));
-
         // For some reason cloning the scripts doesn't prevent isActive and isHidden from persisisting
         // So for now, just reset them manually
         this.data.scripts.forEach(script => 
@@ -286,20 +288,29 @@ export default class WarhammerRollDialog extends Application
             script.isHidden = false;
             script.isActive = false;
         });
-        
+
+        this.fields = this._defaultFields();
+
+        this.tooltips.start(this);
+        mergeObject(this.fields, this.initialFields);
+        this.tooltips.finish(this, this.options.initialTooltip || localize("WH.Dialog.Initial"));
+
         this.tooltips.start(this);
         for(let key in this.userEntry)
         {
             if (["string", "boolean"].includes(typeof this.userEntry[key]))
             {
-                this.fields[key] = this.userEntry[key];
+                foundry.utils.setProperty(this.fields, key, this.userEntry[key]);
             }
             else if (Number.isNumeric(this.userEntry[key]))
             {
-                this.fields[key] = this.userEntry[key];
+                foundry.utils.setProperty(this.fields, key, this.userEntry[key]);
             }
         }
         this.tooltips.finish(this, localize("WH.Dialog.UserEntry"));
+
+        await this.computeInitialFields();
+
 
         this._hideScripts();
         this._activateScripts();
@@ -448,6 +459,14 @@ export default class WarhammerRollDialog extends Application
 
     }
 
+    
+    /**
+     * Run any hard coded computation for fields (before scripts)
+     */
+    async computeInitialFields() 
+    {
+    }
+
     /**
      * Whenever a "field" is changed (that being any element with a "name" property) record that field as user defined,
      * which overrides any automatic scripts or computations done to it
@@ -529,9 +548,17 @@ export default class WarhammerRollDialog extends Application
      */
     async getSubTemplate()
     {
-        if (this.subTemplate)
+        if (this.subTemplate && !foundry.utils.isEmpty(this.subTemplate))
         {
-            return await renderTemplate(this.subTemplate, {fields : this.fields, data: this.data, options : this.options});
+            let templateData = {fields : this.fields, data: this.data, options : this.options, tooltips: this.tooltips.getTooltips()};
+            if (this.subTemplate instanceof Array)
+            {
+                return (await Promise.all(this.subTemplate.map(t => renderTemplate(t, templateData)))).join("");
+            }
+            else 
+            {
+                return await renderTemplate(this.subTemplate, templateData);
+            }
         }
     }
 
