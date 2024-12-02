@@ -69,7 +69,7 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that are now in the template or have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             for(let token of tokens)
             {
                 this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
@@ -83,7 +83,7 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that are now in the template or have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             for(let token of tokens)
             {
                 this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
@@ -106,7 +106,7 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             for(let token of tokens)
             {
                 this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
@@ -117,6 +117,8 @@ export default class AreaHelpers
 
     static async checkTokenAreaEffects(token, newCenter)
     {
+        if (!token.actor) return;
+
         let scene = token.parent;
         let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
         let effects = Array.from(token.actor.effects);

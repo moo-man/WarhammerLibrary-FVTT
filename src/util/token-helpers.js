@@ -79,7 +79,7 @@ export default class TokenHelpers
             let hidden = token.hidden;
             if (update.x || update.y || update.hidden)
             {
-                let auraTemplates = token.parent.templates.contents.filter(i => i.getFlag("wfrp4e", "aura")?.owner == token.actor.uuid);
+                let auraTemplates = token.parent.templates.contents.filter(i => i.getFlag("wfrp4e", "aura")?.owner == token.actor?.uuid);
 
                 for(let t of auraTemplates)
                 {
