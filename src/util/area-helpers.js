@@ -117,6 +117,8 @@ export default class AreaHelpers
 
     static async checkTokenAreaEffects(token, newCenter)
     {
+        if (!token.actor) return;
+
         let scene = token.parent;
         let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
         let effects = Array.from(token.actor?.effects);
