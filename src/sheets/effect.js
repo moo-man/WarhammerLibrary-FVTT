@@ -143,29 +143,51 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
     }
 }
 
-class EmbeddedMeasuredTemplateConfig extends MeasuredTemplateConfig
+const { ApplicationV2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
+
+export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(ApplicationV2)
 {
-    async _updateObject(event, formData)
+    static DEFAULT_OPTIONS = {
+        tag : "form",
+        window: {
+            contentClasses: ["standard-form"],
+            title : "Template Customization"
+        },
+        form: {
+            handler: this.submit,
+            submitOnChange: false,
+            closeOnSubmit: true
+        }
+    };
+
+    static PARTS = {
+        form: {
+            template: "modules/warhammer-lib/templates/apps/template-config.hbs"
+        }
+    };
+
+    constructor(document, options)
     {
-        this.object.update({"system.transferData.area.templateData" : formData});
+        super(options);
+        this.document = document;
     }
 
-    async _render(force, options)
-    {   
-        await super._render(force, options);
-        this.element.find("[name='t']")[0].disabled = true;
-        this.element.find("[name='x']")[0].disabled = true;
-        this.element.find("[name='y']")[0].disabled = true;
-        this.element.find("[name='direction']")[0].disabled = true;
-        this.element.find("[name='angle']")[0].disabled = true;
-        this.element.find("[name='distance']")[0].disabled = true;
-        this.element.find("[name='width']")[0].disabled = true;
+    async _prepareContext(options)
+    {
+        let context = await super._prepareContext(options);
+        context.values = this.document._source.system.transferData.area.templateData;
+        context.fields = this.document.system.schema.fields.transferData.fields.area.fields.templateData.fields;
+        return context;
     }
 
-    async getData()
+    static async submit(event, form, formData)
     {
-        let data = await super.getData();
-        data.data = this.object.system.transferData.area.templateData;
-        return data;
+        this.document.update(formData.object);
+    }
+
+    get list() 
+    {
+        return foundry.utils.getProperty(this.document, this.path);
     }
 }

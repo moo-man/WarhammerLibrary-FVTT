@@ -315,14 +315,14 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     static async _onEditProperty(ev)
     {
-        let document = (await this._getDocument(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev)) || this.document;
         let path = ev.target.dataset.path;
         document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
     static async _onToggleProperty(ev, target)
     {
-        let document = (await this._getDocument(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev)) || this.document;
         let path = target.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
@@ -331,7 +331,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         ev.stopPropagation();
         ev.preventDefault();
-        let document = (await this._getDocument(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev)) || this.document;
         let path = target.dataset.path;
         let step = ev.button == 0 ? 1 : -1;
         step = ev.target.dataset.reversed ? -1 * step : step;

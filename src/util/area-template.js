@@ -117,7 +117,9 @@ export default class AreaTemplate extends MeasuredTemplate
             direction: 0,
             x: token.object.center.x,
             y: token.object.center.y,
-            fillColor: game.user.color,
+            fillColor: effectData.system.transferData.area.templateData.fillColor || game.user.color,
+            borderColor: effectData.system.transferData.area.templateData.borderColor || "#000000",
+            texture: effectData.system.transferData.area.templateData.texture,
             hidden : !effectData.system.transferData.area.aura.render,
             flags: {
                 [game.system.id]: {
