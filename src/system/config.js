@@ -52,8 +52,14 @@ export default {
 
     },
 
+    traitOrder : [], 
+
     getZoneTraitEffects : (region) => 
     {
         return [];
-    }
+    },
+
+    placeholderItemData : {
+        
+    },
 };

@@ -5,7 +5,7 @@ export class BaseWarhammerActorModel extends BaseWarhammerModel
 {
 
     static preventItemTypes = [];
-    static singletonItemTypes = [];
+    static singletonItemPaths = {};
 
     itemIsAllowed(item)
     {
@@ -17,6 +17,15 @@ export class BaseWarhammerActorModel extends BaseWarhammerModel
         else 
         {
             return true;
+        }
+    }
+
+    updateSingleton(item)
+    {
+        let singletonPath = this.constructor.singletonItemPaths[item.type];
+        if (singletonPath)
+        {
+            return item.actor.update(foundry.utils.getProperty(this, singletonPath).set(item));
         }
     }
 }

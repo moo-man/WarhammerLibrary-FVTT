@@ -45,7 +45,7 @@ export default class AreaTemplate extends MeasuredTemplate
             y: 0,
             fillColor: game.user.color,
             flags: {
-                wfrp4e: {
+                [game.system.id]: {
                     itemuuid: `Actor.${actorId}.Item.${itemId}`,
                     messageId: messageId,
                     round: game.combat?.round ?? -1,
@@ -84,7 +84,7 @@ export default class AreaTemplate extends MeasuredTemplate
             y: 0,
             fillColor: game.user.color,
             flags: {
-                wfrp4e: {
+                [game.system.id]: {
                     effectData: effectData,
                     messageId: messageId,
                     aura: false,
@@ -120,7 +120,7 @@ export default class AreaTemplate extends MeasuredTemplate
             fillColor: game.user.color,
             hidden : !effectData.system.transferData.area.aura.render,
             flags: {
-                wfrp4e: {
+                [game.system.id]: {
                     effectData: effectData,
                     aura : {
                         owner : token.actor?.uuid,
@@ -221,7 +221,7 @@ export default class AreaTemplate extends MeasuredTemplate
         this.document.updateSource({x: snapped.x, y: snapped.y});
         this.refresh();
         this.#moveTime = now;
-        if (this.document.getFlag("wfrp4e", "target"))
+        if (this.document.getFlag(game.system.id, "target"))
         {
             this.updateAOETargets();
         }
@@ -257,7 +257,7 @@ export default class AreaTemplate extends MeasuredTemplate
         this.document.updateSource(destination);
         this.#events.resolve(canvas.scene.createEmbeddedDocuments("MeasuredTemplate", [this.document.toObject()]).then(templates => 
         {
-            let test = game.messages.get(templates[0].flags.wfrp4e.messageId)?.system?.test;
+            let test = game.messages.get(templates[0].flags[game.system.id].messageId)?.system?.test;
             if (test && test.data.context.templates)
             {
                 test.data.context.templates = test.data.context.templates.concat(templates[0].id);

@@ -1,0 +1,189 @@
+.theme-light .warhammer.actor.application,
+    .theme-light .warhammer.item.application {
+
+    --attribute-input : transparent;
+    --attribute-input-border : transparent;
+    --attribute-border : var(--color-dark-6);
+    --fieldset-border : var(--color-dark-6);
+    --attribute-locked-input : rgba(0, 0, 0, 0.1);
+    --attribute-locked-border : transparent;
+    --attribute-label : rgba(0, 0, 0, 0.1);;
+    --attribute-field : transparent;
+
+    --form-label : rgba(0, 0, 0, 0.1);//var(--color-dark-6);
+    --form-input : transparent;
+    --form-input-border : transparent;
+    --form-group-border : var(--color-dark-6);
+
+    --editor-header : rgba(0, 0, 0, 0.1);
+    --editor-header-border : var(--color-dark-6);
+
+    --hover-bg : var(--color-cool-5);
+}
+
+.warhammer.actor.application,
+.warhammer.item.application {
+
+    --attribute-input : var(--color-cool-4);
+    --attribute-input-border : transparent;
+    --attribute-border : var(--color-cool-3);
+    --fieldset-border : var(--color-cool-3);
+    --attribute-locked-input : transparent;
+    --attribute-locked-border : transparent;
+    --attribute-label : transparent;
+    --attribute-field : transparent;
+
+    --form-label : transparent;
+    --form-input : var(--color-cool-4);
+    --form-input-border : transparent;
+    --form-group-border : var(--color-cool-3);
+
+    --editor-header : var(--color-cool-3);
+    --editor-header-border : transparent;
+
+    --hover-bg : transparent;
+
+    .positive {
+        color: var(--color-level-success)
+    }
+
+    .negative {
+        color: var(--color-level-error)
+    }
+
+    .rollable {
+        > * {
+            cursor: pointer;
+        }
+        &:hover {
+            img {
+                box-shadow: 0px 0px 10px var(--color-cool-3) inset;
+                background: var(--hover-bg)
+            }
+        }
+    }
+
+
+    .form-group {
+        select,
+        input {
+            border-radius: 0px;
+            background: var(--form-input);
+            border-color: var(--form-input-border);
+        }
+        label {
+            border-right: 1px solid var(--form-group-border);
+            height: var(--input-height);
+            line-height: var(--input-height);
+            text-align: center;
+            background: var(--form-label)
+        }
+        .hint {
+            margin : 0px;
+            padding: 0.5rem;
+            border-top: 1px dashed var(--form-group-border);
+        }
+        border: 1px solid var(--form-group-border);
+    }
+
+    .editor-section {
+        .header {
+            height: 1.5rem;
+            line-height: 1.5rem;
+            padding-left: 5px;
+            background: var(--editor-header);
+            border: 1px solid var(--editor-header-border);
+        }
+        min-height: 100px;
+        .editor-content {
+        }
+    }
+
+    
+    .sheet-effect-buttons {
+        margin: 3px 0px;
+        height: 1rem;
+        display: flex;
+        button {
+            flex : 0 0 content;
+            font-size: var(--font-size-12);
+        } 
+    }
+
+    fieldset {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        border-color: var(--fieldset-border);
+        border-radius: 8px;
+    }
+
+    .attribute-box {
+        margin: 5px 5px;
+
+        &:first-child {
+            margin-left: 0px;
+        }
+        &:last-child {
+            margin-right: 0px;
+        }
+
+        flex: 1;
+        border: 1px solid var(--attribute-border);
+        border-right: none;
+        height: 3rem;
+
+        display: grid;
+        grid-template-columns: repeat(12, 8.333%);
+        grid-template-rows: repeat(2, 50%);
+
+        &.single {
+            grid-template-rows: 100%;
+            height: 1.5rem;
+        }
+
+        > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        select,
+        input {
+            height: 100%;
+            width: 100%;
+            border-radius: 0px;
+            text-align: center;
+            background-color: var(--attribute-input);
+            border : 1px solid var(--attribute-input-border);
+        }
+
+        input:disabled,
+        input[readonly]
+        {
+            background-color: var(--attribute-locked-input);
+            border : 1px solid var(--attribute-locked-border);
+        }
+
+        .field {
+            border-right: 1px solid var(--attribute-border);
+            width: 100%;
+            background: var(--attribute-field);
+        }
+
+        .interact {
+            &.bottom {
+                border-top: 1px solid var(--attribute-border);
+            }
+            background: var(--attribute-input);
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .label {
+            border-right: 1px solid var(--attribute-border);
+            width: 100%;
+            background: var(--attribute-label);
+        }
+    }
+}

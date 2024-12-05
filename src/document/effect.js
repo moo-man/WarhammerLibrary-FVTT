@@ -2,6 +2,8 @@ import ItemDialog from "../apps/item-dialog";
 import { format, log, systemConfig } from "../util/utility";
 import WarhammerScript from "../system/script";
 import { WarhammerTestBase } from "../system/test";
+import { SocketHandlers } from "../util/socket-handlers";
+import ZoneHelpers from "../util/zone-helpers";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
@@ -46,6 +48,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onDelete(options, user)
     {
         await super._onDelete(options, user);
+
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
         
         if (game.user.id != user)
         {
@@ -70,6 +77,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onUpdate(data, options, user)
     {
         await super._onUpdate(data, options, user);
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
+
+        if (game.user.id != user)
+        {
+            return;
+        }
 
         // If an owned effect is updated, run parent update scripts
         if (this.parent)
@@ -86,6 +102,10 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _onCreate(data, options, user)
     {
         await super._onCreate(data, options, user);
+        if (this.actor)
+        {
+            ZoneHelpers.updateFollowedEffects(this.actor.getActiveTokens()[0]?.document);
+        }
 
         if (game.user.id != user)
         {
@@ -351,6 +371,14 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             effect.system.transferData.area.aura.transferred = false;
         }
+
+        // An applied transferred follow zone effect should stay as a zone type, but it is no longer transferred
+        else if (effect.system.transferData.type == "zone" && effect.system.transferData.zone.type == "follow")
+        {
+            effect.system.transferData.zone.following = this.actor.getActiveTokens()[0]?.document?.uuid;
+            effect.system.transferData.zone.transferred = false;
+        }
+
         else 
         {
             if (effect.system.transferData.type == "damage" && effect.system.transferData.documentType == "Item")
@@ -366,7 +394,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             effect.system.sourceData.item = this.item.uuid;
         }
-        
+
+        // When transferred to another actor, effects lose their reference to the item it was in
+        // So if a effect pulls its avoid test from the item data, it can't, so place it manually
+        if (this.system.transferData.avoidTest.value == "item")
+        {
+            effect.system.transferData.avoidTest.value = "custom";
+            foundry.utils.mergeObject(effect.system.transferData.avoidTest, this.item?.getTestData() || {});
+        }
+    
         effect.origin = this.actor?.uuid || effect.origin;
         effect.statuses = effect.statuses.length ? effect.statuses : [effect.name.slugify()];
 
@@ -418,6 +454,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
     }
 
+    
+    get originDocument() 
+    {
+        return fromUuidSync(this.origin);
+    }
+
     get radius()
     {
         if (typeof this.system.transferData.area.radius === 'number') 
@@ -434,7 +476,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get specifier() 
     {
-        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")"));
+        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")")).trim();
     }
 
     get baseName() 
@@ -466,8 +508,9 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return manualScripts.map(s => 
         {
             return {
-                label : s.label,
+                label : s.Label,
                 type : "manualScript",
+                class : "trigger-script",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),
                 index : s.index

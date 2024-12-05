@@ -1,3 +1,4 @@
+import { DocumentReferenceModel } from "../model/components/reference";
 import AreaHelpers from "../util/area-helpers";
 import { SocketHandlers } from "../util/socket-handlers";
 import TokenHelpers from "../util/token-helpers";
@@ -15,6 +16,10 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         if (!this._itemTypes) 
         {
             this._itemTypes = super.itemTypes;
+            for(let type in this._itemTypes)
+            {
+                this._itemTypes[type] = this._itemTypes[type].sort((a, b) => a.sort - b.sort);
+            }
         }
         return this._itemTypes;
     }
@@ -44,7 +49,9 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 
     prepareBaseData()
     {
+        super.prepareBaseData();
         this._propagateDataModels(this.system, "runScripts", this.runScripts.bind(this));
+
         this._itemTypes = null; 
         this.system.computeBase();
         this.runScripts("prepareBaseData", {actor : this});
@@ -70,7 +77,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      */
     async _setupTest(dialogClass, testClass, data, options = {}, roll = true) 
     {
-        let dialogData = dialogClass.setupData(data, this, options);
+        let dialogData = await dialogClass.setupData(data, this, options);
         let setupData;
         if (options.skipDialog) 
         {
@@ -80,13 +87,16 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         {
             setupData = await dialogClass.awaitSubmit(dialogData);
         }
-        let test = testClass.fromData(setupData);
-        if (roll) 
+        if (setupData)
         {
-            await test.roll();
-            test.sendToChat();
+            let test = testClass.fromData(setupData);
+            if (roll) 
+            {
+                await test[testClass.rollFunction || "roll"]();
+                test.sendToChat();
+            }
+            return test;
         }
-        return test;
     }
 
     /**
@@ -244,10 +254,34 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             return self.disposition == target.disposition;
         }
     }
+
+    speakerData(token) 
+    {
+        if (this.isToken || token) 
+        {
+            return {
+                token: token?.id || this.token.id,
+                scene: token?.parent.id || this.token.parent.id
+            };
+        }
+        else 
+        {
+            return {
+                actor: this.id,
+                token: token?.id,
+                scene: token?.parent.id
+            };
+        }
+    }
   
     get auraEffects() 
     {
         return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
+    }
+
+    get followedZoneEffects()
+    {
+        return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "zone" && e.system.transferData.zone.type == "follow" && !e.system.transferData.zone.transferred).filter(i => i.active);
     }
   
 }

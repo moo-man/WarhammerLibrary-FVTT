@@ -6,6 +6,8 @@ import WarhammerSheetMixin from "./mixin";
 export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(ActiveEffectConfig)
 {
     systemTemplate = "";
+    effectKeysTemplate = "";
+    
     static get defaultOptions() 
     {
         const options = super.defaultOptions;
@@ -41,7 +43,7 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         {
             for (let element of effectsTab.find(".key input"))
             {
-                $(element).replaceWith(await renderTemplate(systemConfig().effectKeysTemplate, {name : element.name, value : element.value}));
+                $(element).replaceWith(await renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value}));
             }
         }
 

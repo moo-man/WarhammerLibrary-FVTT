@@ -60,6 +60,7 @@ export default function ()
             entry = page.parent;
             noteData.pageId = page.id;
             noteData.flags = {anchor : data.anchor };
+            noteData.name = data.anchor.name;
         }
         if ( entry?.compendium ) 
         {

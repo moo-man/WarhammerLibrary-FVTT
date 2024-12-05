@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
-import path from "path"
 import foundryConfig from "./foundry-path.js";
 import copy from 'rollup-plugin-copy';
+import postcss from "rollup-plugin-postcss";
 
 let modulePath = foundryConfig();
 export default {
-	input: 'src/lib.js',
-	output: {file : path.join(modulePath, "warhammer.js")},
+	input: ['src/warhammer-lib.js'],
+	output: {dir: modulePath},
 	plugins: [
 		copy({
 			targets : [
@@ -14,6 +14,10 @@ export default {
 				{src: "./static/*", dest : modulePath}
 			],
             watch: process.env.NODE_ENV == "production" ? false : ["./static/**", "system.json", "template.json"]
+		}),
+		postcss({
+			extract: "warhammer.css",
+			plugins : []
 		})
 	],
 	// output: rollupPaths.map(repoPath => {

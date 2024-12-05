@@ -1,16 +1,19 @@
 import ItemDialog from "../apps/item-dialog";
-import zones from "../hooks/zones";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty} = foundry.utils;
+const {hasProperty, getProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
 
 export default class ZoneHelpers 
 {
+    static semaphore = new foundry.utils.Semaphore();
+
     // Checks a token's current zone and zone effects, adding and removing them
     static async checkTokenUpdate(token, update, options, user)
     {
+        this.updateFollowedEffects(token);
+
         if (user == game.user.id)
         {
             // If every current region ID exists in priorRegions, and every priorRegion ID existis in current, there was no region change 
@@ -20,7 +23,7 @@ export default class ZoneHelpers
 
             if (changedRegion)
             {
-                await this.checkTokenZoneEffects(token);
+                this.semaphore.add(this.checkTokenZoneEffects.bind(this), token);
             }
         }
     }
@@ -32,18 +35,41 @@ export default class ZoneHelpers
             let tokens = [...region.tokens];
             for(let token of tokens)
             {
-                await this.checkTokenZoneEffects(token);
+                this.semaphore.add(this.checkTokenZoneEffects.bind(this), token);
             }
         }
 
     }
 
+    static updateFollowedEffects(token)
+    {
+        if (!token)
+        {
+            return;
+        }
+
+        if (game.users.activeGM.id == game.user.id)
+        {
+            this.semaphore.add(this._handleFollowedEffects.bind(this), token);
+        }
+    }
+
+    /**
+     * This function handles a token's zone effects, it is meant to be called when the token or any zone is updated.
+     * When a token or zone is updated, it re-evaluates what zone effects the provided token should have given what
+     * zone(s) it is in. 
+     * 
+     * @param {TokenDocument} token 
+     */
     static async checkTokenZoneEffects(token)
     {
 
         let inZones = Array.from(token.regions);
-        let inZoneIds = inZones.map(i => i.uuid);
+
+        // Zone effects will always be applied (non-grandchild) effects
         let effects = Array.from(token.actor.effects);
+
+        // Compile the status effects from the effects of all the zones the token is in. Used later to prevent adding multiple of the same effect. 
         let zoneStatuses = [];
         inZones.forEach(zone => 
         {
@@ -57,11 +83,18 @@ export default class ZoneHelpers
         let toDelete = [];
         
         // Remove all zone effects that reference a zone the token is no longer in
-        toDelete = effects.filter(e => e.system.sourceData.zone && e.statuses.every(s => !zoneStatuses.includes(s))).map(e => e.id);
+        toDelete = effects.filter(e => e.system.sourceData.zone && !e.system.transferData.zone.keep && e.statuses.every(s => !zoneStatuses.includes(s))).map(e => e.id);
         
+        // For each zone, get the effects that should be added to the token
         for(let zone of inZones)
         {
+            // All Zone effects
             let effects = this.getZoneEffects(zone);
+
+            // Only include effects that are not following this token (they already have the effect in the first place)
+            effects = effects.filter(e => getProperty(e, "system.transferData.zone.following") != token.uuid);
+
+            // Add any zone effects that aren't already on the token
             toAdd = toAdd.concat(effects.filter(i => ![...token.actor.statuses].includes(i.statuses[0])));
         }
          
@@ -71,9 +104,88 @@ export default class ZoneHelpers
         }
         if (toAdd.length)
         {
-            await token.actor.createEmbeddedDocuments("ActiveEffect", toAdd);
+            await token.actor.applyEffect({effectData: toAdd});
         }
     }
+
+
+    /**
+     * Given a token, update all regions on a scene to have the correct zone effects
+     * i.e. removing or adding any followed effects based on token positions. 
+     * 
+     * Note: This function might be doing too much, it goes through each region, regardless
+     * of whether it was part of the token movement.
+     * 
+     * 
+     * @param {TokenDocument} token 
+     */
+    static async _handleFollowedEffects(token)
+    {
+        // Effects following theprovided token
+        let followedEffects = token?.actor.followedZoneEffects || [];
+
+        // For each region, add and delete followed effects
+        for(let region of token.parent.regions)
+        {
+            let update = false;
+
+            // Grab the zone effects and specifically the ones that are following a token
+            let effects = foundry.utils.deepClone(region.getFlag(game.system.id, "effects")) || [];
+            let existingFollowedEffects = effects.filter(e => e.system.transferData.originalType == "zone" && e.system.transferData.zone.following);
+
+            // Using the provided token, add any non-existing followed zone effects to the region if the token is within it
+            if (region.tokens.has(token))
+            {
+                // for each of the provided token's followed effects
+                for(let fe of followedEffects)
+                {
+                    // Only add a followed effect if it doesn't already exist in the zone
+                    if (!existingFollowedEffects.find(e => e._id == fe.id))
+                    {
+                        this.displayScrollingTextForRegion(region, "+" + fe.name);
+                        let followedEffectData = fe.convertToApplied();
+                        // Followed effects, when added to the zone's flags, turn into normal Zone effects, they are 
+                        // distinguished from other effects by having a `following` property that points to the token it came from
+                        followedEffectData.system.transferData.zone.type = "zone";
+                        effects = effects.concat(followedEffectData);
+                        update = true;
+                    }
+                }
+            }
+
+            // List of followed effects that should be removed
+            let followedToDelete = [];
+
+            // Check each followed effect on the region, determine whether it should be kept
+            for(let existing of existingFollowedEffects)
+            {
+                let followingToken = fromUuidSync(existing.system.transferData.zone.following);
+
+                // Only keep if the source token exists, the token is in the region, and the token still has the effect itself
+                let shouldKeep = followingToken && followingToken.regions.has(region) && followingToken.actor?.followedZoneEffects.find(i => i.id == existing._id);
+
+                if (!shouldKeep)
+                {
+                    update = true;
+                    followedToDelete.push(existing._id);
+                    this.displayScrollingTextForRegion(region, "-" + existing.name, true);
+                }
+            }
+
+            if (followedToDelete.length > 0)
+            {
+                effects = effects.filter(e => !followedToDelete.includes(e._id));
+            }
+
+            if (update)
+            {
+                await region.update({[`flags.${game.system.id}.effects`] : effects});
+            }
+
+        }
+    }
+
+
 
     /**
      * Retrieves custom/zone effects from a given region document
@@ -83,6 +195,7 @@ export default class ZoneHelpers
     static getZoneEffects(zone)
     {
         let effects = systemConfig().getZoneTraitEffects(zone, this.getGreatestTrait);
+        // let tokens = Array.from(zone.tokens);
 
         effects = effects.concat(zone.getFlag(game.system.id, "effects") || []);
 
@@ -95,46 +208,6 @@ export default class ZoneHelpers
         return effects;
     }
 
-  
-    /**
-     * Return an array of effect data based on Zone Settings
-     * @param {Drawing} drawing Drawing instance
-     * @returns {Array<WarhammerEffect>} zone effect instances
-     */
-    static zoneEffects(drawing)
-    {
-        let traits = [];
-        let zoneTraits = drawing.document.flags?.impmal?.traits || {};
-        let zoneEffects = drawing.document.flags?.impmal?.effects || [];
-        this._combineTraitsFromEffects(zoneEffects, zoneTraits);
-
-        for (let key in zoneTraits)
-        {
-            if (zoneTraits[key])
-            {
-                if (typeof zoneTraits[key] == "boolean")
-                {
-                    traits.push(key); // For boolean properties, the effect key is the property name
-                }
-                else if (typeof zoneTraits[key] == "string")
-                {
-                    traits.push(zoneTraits[key]); // For selection properties, the effect key is the value 
-                }
-            }
-        }
-        
-        // Return trait effects and any other added effects
-        return traits.map(i => deepClone(systemConfig().zoneEffects[i]))
-            .concat(zoneEffects || [])
-            .map(effect => 
-            {
-            // Designate all zone effects with a flag to easily be distinguished
-                setProperty(effect, `system.sourceData.zone`, drawing.document.uuid);
-                setProperty(effect, `system.transferData.zoneType`,  "");
-                effect.origin = drawing.document.uuid;
-                return effect;
-            });
-    }
 
     // Zone effects can designate traits to add (e.g. a power making a zone a Minor Hazard)
     // This collects all of them into a single trait object
@@ -142,7 +215,7 @@ export default class ZoneHelpers
     {
         for(let effect of effects)
         {
-            let effectTraits = effect.flags.impmal.applicationData?.traits || {};
+            let effectTraits = effect.system.transferData.zone.traits;
 
             for(let key in effectTraits)
             {
@@ -181,57 +254,45 @@ export default class ZoneHelpers
         return effectList[maxIndex];
     }
 
-    // Follow Effects are tied to actors, but apply to the zone they are in
-    static followEffects(tokens)
-    {
-        if (!(tokens instanceof Array))
-        {
-            tokens = [tokens];
-        }
-        return tokens.map(t => t.actor) // Take all token actors 
-            .filter(t => t)
-            .reduce((prev, current) => prev // Reduce them to just their "Follow" zone effects
-                .concat(Array.from(current.allApplicableEffects())
-                    .filter(e => e.system.transferData.area.zoneType == "follow")), [])
-            .map(effect =>                  // Convert these effects to data  
-            {
-                let data = effect.toObject();
-                if (data.statuses.length == 0) // Zone effects should alway show on a token
-                {
-                    data.statuses.push(effect.name.slugify());
-                }
-                return data;
-            });
-    }
-
     static avgCoordinate(shape) 
     {
-        let xTotal = 0;
-        let yTotal = 0;
-    
-        shape.points.forEach((p, i) => 
+
+        let x, y;
+        if (shape.points)
         {
-            if (i % 2 == 0)
+            let xTotal = 0;
+            let yTotal = 0;
+            shape.points.forEach((p, i) => 
             {
-                xTotal += p;   
-            }
-            else 
-            {
-                yTotal += p;
-            }
-        });
-        let x = xTotal / (shape.points.length / 2);
-        let y = yTotal / (shape.points.length / 2);
+                if (i % 2 == 0)
+                {
+                    xTotal += p;   
+                }
+                else 
+                {
+                    yTotal += p;
+                }
+            });
+
+            x = xTotal / (shape.points.length / 2);
+            y = yTotal / (shape.points.length / 2);
+        }
+        else 
+        {
+            x = shape.x + shape.width / 2;
+            y = shape.y + shape.height / 2;
+        }
+
     
         return {x, y};
     }
 
-    static displayScrollingTextForRegion(region, text)
+    static displayScrollingTextForRegion(region, text, reversed)
     {
         let promises = [];
         for(let shape of region.shapes)
         {
-            promises.push(canvas.interface.createScrollingText(this.avgCoordinate(shape), text));
+            promises.push(canvas.interface.createScrollingText(this.avgCoordinate(shape), text, {direction : reversed ? CONST.TEXT_ANCHOR_POINTS.BOTTOM : CONST.TEXT_ANCHOR_POINTS.TOP}));
         }
         return promises;
     }
@@ -304,11 +365,11 @@ export default class ZoneHelpers
                 let message = game.messages.get(messageId);
                 let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(message?.system?.test), {temporary : true, message : message?.id});
 
-                if (zoneEffect.system.zone.type == "tokens")
+                if (zoneEffect.system.transferData.zone.type == "tokens")
                 {
                     tokenEffectUuids.push(uuid);
                 }
-                else if (zoneEffect.system.zone.type == "zone")
+                else if (zoneEffect.system.transferData.zone.type == "zone")
                 {
                     zoneEffects.push(zoneEffect.toObject());
                     newZoneEffectNames.push(zoneEffect.name);

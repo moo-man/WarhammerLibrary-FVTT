@@ -12,7 +12,7 @@ export default function ()
 
         CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
         {
-            let effectData = this.getFlag("wfrp4e", "effectData");
+            let effectData = this.getFlag(game.system.id, "effectData");
             if (effectData) 
             {
                 let effect = new CONFIG.ActiveEffect.documentClass(effectData);
@@ -33,7 +33,7 @@ export default function ()
 
         Handlebars.registerHelper("config", function (key) 
         {
-            return systemConfig()[key];
+            return foundry.utils.getProperty(systemConfig(), key);
         });
 
         Handlebars.registerHelper("configLookup", function (obj, key) 
@@ -45,11 +45,18 @@ export default function ()
 
         Handlebars.registerHelper("lookup", function (obj, key) 
         {
-            if (!obj) {return "lookup failed for key: " + key;}
-            if (obj[key])
-            {return obj[key];}
+            if (key === 0)
+            {
+                key = "0"; // getProperty doesn't like 0 if using an array
+            }
+            if (!obj) 
+            {
+                return null;
+            }
             else 
-            {return getProperty(obj, key);};
+            {
+                return foundry.utils.getProperty(obj, key.toString());
+            }
         });
     
 
@@ -79,6 +86,11 @@ export default function ()
             {return array.join(", ");}
         });
 
+        Handlebars.registerHelper("includes", function(array=[], value) 
+        {
+            return array.includes(value);
+        });
+
         Handlebars.registerHelper("hasProperty", function (obj, key) 
         {
             return hasProperty(obj, key);
@@ -86,6 +98,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenImg", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 
@@ -97,6 +113,10 @@ export default function ()
 
         Handlebars.registerHelper("tokenName", function(actor) 
         {
+            if (!actor)
+            {
+                return;
+            }
             let tokens = actor.getActiveTokens();
             let tokenDocument = actor.prototypeToken;
             if(tokens.length == 1) 

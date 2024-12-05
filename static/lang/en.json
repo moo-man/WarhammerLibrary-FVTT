@@ -28,7 +28,7 @@
             "Warning": "<b>Be aware</b>: This information is posted on the GitHub issues page, which is public, so Discord tag is preferred. Otherwise, contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
             "MatchingIssues": "Has your issue already been posted?",
             "DescriptionPlaceholder": "What happened, how to reproduce, etc.",
-            "ManyModules": "You have non-WFRP4e modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
+            "ManyModules": "You have non-Warhammer modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
             "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
             "NeedsAttention": "NEEDS ATTENTION",
             "Resolved": "RESOLVED"
@@ -83,7 +83,6 @@
             "EndCombat": "End Combat"
 
         },
-        "Error.ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",
         "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
@@ -153,11 +152,16 @@
         "TokensInZone" : "Tokens in Zone",
         "FollowToken" : "Follow Token",
         "SendingSocketRequest" : "Sending Socket Request",
+        "ZoneConfig" : "Zone Configuration",
+        "ZoneEffects" : "Applied Zone Effects",
         "Warning" : {
             "RenderAuraChange" : "To reflect the change to Render Aura, disable and re-enable the source Effect, or replace the Token on the Scene."
         },
         "Error" : {
-            "LibraryOutaded" : "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}."
+            "NotValidChoiceType" : "Not a valid choice",
+            "LibraryOutaded" : "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}.",
+            "ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
+            "CreateZoneEffect" : "Effects must be created via an Active Effect with the 'Zone' Transfer Type"
         }
     }
 }

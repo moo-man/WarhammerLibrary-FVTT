@@ -3,7 +3,7 @@ import { BaseWarhammerModel } from "./base";
 export class BaseWarhammerItemModel extends BaseWarhammerModel 
 {
 
-    computeOwned() 
+    computeOwned(actor) 
     {
         
     }

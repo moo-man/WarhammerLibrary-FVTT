@@ -1,14 +1,16 @@
+import WarhammerContextMenu from "../../apps/context-menu";
 import { ListPropertyForm } from "../../apps/list-form";
+import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 
 const WarhammerSheetMixinV2 = (cls) => class extends cls  
 {
-
     #dragDrop;
 
     constructor(options = {}) 
     {
         super(options);
+        addSheetHelpers(this);
         this.#dragDrop = this.#createDragDropHandlers();
     }
 
@@ -24,7 +26,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             listDelete : this._onListDelete,
             listForm : this._onListForm,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
-            clickEffectButton : this._onClickEffectButton
+            togglePip : this._onTogglePip,
+            clickEffectButton : this._onClickEffectButton,
+            editImage : this._onEditImage
         },
         window: {
             resizable: true
@@ -187,6 +191,11 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             });
         }
     
+        this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
+        {
+            element.addEventListener("change", this.constructor._onListCreateWithValue.bind(this));
+        });
+
         this.element.querySelectorAll("[data-action='editProperty']").forEach(element => 
         {
             element.addEventListener("change", this.constructor._onEditProperty.bind(this));
@@ -200,10 +209,15 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _setupContextMenus()
     {
-
+        // return  
+        return [
+            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContetMenuOptions()), 
+            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContetMenuOptions(), {eventName : "click"}),
+            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContetMenuOptions())
+        ];
     }
 
-    _getEntryContextOptions() 
+    _getContetMenuOptions() 
     {
 
     }
@@ -259,9 +273,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         return {};
     }
 
-    static async _onCreateEffect(ev) 
+    static async _onCreateEffect(ev, target) 
     {
-        let type = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`).dataset.category;
+        let type = target.dataset.category;
         let effectData = { name: localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
         if (type == "temporary") 
         {
@@ -301,27 +315,24 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     static async _onEditProperty(ev)
     {
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = ev.target.dataset.path;
         document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
-    static async _onToggleProperty(ev)
+    static async _onToggleProperty(ev, target)
     {
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = target.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
 
-    static async _onStepProperty(ev)
+    static async _onStepProperty(ev, target)
     {
         ev.stopPropagation();
         ev.preventDefault();
-        let element = ev.target.dataset.action ? ev.target : this._getParent(ev.target, `[data-action]`);
         let document = (await this._getDocument(ev)) || this.document;
-        let path = element.dataset.path;
+        let path = target.dataset.path;
         let step = ev.button == 0 ? 1 : -1;
         step = ev.target.dataset.reversed ? -1 * step : step;
         if (ev.ctrlKey)
@@ -342,6 +353,21 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
+    static async _onListCreateWithValue(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let list = this._getList(ev);
+
+        if (list)
+        {
+            if (list instanceof Array)
+            {
+                return this._handleArrayCreate(doc, ev);
+            }
+            doc.update(list.add(ev.target.value));
+        }
+    }
+
     static async _onListDelete(ev)
     {
         let doc = await this._getDocumentAsync(ev) || this.document;
@@ -350,6 +376,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (list)
         {
+            if (list instanceof Array)
+            {
+                return this._handleArrayDelete(doc, ev);
+            }
             doc.update(list.remove(index));
         }
     }
@@ -364,6 +394,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (list)
         {
+            if (list instanceof Array)
+            {
+                return this._handleArrayEdit(doc, ev);
+            }
             doc.update(list.edit(index, value, internalPath));
         }
 
@@ -377,114 +411,97 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         list.toForm(index, doc);
     }
 
+    static async _onTogglePip(ev)
+    {
+        let path = this._getPath(ev);
+        let clicked = this._getIndex(ev);
+        let currentValue = foundry.utils.getProperty(this.document, path);
+        let newValue;
+        if (clicked + 1 == currentValue)
+        {
+            newValue = clicked;
+        }
+        else 
+        {
+            newValue = clicked + 1;
+        }
+        this.document.update({[path] : newValue});
+    }
+
+    
+    // TODO: Remove in V13
+    static async _onEditImage(event) 
+    {
+        const attr = event.target.dataset.edit;
+        const current = foundry.utils.getProperty(this.document, attr);
+        const fp = new FilePicker({
+            current,
+            type: "image",
+            callback: path => 
+            {
+                this.document.update({img : path});
+            },
+            top: this.position.top + 40,
+            left: this.position.left + 10
+        });
+        await fp.browse();
+    }
+
     modifyHTML()
     {
         // replacePopoutTokens(this.element);
         addLinkSources(this.element);
     }
 
-
-    // Shared listeners between different document sheets 
-    _getId(ev) 
-    {
-        return this._getDataAttribute(ev, "id");
-    }
     
-    _getIndex(ev) 
+    // Compatibilty with array properties that don't use the ListModel
+    _handleArrayCreate(doc, ev)
     {
-        return Number(this._getDataAttribute(ev, "index"));
-    }
+        let list = this._getPath(ev);
+        let arr = foundry.utils.getProperty(doc, list);
 
-    _getKey(ev) 
-    {
-        return this._getDataAttribute(ev, "key");
-    }
-
-    _getType(ev) 
-    {
-        return this._getDataAttribute(ev, "type");
-    }
-
-    _getPath(ev) 
-    {
-        return this._getDataAttribute(ev, "path");
-    }
-
-    _getCollection(ev) 
-    {
-        return this._getDataAttribute(ev, "collection") || "items";
-    }
-
-    _getUUID(ev)
-    {
-        return this._getDataAttribute(ev, "uuid");
-    }
-
-    _getList(ev)
-    {
-        return foundry.utils.getProperty(this._getDocument(ev) || this.document, this._getPath(ev));
-    }
-
-
-    /**
-     * Search for an HTML data property, specified as data-<property>
-     * First search target of the event, then search in parent properties
-     * @param {Event} ev Event triggered
-     * @param {string} property data-<property> being searched for
-     * @returns {object} property found
-     */
-    _getDataAttribute(ev, property)
-    {
-        let value = ev.target.dataset[property];
-
-        if (!value) 
+        // Not very good probably but it will do for now
+        let value = parseInt(ev.target.value) || ev.target.value;
+        
+        if (arr)
         {
-            const parent = this._getParent(ev.target, `[data-${property}]`);
-            if (parent) 
+            doc.update({[list] : arr.concat(value)});
+        }
+    }
+    _handleArrayDelete(doc, ev)
+    {
+        let list = this._getPath(ev);
+        let index = this._getIndex(ev);
+        let arr = foundry.utils.getProperty(doc, list);
+        
+        if (arr)
+        {
+            doc.update({[list] : arr.filter((_, i) => i != index)});
+        }
+    }
+    _handleArrayEdit(doc, ev)
+    {
+        let list = this._getPath(ev);
+        let index = this._getIndex(ev);
+        let arr = foundry.utils.getProperty(doc, list);
+
+        // Not very good probably but it will do for now
+        let value = parseInt(ev.target.value) || ev.target.value;
+
+        if (arr)
+        {
+            doc.update({[list] : arr.map((val, i) => 
             {
-                value = parent.dataset[property];
-            }
+                if (i == index)
+                {
+                    return value;
+                }
+                else 
+                {
+                    return val;
+                }
+            })});
         }
-        return value;
-    }
-
-    _getParent(element, selector)
-    {
-        if (element.matches(selector))
-        {
-            return element;
-        }
-        if (!element.parentElement)
-        {
-            return null;
-        }
-        if (element.parentElement.matches(selector))
-        {
-            return element.parentElement;
-        }
-        else 
-        {
-            return this._getParent(element.parentElement, selector);
-        }
-
-    }
-
-    _getDocument(event)
-    {
-        let id = this._getId(event);
-        let collection = this._getCollection(event);
-        let uuid = this._getUUID(event);
-
-        return (uuid ? fromUuidSync(uuid) : this.document[collection]?.get(id));
-    }
-
-    _getDocumentAsync(event)
-    {
-        let id = this._getId(event);
-        let collection = this._getCollection(event);
-        let uuid = this._getUUID(event);
-
-        return (uuid ? fromUuid(uuid) : this.document[collection]?.get(id));
     }
 };
 
