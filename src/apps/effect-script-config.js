@@ -85,7 +85,7 @@ export default class WarhammerEffectScriptConfig extends ScriptConfig
         let object = this._getScriptObject();
         if (type == "script")
         {
-            return !!object.script.match(regex);
+            return !!object.script?.match(regex);
         }
         else 
         {

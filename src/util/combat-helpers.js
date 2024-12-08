@@ -48,6 +48,13 @@ export class CombatHelpers
 
     static async updateCombat(combat, update, options, user) 
     {
+        const shouldReroll = foundry.utils.getProperty(options, `wfrp4e-pl-addons.shouldReroll`);        
+        if (shouldReroll) 
+        {
+            return;
+        }
+
+
         if (hasProperty(update, "turn") || hasProperty(update, "round"))
         {
             for(let actor of combat.combatants.map(i => i.actor))

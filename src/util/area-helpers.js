@@ -58,7 +58,7 @@ export default class AreaHelpers
 
             if (changedRegion)
             {
-                await this.checkTokenAreaEffects(token, options._newCenter[token.id]);
+                await this.checkTokenAreaEffects([token], options._newCenter[token.id]);
             }
         }
     }
@@ -70,10 +70,7 @@ export default class AreaHelpers
         {
             // Tokens that are now in the template or have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
-            for(let token of tokens)
-            {
-                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
-            }
+            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
         }
     }
 
@@ -84,10 +81,7 @@ export default class AreaHelpers
         {
             // Tokens that are now in the template or have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
-            for(let token of tokens)
-            {
-                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
-            }
+            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
             
             if (template.getFlag("wfrp4e", "instantaneous"))
             {
@@ -107,46 +101,47 @@ export default class AreaHelpers
         {
             // Tokens that have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
-            for(let token of tokens)
-            {
-                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
-            }
+            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
         }
-
     }
 
-    static async checkTokenAreaEffects(token, newCenter)
+    static async checkTokenAreaEffects(tokens, newCenter)
     {
-        let scene = token.parent;
-        let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
-        let effects = Array.from(token.actor.effects);
-        let areaEffects = [];
-        inAreas.forEach(area => 
+        let promises = [];
+        for(let token of tokens) 
         {
-            let areaEffect = area.areaEffect();
-            let auraData = area.getFlag("wfrp4e", "aura");
-            // If the effect exists, only add the area effect if the area is not an aura OR this isn't the owner of the aura and it's not a transferred aura
-            // in other words, if the aura is transferred, apply to owner of the aura. If it's a constant aura, don't add the effect to the owner
-            if (areaEffect && (!auraData || auraData.owner != token.actor?.uuid || auraData.transferred))
+            let scene = token.parent;
+            let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
+            let effects = Array.from(token.actor.effects);
+            let areaEffects = [];
+            inAreas.forEach(area => 
             {
-                areaEffects.push(areaEffect);
+                let areaEffect = area.areaEffect();
+                let auraData = area.getFlag("wfrp4e", "aura");
+                // If the effect exists, only add the area effect if the area is not an aura OR this isn't the owner of the aura and it's not a transferred aura
+                // in other words, if the aura is transferred, apply to owner of the aura. If it's a constant aura, don't add the effect to the owner
+                if (areaEffect && (!auraData || auraData.owner != token.actor?.uuid || auraData.transferred))
+                {
+                    areaEffects.push(areaEffect);
+                }
+            });
+
+            // Remove all area effects that reference an area the token is no longer in
+            let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
+
+            // filter out all area effects that are already on the actor
+            let toAdd = areaEffects.filter(ae => !token.actor.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
+        
+            if (toDelete.length)
+            {
+                promises.push(token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete));
             }
-        });
-
-        // Remove all area effects that reference an area the token is no longer in
-        let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
-
-        // filter out all area effects that are already on the actor
-        let toAdd = areaEffects.filter(ae => !token.actor.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
-    
-        if (toDelete.length)
-        {
-            await token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+            if (toAdd.length)
+            {
+                promises.push(token.actor.applyEffect({effects : toAdd}));
+            }
         }
-        if (toAdd.length)
-        {
-            await token.actor.applyEffect({effects : toAdd});
-        }
+        await Promise.all(promises);
         // If an effect from this area was not found, add it. otherwise ignore
     }
 
