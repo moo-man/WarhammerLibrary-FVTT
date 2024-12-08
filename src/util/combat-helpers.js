@@ -57,7 +57,7 @@ export class CombatHelpers
 
         if (hasProperty(update, "turn") || hasProperty(update, "round"))
         {
-            for(let actor of combat.combatants.map(i => i.actor))
+            for(let actor of combat.combatants.filter(i => i.actor).map(i => i.actor))
             {
                 actor.runScripts("updateCombat", {combat}, true);
             }
@@ -95,7 +95,7 @@ export class CombatHelpers
                 }
             }
 
-            if (update.round && update.turn == 0)
+            if (update.round && options.direction == 1)
             {
                 if (!tracker.endRound < combat.round)
                 {

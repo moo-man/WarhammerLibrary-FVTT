@@ -17,8 +17,9 @@
             <label>{{localize "WH.TransferData.DocumentType"}}</label>
             <select name="system.transferData.documentType">
                 {{#select system.transferData.documentType}}
-                    <option value="Actor">{{localize "Actor"}}</option>
-                    <option value="Item">{{localize "Item"}}</option>
+                    {{#each (config "transferDocumentTypes")}}
+                        <option value="{{@key}}">{{this}}</option>
+                    {{/each}}
                 {{/select}}
             </select>
             <p class="notes">{{localize "WH.TransferData.DocumentTypeHint"}}</p>

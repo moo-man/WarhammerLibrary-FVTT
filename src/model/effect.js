@@ -6,6 +6,20 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 {
     
     static _avoidTestModel = AvoidTestModel;
+
+    // This ensures automated form groups have `system` in their name
+    // This is built in with `TypeDataModels` but those aren't being used
+    static get schema() 
+    {
+        if ( this.hasOwnProperty("_schema") ) 
+        {
+            return this._schema;
+        }
+        const schema = super.schema;
+        schema.name = "system";
+        return schema;
+    }
+
     
     static defineSchema() 
     {
@@ -26,7 +40,11 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
             area : new fields.SchemaField({
                 radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
-                templateData: new fields.ObjectField(),
+                templateData: new fields.SchemaField({
+                    borderColor : new fields.ColorField({label : "Border Color"}),
+                    fillColor : new fields.ColorField({label : "Fill Color"}),
+                    texture : new fields.FilePathField({label : "Texture", categories : ['IMAGE', 'VIDEO']})
+                }),
                 keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
     
                 aura : new fields.SchemaField({

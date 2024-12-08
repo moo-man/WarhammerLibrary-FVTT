@@ -476,7 +476,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get specifier() 
     {
-        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")"));
+        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")")).trim();
     }
 
     get baseName() 
@@ -510,6 +510,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return {
                 label : s.Label,
                 type : "manualScript",
+                class : "trigger-script",
                 uuid : s.effect.uuid,
                 path : s.effect.getFlag(game.system.id, "path"),
                 index : s.index

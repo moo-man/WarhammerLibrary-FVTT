@@ -18,6 +18,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         html.on("click", ".apply-target", this._onApplyTargetEffect.bind(this));
         html.on("click", ".place-area", this._onPlaceAreaEffect.bind(this));
         html.on("click", ".apply-zone", this._onApplyZoneEffect.bind(this));
+        html.on("click", ".remove-singleton", this._onRemoveSingleton.bind(this));
     }
     _onTriggerScript(ev)
     {
@@ -103,4 +104,11 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         }
         ZoneHelpers.promptZoneEffect({effectData : [effectData]});
     };
+
+    _onRemoveSingleton(ev)
+    {
+        let path = this._getPath(ev);
+
+        this.actor.update(foundry.utils.getProperty(this.actor, path)?.delete());
+    }
 }

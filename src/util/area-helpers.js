@@ -40,7 +40,7 @@ export default class AreaHelpers
             options._newCenter = {};
         }
         // Get all areas left, but aura owners should never leave their aura area
-        options._priorAreas[token.id] = scene.templates.contents.filter(template => this.isInTemplate(token.object.center, template) && template.getFlag("wfrp4e", "aura")?.owner != token.actor?.uuid).map(i => i.id);
+        options._priorAreas[token.id] = scene.templates.contents.filter(template => this.isInTemplate(token.object.center, template) && template.getFlag(game.system.id, "aura")?.owner != token.actor?.uuid).map(i => i.id);
         let newCenter = TokenHelpers.tokenCenter(foundry.utils.mergeObject(token.toObject(), update));
         options._newCenter[token.id] = newCenter;
         options._areas[token.id] = scene.templates.contents.filter(template => this.isInTemplate(newCenter, template)).map(i => i.id);
@@ -69,7 +69,7 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that are now in the template or have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
         }
     }
@@ -80,14 +80,14 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that are now in the template or have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
             
-            if (template.getFlag("wfrp4e", "instantaneous"))
+            if (template.getFlag(game.system.id, "instantaneous"))
             {
                 sleep(500).then(() => 
                 {
-                    template.setFlag("wfrp4e", "effectData", null);
+                    template.setFlag(game.system.id, "effectData", null);
                 });
             }
         }
@@ -100,7 +100,7 @@ export default class AreaHelpers
         if (game.users.activeGM.id == game.user.id && !options?.skipAreaCheck)
         {
             // Tokens that have effects from this template
-            let tokens = template.parent?.tokens.contents.filter(token => token.actor.effects.find(e => e.system.sourceData.area == template.uuid));
+            let tokens = template.parent?.tokens.contents.filter(token => token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
             this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
         }
     }
@@ -110,14 +110,15 @@ export default class AreaHelpers
         let promises = [];
         for(let token of tokens) 
         {
+            if (!token.actor) continue;
             let scene = token.parent;
             let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
-            let effects = Array.from(token.actor.effects);
+            let effects = Array.from(token.actor?.effects);
             let areaEffects = [];
             inAreas.forEach(area => 
             {
                 let areaEffect = area.areaEffect();
-                let auraData = area.getFlag("wfrp4e", "aura");
+                let auraData = area.getFlag(game.system.id, "aura");
                 // If the effect exists, only add the area effect if the area is not an aura OR this isn't the owner of the aura and it's not a transferred aura
                 // in other words, if the aura is transferred, apply to owner of the aura. If it's a constant aura, don't add the effect to the owner
                 if (areaEffect && (!auraData || auraData.owner != token.actor?.uuid || auraData.transferred))
@@ -130,15 +131,20 @@ export default class AreaHelpers
             let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
 
             // filter out all area effects that are already on the actor
-            let toAdd = areaEffects.filter(ae => !token.actor.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
+            let toAdd = areaEffects.filter(ae => !token.actor?.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
         
             if (toDelete.length)
             {
-                promises.push(token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete));
+                if (token.actor)
+                {
+                    promises.push(token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete));
+                }
             }
             if (toAdd.length)
             {
-                promises.push(token.actor.applyEffect({effects : toAdd}));
+                if (token.actor){
+                    promises.push(token.actor.applyEffect({effects : toAdd}));
+                }
             }
         }
         await Promise.all(promises);
@@ -187,33 +193,6 @@ export default class AreaHelpers
     {                                                                                 // points are relative to origin of the template, needs to be origin of the map
         let polygon = new PIXI.Polygon(template.shape.points.map((coord, index) => coord += index % 2 == 0 ? template.document.x : template.document.y ));
         return polygon.contains(point.x, point.y);
-    }
-
-    static effectToTemplate(effect)
-    {
-        let token = effect.actor.getActiveTokens()[0];
-        let template = new MeasuredTemplate(new CONFIG.MeasuredTemplate.documentClass(foundry.utils.mergeObject({
-            t: "circle",
-            _id : effect.id,
-            user: game.user.id,
-            distance: effect.radius,
-            direction: 0,
-            x: token.center.x, // Using the token x/y will double the template's coordinates, as it's already a child of the token
-            y: token.center.y, // However, this is necessary to get tho correct grid highlighting. The template's position is corrected when it's rendered (see renderAura)
-            fillColor: game.user.color,
-            flags: {
-                wfrp4e: {
-                    effectUuid: effect.uuid
-                }
-            }
-        }, effect.flags.wfrp4e?.system.transferData.area?.templateData || {}), {parent : canvas.scene}));
-
-        // For some reason, these temporary templates have 0,0 as their coordinates
-        // instead of the ones provided by the document, so set them manually
-        template.x = template.document.x;
-        template.y = template.document.y;
-        template.auraEffect = effect;
-        return template;
     }
 
     static refreshArea(template, flags)

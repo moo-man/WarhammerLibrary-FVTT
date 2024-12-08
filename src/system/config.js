@@ -62,4 +62,9 @@ export default {
     placeholderItemData : {
         
     },
+
+    transferDocumentTypes : {
+        "Actor" : "Actor",
+        "Item" : "Item"
+    }
 };

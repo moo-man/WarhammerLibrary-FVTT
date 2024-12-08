@@ -9,7 +9,7 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
 {
 
     static DEFAULT_OPTIONS = {
-        classes: ["actor"],
+        classes: ["item"],
         actions: {
 
         },
@@ -19,13 +19,36 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
 
     };
 
+    get item() 
+    {
+        return this.document;
+    }
+
     async _prepareContext(options) 
     {
         let context = await super._prepareContext(options);
+        context.item = this.item;
+        context.actor = this.item.actor;
         return context;
     }
 
+    _prepareEffectsContext(context) 
+    {
+        let effects = {};
+        effects.active = this.item.effects.contents.filter(i => i.active);
+        effects.disabled = this.item.effects.contents.filter(i => i.disabled);
+        effects.temporary = this.item.actor?.getEffectsApplyingToItem(this.item) || [];
+        context.effects = effects;
+    }
+    
+
     //#region Effects
+
+    
+    //#region Action Handlers
+
+
+    //#endregion
 
     
 }
