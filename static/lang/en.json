@@ -115,6 +115,8 @@
             "RadiusHint": "Radius of the template",
             "TemplateData": "Template Data",
             "TemplateDataHint": "Configure template data, such as color or texture",
+            "TemplateCustomization": "Template Customization",
+            "Texture": "Texture",
             "TestIndependent": "Test Independent",
             "TestIndependentHint": "If checked, this Effect can be called directly from the owning Actor's sheet, instead of from chat",
             "PreApplyScript": "Pre-Apply Script",
@@ -143,6 +145,9 @@
             "Zone" : "Zone",
             "Other" : "Other"
         },
+        "Dialog.ValueDialog": "Value Dialog",
+        "Dialog.EnterValue": "Enter Value",
+        "Dialog.SelectValue": "Select Value",
         "Dialog.Modifiers": "Dialog Modifiers",
         "Dialog.UserEntry": "User Entry",
         "Dialog.Initial": "Initial",
