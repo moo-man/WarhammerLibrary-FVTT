@@ -41,9 +41,9 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             area : new fields.SchemaField({
                 radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
                 templateData: new fields.SchemaField({
-                    borderColor : new fields.ColorField({label : "Border Color"}),
-                    fillColor : new fields.ColorField({label : "Fill Color"}),
-                    texture : new fields.FilePathField({label : "Texture", categories : ['IMAGE', 'VIDEO']})
+                    borderColor : new fields.ColorField({label : game.i18n.localize("TEMPLATE.BorderColor")}),
+                    fillColor : new fields.ColorField({label : game.i18n.localize("TEMPLATE.FillColor")}),
+                    texture : new fields.FilePathField({label : game.i18n.localize("WH.TransferData.Texture"), categories : ['IMAGE', 'VIDEO']})
                 }),
                 keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
     

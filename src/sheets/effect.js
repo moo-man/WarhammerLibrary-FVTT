@@ -152,7 +152,7 @@ export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(A
         tag : "form",
         window: {
             contentClasses: ["standard-form"],
-            title : "Template Customization"
+            title : "WH.TransferData.TemplateCustomization"
         },
         form: {
             handler: this.submit,
