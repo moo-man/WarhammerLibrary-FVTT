@@ -238,7 +238,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     async _preparePartContext(partId, context) 
     {
         context.partId = `${this.id}-${partId}`;
-        context.tab = context.tabs[partId];
+        if (context.tabs)
+        {
+            context.tab = context.tabs[partId];
+        }
 
         let fn = this[`_prepare${partId.capitalize()}Context`]?.bind(this);
         if (typeof fn == "function")
@@ -251,6 +254,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _prepareTabs(options) 
     {
+        if (!this.constructor.TABS)
+        {
+            return;
+        }
         let tabs = foundry.utils.deepClone(this.constructor.TABS);
 
         for (let t in tabs) 

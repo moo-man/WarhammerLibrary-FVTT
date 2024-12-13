@@ -36,6 +36,7 @@ import { SingletonItemModel } from "./model/components/singleton-item";
 import WarhammerItemSheetV2 from "./sheets/v2/item";
 import addSheetHelpers from "./util/sheet-helpers";
 import { WarhammerZoneConfig } from "./apps/zone-config";
+import ChoiceConfigV2 from "./apps/choice-config";
 hooks();
 overrides();
 
@@ -86,7 +87,8 @@ warhammer.apps = {
     WarhammerItemSheet,
     WarhammerActorSheetV2,
     WarhammerItemSheetV2,
-    WarhammerZoneConfig
+    WarhammerZoneConfig,
+    ChoiceConfigV2
 };
 
 warhammer.models = {

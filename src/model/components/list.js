@@ -31,7 +31,14 @@ export class ListModel extends foundry.abstract.DataModel
         let list = foundry.utils.duplicate(this.list);
         if (typeof value == "object")
         {
-            foundry.utils.mergeObject(list[index], value, {overwrite : true});
+            if (path)
+            {
+                foundry.utils.mergeObject(list[index], {[path] : value}, {overwrite : true});
+            }
+            else 
+            {
+                foundry.utils.mergeObject(list[index], value, {overwrite : true});
+            }
         }
         else if (typeof value == "string" || typeof value == "number")
         {
