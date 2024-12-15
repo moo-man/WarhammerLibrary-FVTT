@@ -12,7 +12,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         },
         window: {
             resizable : true,
-            title : "Choices"
+            title : "WH.Choice.Choices"
         },
         actions : {
             chooseOption : this._onChooseOption

@@ -1,4 +1,5 @@
 import addSheetHelpers from "../util/sheet-helpers";
+import { localize } from "../util/utility";
 
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -41,12 +42,12 @@ export class WarhammerZoneConfig extends HandlebarsApplicationMixin(ApplicationV
         config: {
             id: "config",
             group: "primary",
-            label: "Configuration",
+            label: localize("WH.Configuration"),
         },
         effects: {
             id: "effects",
             group: "primary",
-            label: "Effects",
+            label: localize("WH.Effects"),
         }
     };
 
