@@ -26,9 +26,9 @@ export default class ValueDialog extends Dialog
 
         // If values object provided, show a select box, otherwise, just a text input
         let content = foundry.utils.isEmpty(values) ? 
-            `<div class="value-dialog"><p>${text || "Enter Value"}</p><input class="value" type="text" value="${defaultValue}"></div>` 
+            `<div class="value-dialog"><p>${text || localize("WH.Dialog.EnterValue")}</p><input class="value" type="text" value="${defaultValue}"></div>` 
             : 
-            `<div class="value-dialog"><p>${text || "Select Value"}</p><select class="value" value="${defaultValue}"><option value=""></option>${Object.keys(values).map(
+            `<div class="value-dialog"><p>${text || localize("WH.Dialog.SelectValue")}</p><select class="value" value="${defaultValue}"><option value=""></option>${Object.keys(values).map(
                 v => `<option value=${v}>
                         ${typeof values[v] == "string" ? values[v] : v }
                   </option>`)}
@@ -37,7 +37,7 @@ export default class ValueDialog extends Dialog
 
 
         return Dialog.wait({
-            title : title || "Value Dialog",
+            title : title || localize("WH.Dialog.ValueDialog"),
             content : content,
             buttons : {
                 submit : {
