@@ -36,7 +36,9 @@ import { SingletonItemModel } from "./model/components/singleton-item";
 import WarhammerItemSheetV2 from "./sheets/v2/item";
 import addSheetHelpers from "./util/sheet-helpers";
 import { WarhammerZoneConfig } from "./apps/zone-config";
+import WarhammerDiffEditor from "./apps/diff-editor";
 import ChoiceConfigV2 from "./apps/choice-config";
+import { ChoiceModel } from "./model/components/choices";
 hooks();
 overrides();
 
@@ -71,6 +73,7 @@ warhammer.apps = {
     ItemDialog,
     ValueDialog,
     WarhammerScriptConfig,
+    WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,
     WarhammerActiveEffectConfig,
@@ -104,6 +107,7 @@ warhammer.models = {
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
     WarhammerActiveEffect,
+    ChoiceModel
 
 };
 

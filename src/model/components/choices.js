@@ -92,6 +92,14 @@ export class ChoiceModel extends foundry.abstract.DataModel
     {
         return {options: this.options.filter(i => i.id != id), structure : this.remove(id)};
     }
+
+    editOption(id, data)
+    {
+        let options = foundry.utils.deepClone(this.options);
+        let option = options.find(i => i.id == id);
+        foundry.utils.mergeObject(option, data);
+        return {options, structure : this.structure};
+    }
  
     //#region Operations
 
@@ -141,7 +149,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
         }
     }
 
-    async getOptionDocument(optionId, parent)
+    async getOptionDocument(optionId, parent, includeDiff=true)
     {
         let option = this.options.find(o => o.id == optionId);
 
@@ -168,7 +176,13 @@ export class ChoiceModel extends foundry.abstract.DataModel
         }
         else if (["id", "uuid"].includes(option.idType))
         {
-            return await game.impmal.utility.findId(option.documentId);
+            let document = await warhammer.utility.findItemId(option.documentId);
+            if (includeDiff && !foundry.utils.isEmpty(option.diff))
+            {
+                document = new Item.implementation(foundry.utils.mergeObject(document.toObject(), option.diff));
+            }
+
+            return document;
         }
         else if (option.idType == "relative")
         {

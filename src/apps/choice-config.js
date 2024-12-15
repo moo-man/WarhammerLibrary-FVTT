@@ -1,6 +1,7 @@
 import WarhammerSheetMixinV2 from "../sheets/v2/mixin";
 import ChoiceDecision from "./choice-decision";
 import { ChoiceOptionFormV2 } from "./choice-option";
+import WarhammerDiffEditor from "./diff-editor";
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -29,7 +30,8 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
             listCreate : this._onListCreate,
             listDelete : this._onListDelete,
             toggleConnector : this._onToggleConnector,
-            openChoiceDialog : this._onOpenChoiceDialog
+            openChoiceDialog : this._onOpenChoiceDialog,
+            editDiff : this._onEditDiff,
         },
         dragDrop: [{ dragSelector: '.option', dropSelector: ".option" }],
 
@@ -244,6 +246,26 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
             }
 
         }
+    }
+
+    static async _onEditDiff(event)
+    {
+        let optionId = this._getId(event);
+        let options = foundry.utils.deepClone(this.choices.options);
+        let index = options.findIndex(o => o.id == optionId);
+        let original = await this.choices.getOptionDocument(optionId, this.document, false);
+
+        let newDiff = await WarhammerDiffEditor.wait(options[index].diff, {document : original});
+        options[index].diff = newDiff;
+        if (newDiff.name)
+        {
+            options[index].name = newDiff.name;
+        }
+        else 
+        {
+            options[index].name = original.name;
+        }
+        this._updateObject(this.choices.editOption(optionId, options[index]));
     }
 
     

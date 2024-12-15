@@ -226,10 +226,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     async _prepareContext(options) 
     {
         let context = await super._prepareContext(options);
-        context.system = this.document.system;
+        if (this.document)
+        {
+            context.system = this.document.system;
+            context.fields = this.document.system.schema.fields;
+            context.source = this.document.toObject();
+        }
         context.tabs = this._prepareTabs(options);
-        context.fields = this.document.system.schema.fields;
-        context.source = this.document.toObject();
         context.enriched = await this._handleEnrichment();
 
         return context;
