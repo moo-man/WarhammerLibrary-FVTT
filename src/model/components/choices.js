@@ -1,3 +1,5 @@
+import ChoiceDecision from "../../apps/choice-decision";
+import ItemDialog from "../../apps/item-dialog";
 
 /**
  * A ChoiceModel allows for choices between any arbitrary amount of documents to any amount of depth
@@ -35,6 +37,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
             })),
         }));
         return schema;
+    }
+
+    async promptDecision()
+    {
+        let decisions = await ChoiceDecision.awaitSubmit(this);
+        return Promise.all(decisions.map(i => this.getOptionDocument(i.id)));
     }
 
     compileTree()
@@ -231,7 +239,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
     {
         if (id == dest)
         {
-            return;
+            return this.structure;
         }
         let data = this.find(id);
         if (data.type == "option")
