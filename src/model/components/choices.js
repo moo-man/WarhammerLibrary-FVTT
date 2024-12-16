@@ -1,15 +1,15 @@
-let fields = foundry.data.fields;
 
 /**
  * A ChoiceModel allows for choices between any arbitrary amount of documents to any amount of depth
  * 
  * The structure property describes the structure of the possible decisions, e.g. A and B or C and D   vs.   A or (B and C) or D
  * The options property contains the list of things being chosen, e.g. what A, B, C, D actually are
- */
+*/
 export class ChoiceModel extends foundry.abstract.DataModel
 {
     static defineSchema() 
     {
+        let fields = foundry.data.fields;
         let schema = {};
  
         schema.structure = new fields.ObjectField({initial : {

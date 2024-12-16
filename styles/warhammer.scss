@@ -1,7 +1,8 @@
 @use "./apps/item-dialog";
 @use "./apps/bug-reporter";
-@use "./apps//roll-dialog";
-@use "./apps//choice-config";
+@use "./apps/roll-dialog";
+@use "./apps/choice-config";
+@use "./apps/choice-decision";
 @use "./sheets/sheets";
 @use "./sheets/list";
 

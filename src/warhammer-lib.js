@@ -91,7 +91,8 @@ warhammer.apps = {
     WarhammerActorSheetV2,
     WarhammerItemSheetV2,
     WarhammerZoneConfig,
-    ChoiceConfigV2
+    ChoiceConfigV2,
+    ChoiceDecision
 };
 
 warhammer.models = {
