@@ -1,4 +1,5 @@
 import { ListPropertyForm } from "../../apps/list-form";
+import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./reference";
 
 // Generic list of objects
 export class ListModel extends foundry.abstract.DataModel
@@ -69,4 +70,64 @@ export class ListModel extends foundry.abstract.DataModel
     {
         new ListPropertyForm(document, {path : this.schema.fieldPath, index, window : {title : this.schema.options.label}}).render(true);
     }
+}
+
+
+export class DocumentReferenceListModel extends ListModel 
+{
+    static listSchema = DocumentReferenceModel;
+
+    add(document)
+    {
+        return this._add({uuid : document.uuid, id : document.id, name : document.name});
+    }
+
+    _add(value)
+    {
+        return {[this.schema.fields.list.fieldPath] : this.list.concat(value)};
+    }
+
+    removeId(uuid)
+    {
+        return super.remove(this.list.findIndex(i => i.uuid == uuid));
+    }
+
+    get documents() 
+    {
+        if (this.relative)
+        {
+            this.list.forEach(i => i.relative = this.relative);
+        }
+        return this.list.map(i => i.document).filter(i => i);
+    }
+
+    async awaitDocuments()
+    {
+        return await Promise.all(this.list.map(i => i.awaitDocument()));
+    }
+}
+
+export class DeferredReferenceListModel extends ListModel 
+{
+    static listSchema = DeferredReferenceModel;
+
+    add(document)
+    {
+        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, id : document.id, name : document.name})};
+    }
+
+    get documents() 
+    {
+        return this.list.map(i => i.document).filter(i => i);
+    }
+
+    async awaitDocuments()
+    {
+        return await Promise.all(this.list.map(i => i.awaitDocument()));
+    }
+}
+
+export class DiffReferenceListModel extends DeferredReferenceListModel
+{
+    static listSchema = DiffReferenceModel;
 }

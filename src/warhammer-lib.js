@@ -28,8 +28,7 @@ import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
 import { error, findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
-import { ListModel } from "./model/components/list";
-import { DeferredReferenceListModel, DeferredReferenceModel, DocumentReferenceListModel, DocumentReferenceModel } from "./model/components/reference";
+import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
 import { SingletonItemModel } from "./model/components/singleton-item";
@@ -39,6 +38,8 @@ import { WarhammerZoneConfig } from "./apps/zone-config";
 import WarhammerDiffEditor from "./apps/diff-editor";
 import ChoiceConfigV2 from "./apps/choice-config";
 import { ChoiceModel } from "./model/components/choices";
+import ChoiceDecision from "./apps/choice-decision";
+import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./model/components/reference";
 hooks();
 overrides();
 
@@ -105,6 +106,8 @@ warhammer.models = {
     DocumentReferenceListModel,
     DeferredReferenceModel,
     DeferredReferenceListModel,
+    DiffReferenceModel,
+    DiffReferenceListModel,
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
     WarhammerActiveEffect,
