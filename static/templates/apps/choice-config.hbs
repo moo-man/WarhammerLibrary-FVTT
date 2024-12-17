@@ -1,0 +1,46 @@
+<div>
+        <nav class="sheet-tabs tabs">
+            {{#each tabs as |tab|}}
+            <a class="{{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+                <i class="{{tab.icon}}"></i>
+                <label>{{localize tab.label}}</label>
+            </a>
+            {{/each}}
+        </nav>
+
+
+        <div class="tab {{#if tabs.options.active}}active{{/if}}" data-tab="options" data-group="primary">
+            <div class="sheet-list">
+                <div class="list-header row-content">
+                    <div class="list-name">{{localize "WH.Choice.Options"}}</div>
+                    <div class="list-controls">
+                        <a class="list-control" data-action="listCreate"><i class="fa-solid fa-plus"></i></a>
+                    </div>
+                </div>
+                <div class="list-content">
+                    {{#each options}}
+                        <div class="list-row" data-id="{{this.id}}">
+                            <div class="row-content">
+                                <div class="list-name">
+                                    <a class="label" data-action="listEdit">{{this.name}}</a>
+                                </div>
+                                <div class="list-controls">
+                                    {{#if (eq this.type "item")}}
+                                    <a class="list-control" data-action="editDiff"><i class="fa-solid fa-file-plus-minus"></i></a>
+                                    {{/if}}
+                                    <a class="list-control" data-action="listDelete"><i class="fa-solid fa-xmark"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="tab {{#if tabs.structure.active}}active{{/if}}" data-tab="structure" data-group="primary">
+            {{{structureHTML}}}
+        </div>
+
+            
+    </div>

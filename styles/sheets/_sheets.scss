@@ -186,4 +186,18 @@
             background: var(--attribute-label);
         }
     }
+
+    .choice-group {
+        text-align: center;
+        label {
+            font-size : var(--font-size-18);
+        }
+        .choice-text {
+            margin-top: 5px;
+            text-align: center;
+            border: 2px solid var(--color-cool-3);
+            padding: 5px;
+            border-radius: 5px;
+        }
+    }
 }

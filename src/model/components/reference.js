@@ -1,5 +1,3 @@
-import { ListModel } from "./list";
-
 export class DocumentReferenceModel extends foundry.abstract.DataModel
 {
     static defineSchema() 
@@ -57,6 +55,7 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
     }
 }
 
+
 export class DeferredReferenceModel extends DocumentReferenceModel
 {
     get document() 
@@ -99,52 +98,47 @@ export class DeferredReferenceModel extends DocumentReferenceModel
     }
 }
 
-export class DocumentReferenceListModel extends ListModel 
+export class DiffReferenceModel extends DeferredReferenceModel
 {
-    static listSchema = DocumentReferenceModel;
-
-    add(document)
+    static defineSchema() 
     {
-        return this._add({uuid : document.uuid, id : document.id, name : document.name});
+        let schema = super.defineSchema();
+        schema.diff = new foundry.data.fields.ObjectField();
+        return schema;
     }
 
-    _add(value)
+    get document() 
     {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat(value)};
+        this._document = null;
+        let document = super.document;
+        if (document instanceof Promise)
+        {
+            return new Promise(resolve => 
+            {
+                document.then(doc => 
+                {
+                    let diffed = new doc.constructor(foundry.utils.mergeObject(doc.toObject(), this.diff));
+                    diffed.originalDocument = doc;
+                    resolve(diffed);
+                });
+            });
+        }
+        else if (document)
+        {
+            // return document.clone({[`flags.diff`] : foundry.utils.deepClone(this.diff)});
+            let diffed = new document.constructor(foundry.utils.mergeObject(document.toObject(), this.diff));
+            diffed.originalDocument = document;
+            return diffed;
+        }
+        else 
+        {
+            return null;
+        }
     }
 
-    removeId(uuid)
+    async awaitDocument()
     {
-        return super.remove(this.list.findIndex(i => i.uuid == uuid));
-    }
-
-    get documents() 
-    {
-        return this.list.map(i => i.document).filter(i => i);
-    }
-
-    async awaitDocuments()
-    {
-        return await Promise.all(this.list.map(i => i.awaitDocument()));
-    }
-}
-
-export class DeferredReferenceListModel extends ListModel 
-{
-    static listSchema = DeferredReferenceModel;
-
-    add(document)
-    {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, id : document.id, name : document.name})};
-    }
-
-    get documents() 
-    {
-        return this.list.map(i => i.document).filter(i => i);
-    }
-
-    async awaitDocuments()
-    {
-        return await Promise.all(this.list.map(i => i.awaitDocument()));
+        this._document = await this.document;
+        return this._document;
     }
 }

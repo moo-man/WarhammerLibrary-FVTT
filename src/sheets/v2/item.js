@@ -1,3 +1,5 @@
+import ChoiceConfigV2 from "../../apps/choice-config";
+import ChoiceDecision from "../../apps/choice-decision";
 import AreaTemplate from "../../util/area-template";
 import ZoneHelpers from "../../util/zone-helpers";
 import WarhammerSheetMixinV2 from "./mixin";
@@ -11,8 +13,9 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
     static DEFAULT_OPTIONS = {
         classes: ["item"],
         actions: {
-
-        },
+            configureChoice : this._onConfigureChoice,
+            showDecision : this._onShowDecision
+        }
     };
 
     static TABS = {
@@ -41,6 +44,16 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
         context.effects = effects;
     }
     
+
+    static _onConfigureChoice(ev, target)
+    {
+        new ChoiceConfigV2(this.item, {path : target.dataset.path}).render(true);
+    }
+
+    static _onShowDecision(ev, target)
+    {
+        new ChoiceDecision(foundry.utils.getProperty(this.item.system, target.dataset.path)).render(true);
+    }
 
     //#region Effects
 

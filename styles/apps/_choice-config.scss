@@ -1,0 +1,60 @@
+.warhammer.application.choice-config {
+    .window-content > div {
+        height: 100%;
+    }
+
+    .tab {
+        margin: 10px 0px;
+        height: calc(100% - 40px);
+    }
+
+    .sheet-list {
+        height: 100%;
+
+        .list-content {
+            overflow-y: auto;
+        }
+        .row-content .list-controls {
+            justify-content: right;
+        }
+    }
+
+    .choice {
+        padding: 5px;
+        border: 1px solid var(--color-cool-3);
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.05);
+        width:unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 5px 0px;
+    }
+
+    .connector {
+        margin: 0px 5px;
+        cursor: pointer;
+    }
+}
+
+.warhammer.choice-option {
+    .filters {
+        button {
+            width: 5rem;
+        }
+    }
+}
+
+.warhammer.diff-editor {
+
+    .window-content > div {
+        height: calc(100% - 110px);
+    }
+
+    .editor {
+        height: 100%;
+        overflow: hidden
+    }
+    textarea { height: 100%; resize: none;}
+}

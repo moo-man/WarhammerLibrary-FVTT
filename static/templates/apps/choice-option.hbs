@@ -1,0 +1,38 @@
+<div>
+    <div>
+        <div class="form-group">
+            <label>{{localize "Name"}}</label>
+            <div class="form-fields">
+                <input type="text" name="name" value="{{option.name}}">
+            </div>
+        </div>
+        {{#if (eq option.type "filter")}}
+            <section class="list filters">
+                    <button class="list-create" data-action="addFilter"></a><i class="fa-solid fa-plus"></i> {{localize "WH.Choice.Filter"}}</button>
+                        
+                    {{#each option.filters}}
+                        <hr>
+                            <div class="form-group" data-index="{{@key}}">
+                                <label>{{localize "WH.Choice.FilterPath"}}</label>
+                                <div class="form-fields">
+                                    <input type="text" data-property="path" value="{{this.path}}">
+                                </div>
+                            </div>
+                            <div class="form-group" data-index="{{@key}}">
+                                <label>{{localize "WH.Choice.FilterOperation"}}</label>
+                                <div class="form-fields">
+                                    <input type="text" data-property="operation" value="{{this.operation}}" placeholder=">=, <=, >, <, =, includes">
+                                </div>
+                            </div>
+                            <div class="form-group" data-index="{{@key}}">
+                                <label>{{localize "WH.Choice.FilterValue"}}</label>
+                                <div class="form-fields">
+                                    <input type="text" data-property="value" value="{{this.value}}">
+                                </div>
+                            </div>
+                    {{/each}}
+            </section>
+        {{/if}}
+    </div>
+    <button type="submit">{{localize "Submit"}}</button>
+</div>
