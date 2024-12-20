@@ -170,6 +170,19 @@ export function findItemId(id, type)
     }
 }
 
+// Given a ID, find the compendium UUID
+export function findUuid(id) 
+{
+    let packs = game.packs.contents;
+    for (let pack of packs) 
+    {
+        if (pack.index.has(id)) 
+        {
+            return pack.index.get(id).uuid;
+        }
+    }
+}
+
 /**
  * Find the owner of a document, prioritizing non-GM users 
  * @param {object} document Document whose owner is being found
