@@ -1,0 +1,8 @@
+<div>
+    <div class="editor">
+        <textarea {{#unless (isGM)}}disabled{{/unless}} name="script" spellcheck="false">{{script}}</textarea>
+    </div>
+    {{#if (isGM)}}
+    <button type="submit">{{localize "Submit"}}</button>
+    {{/if}}
+</div>

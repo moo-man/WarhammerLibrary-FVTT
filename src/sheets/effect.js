@@ -1,5 +1,5 @@
-import WarhammerEffectScriptConfig from "../apps/effect-script-config";
-import WarhammerScriptConfig from "../apps/script-config";
+import WarhammerEffectScriptEditor from "../apps/effect-script-editor";
+import WarhammerScriptEditor from "../apps/script-editor";
 import { localize, systemConfig } from "../util/utility";
 import WarhammerSheetMixin from "./mixin";
 
@@ -118,12 +118,12 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         html.on("click", ".script-edit", ev => 
         {
             let index = this._getDataAttribute(ev, "index");
-            new WarhammerEffectScriptConfig(this.object, {index : Number(index)}).render(true);
+            new WarhammerEffectScriptEditor(this.object, {index : Number(index)}).render(true);
         });
 
         html.on("click", ".script-config", ev => 
         {
-            new WarhammerScriptConfig(this.object, {path : this._getDataAttribute(ev, "path")}).render(true);
+            new WarhammerScriptEditor(this.object, {path : this._getDataAttribute(ev, "path")}).render(true);
         });
 
         html.on("change", ".wh-effect-config input,.wh-effect-config select", () => 

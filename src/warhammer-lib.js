@@ -40,6 +40,7 @@ import ChoiceConfigV2 from "./apps/choice-config";
 import { ChoiceModel } from "./model/components/choices";
 import ChoiceDecision from "./apps/choice-decision";
 import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./model/components/reference";
+import WarhammerScriptEditor from "./apps/script-editor";
 hooks();
 overrides();
 
@@ -75,6 +76,7 @@ warhammer.apps = {
     ItemDialog,
     ValueDialog,
     WarhammerScriptConfig,
+    WarhammerScriptEditor,
     WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,
