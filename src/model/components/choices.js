@@ -1,5 +1,6 @@
 import ChoiceDecision from "../../apps/choice-decision";
 import ItemDialog from "../../apps/item-dialog";
+import { systemConfig } from "../../util/utility";
 
 /**
  * A ChoiceModel allows for choices between any arbitrary amount of documents to any amount of depth
