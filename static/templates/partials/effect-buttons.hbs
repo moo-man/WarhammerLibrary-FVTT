@@ -1,6 +1,6 @@
 {{#if targetEffects.length}}
     <div class="test-buttons">
-        {{#each testEffects as |effect e|}}
+        {{#each targetEffects as |effect e|}}
             <button class="apply-target" data-uuid="{{effect.uuid}}" type="button"><i class="fa-solid fa-crosshairs"></i><img src="{{effect.img}}" width="25" height="25"> {{localize 'WH.ApplyEffect' name=effect.name}}</button>
         {{/each}}
     </div>
