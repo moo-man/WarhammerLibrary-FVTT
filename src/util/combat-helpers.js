@@ -78,7 +78,7 @@ export class CombatHelpers
             {
                 if (!tracker.endTurn[previousCombatant.id]  || tracker.endTurn[previousCombatant.id] < combat.round)
                 {
-                    await Promise.all(previousCombatant.actor.runScripts("endTurn", {combat}, true));
+                    await Promise.all(previousCombatant.actor?.runScripts("endTurn", {combat}, true) || []);
                     Hooks.callAll(game.system.id + ":endTurn", combat);
                     this.endTurn.forEach(fn => fn(combat, update, options, user));
                     tracker.endTurn[previousCombatant.id] = combat.round;
@@ -88,7 +88,7 @@ export class CombatHelpers
             {
                 if (!tracker.startTurn[combat.combatant.id] || tracker.startTurn[combat.combatant.id] < combat.round)
                 {
-                    await Promise.all(combat.combatant.actor.runScripts("startTurn", {combat}, true));
+                    await Promise.all(combat.combatant.actor?.runScripts("startTurn", {combat}, true) || []);
                     Hooks.callAll(game.system.id + ":startTurn", combat);
                     this.startTurn.forEach(fn => fn(combat, update, options, user));
                     tracker.startTurn[combat.combatant.id] = combat.round;
@@ -101,7 +101,7 @@ export class CombatHelpers
                 {
                     for(let combatant of combat.combatants)
                     {
-                        await Promise.all(combatant.actor.runScripts("endRound", {combat}, true));
+                        await Promise.all(combatant.actor?.runScripts("endRound", {combat}, true) || []);
                     }
                     this.endRound.forEach(fn => fn(combat, update, options, user));
                     tracker.endRound = combat.round;
@@ -111,7 +111,7 @@ export class CombatHelpers
                 {
                     for(let combatant of combat.combatants)
                     {
-                        await Promise.all(combatant.actor.runScripts("startRound", {combat}, true));
+                        await Promise.all(combatant.actor?.runScripts("startRound", {combat}, true) || []);
                     }
                     this.startRound.forEach(fn => fn(combat, update, options, user));
                     tracker.startRound = combat.round;

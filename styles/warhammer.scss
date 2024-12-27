@@ -3,6 +3,7 @@
 @use "./apps/roll-dialog";
 @use "./apps/choice-config";
 @use "./apps/choice-decision";
+@use "./apps/editor";
 @use "./sheets/sheets";
 @use "./sheets/list";
 
@@ -64,10 +65,30 @@
     }
   }
 
-  &.active-effect-sheet .key select {
-    width: 100%;
-  }
+    &.active-effect-sheet {
+        .key select {
+            width: 100%;
+        }
 
+        .script {
+            border: 1px solid black;
+            margin: 5px 0px;
+            padding: 5px;
+            display:flex;
+            > * {
+                flex: 1;
+            }
+            .script-delete,
+            .script-edit{
+                flex: 0 0 20px;
+            }         
+        }
+
+        .add-script {
+            width: 200px;
+            margin: 10px 30%;
+        }
+    }
 
   &#context-menu {
     z-index: 9999;

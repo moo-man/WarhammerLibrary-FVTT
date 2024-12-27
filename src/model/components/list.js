@@ -41,7 +41,7 @@ export class ListModel extends foundry.abstract.DataModel
                 foundry.utils.mergeObject(list[index], value, {overwrite : true});
             }
         }
-        else if (typeof value == "string" || typeof value == "number")
+        else if (["string", "number", "boolean"].includes(typeof value))
         {
             if (path)
             {
@@ -59,6 +59,18 @@ export class ListModel extends foundry.abstract.DataModel
     {
         index = Number(index);
         return {[this.schema.fields.list.fieldPath] : this.list.filter((value, i) => i != index)};
+    }
+
+    removeId(id)
+    {
+        if (id.includes("."))
+        {
+            return this.remove(this.list.findIndex(i => i.uuid == id));
+        }
+        else 
+        {
+            return this.remove(this.list.findIndex(i => i.id == id));
+        }
     }
 
     get(index)
@@ -85,11 +97,6 @@ export class DocumentReferenceListModel extends ListModel
     _add(value)
     {
         return {[this.schema.fields.list.fieldPath] : this.list.concat(value)};
-    }
-
-    removeId(uuid)
-    {
-        return super.remove(this.list.findIndex(i => i.uuid == uuid));
     }
 
     get documents() 

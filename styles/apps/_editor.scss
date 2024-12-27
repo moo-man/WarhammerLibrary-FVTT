@@ -1,0 +1,43 @@
+.warhammer.script-editor
+{
+    .window-content > div {
+        height: 100%;
+    }
+
+    &.effect-script .window-content > div{
+        overflow-y: auto;
+    }
+
+    .editor {
+        height: calc(100% - 3rem);
+        overflow: hidden
+    }
+
+    textarea { height: 100%; resize: none;}
+
+    .script-fields {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 8.5rem);
+        > .script {
+            flex: 1;
+            textarea {
+                height: calc(100% - 2rem);
+            }
+        }
+    }
+
+}
+
+.warhammer.diff-editor {
+
+    .window-content > div {
+        height: calc(100% - 110px);
+    }
+
+    .editor {
+        height: 100%;
+        overflow: hidden
+    }
+    textarea { height: 100%; resize: none;}
+}

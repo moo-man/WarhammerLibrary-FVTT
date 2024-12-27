@@ -48,6 +48,20 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
         await this.system._onDelete(options, user);
     }
 
+    // Helper method to easily check and decrement some property
+    async spend(path, value=1)
+    {
+        let current = foundry.utils.getProperty(this, path);
+        if (current >= value)
+        {
+            return this.update({[path] : current - value});
+        }
+        else 
+        {
+            return false;
+        }
+    }
+
     // Assigns a property to all datamodels and their embedded models
     _propagateDataModels(model, name, value, modelSelector)
     {

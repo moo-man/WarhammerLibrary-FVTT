@@ -27,7 +27,7 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { error, findAllItems, findItemId, findKey, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
+import { error, findAllItems, findItemId, findKey, findUuid, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
@@ -40,6 +40,7 @@ import ChoiceConfigV2 from "./apps/choice-config";
 import { ChoiceModel } from "./model/components/choices";
 import ChoiceDecision from "./apps/choice-decision";
 import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./model/components/reference";
+import WarhammerScriptEditor from "./apps/script-editor";
 hooks();
 overrides();
 
@@ -63,6 +64,7 @@ warhammer.utility = {
     getActiveDocumentOwner,
     findAllItems,
     findItemId,
+    findUuid,
     replacePopoutTokens,
     replacePopoutPath,
     addSheetHelpers,
@@ -74,6 +76,7 @@ warhammer.apps = {
     ItemDialog,
     ValueDialog,
     WarhammerScriptConfig,
+    WarhammerScriptEditor,
     WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,

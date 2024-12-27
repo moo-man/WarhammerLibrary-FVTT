@@ -6,6 +6,7 @@
         "Initialize": "Initialize",
         "ScriptConfig": "Script Config",
         "DiffEditor": "Diff Editor",
+        "ScriptEditor": "Script Editor",
         "AddScript": "Add Script",
         "EffectFiltered": "Effect Filtered",
         "EffectPrevented": "Effect Prevented",

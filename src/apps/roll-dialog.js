@@ -36,6 +36,11 @@ export default class WarhammerRollDialog extends Application
         return this.data.targets;
     }
 
+    get target() 
+    {
+        return this.targets[0]?.actor;
+    }
+
     /**
      * Creates a roll dialog instancte
      * @param {object} data Internal data the dialog should have
@@ -295,6 +300,7 @@ export default class WarhammerRollDialog extends Application
         mergeObject(this.fields, this.initialFields);
         this.tooltips.finish(this, this.options.initialTooltip || localize("WH.Dialog.Initial"));
 
+        await this.computeInitialFields();
         this.tooltips.start(this);
         for(let key in this.userEntry)
         {
@@ -308,9 +314,6 @@ export default class WarhammerRollDialog extends Application
             }
         }
         this.tooltips.finish(this, localize("WH.Dialog.UserEntry"));
-
-        await this.computeInitialFields();
-
 
         this._hideScripts();
         this._activateScripts();
