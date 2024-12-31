@@ -173,12 +173,12 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get specifier() 
     {
-        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")")).trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
     }
 
     get baseName() 
     {
-        return this.name.split("(")[0].trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim();
     }
 
     // If item.getScripts is called, filter scripts specifying "Item" document type

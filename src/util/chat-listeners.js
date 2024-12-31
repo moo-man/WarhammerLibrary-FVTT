@@ -9,8 +9,8 @@ export default class WarhammerChatListeners
     {
 
         let applyData = {};
-        let uuid = ev.target.dataset.uuid;
-        let effectPath = ev.target.dataset.path;
+        let uuid = ev.currentTarget.dataset.uuid;
+        let effectPath = ev.currentTarget.dataset.path;
         let messageId = $(ev.currentTarget).parents('.message').attr("data-message-id");
         let message = game.messages.get(messageId);
         let test = message.system.test;
@@ -29,8 +29,8 @@ export default class WarhammerChatListeners
         }
         else if (uuid)
         {
-            applyData = {effectUuids : uuid};
             effect = await fromUuid(uuid);
+            applyData = {effectData : [effect.convertToApplied()]};
         }
         else 
         {
@@ -47,7 +47,7 @@ export default class WarhammerChatListeners
             targets = (game.user.targets.size ? Array.from(game.user.targets) : test.targetTokens).map(t => t.actor);
         }
 
-        if (!(await effect.runPreApplyScript({test, targets})))
+        if (!(await effect.runPreApplyScript({test, targets, effectData : applyData.effectData[0]})))
         {
             return;
         }
