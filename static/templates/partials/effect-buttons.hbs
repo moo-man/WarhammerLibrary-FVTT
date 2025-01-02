@@ -1,7 +1,11 @@
 {{#if targetEffects.length}}
     <div class="test-buttons">
         {{#each targetEffects as |effect e|}}
-            <button class="apply-target" data-uuid="{{effect.uuid}}" type="button"><i class="fa-solid fa-crosshairs"></i><img src="{{effect.img}}" width="25" height="25"> <p>{{localize 'WH.ApplyEffect' name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
+        {{#if effect.system.transferData.selfOnly}}
+            <button class="apply-target" data-uuid="{{effect.uuid}}" type="button"><i data-tooltip="WH.ApplyTooltips.Self" data-tooltip-direction="LEFT" class="fa-solid fa-person-rays"></i><img src="{{effect.img}}" width="25" height="25"> <p>{{localize 'WH.ApplyEffect' name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
+        {{else}}
+            <button class="apply-target" data-uuid="{{effect.uuid}}" type="button"><i data-tooltip="WH.ApplyTooltips.Target" data-tooltip-direction="LEFT" class="fa-solid fa-crosshairs"></i><img src="{{effect.img}}" width="25" height="25"> <p>{{localize 'WH.ApplyEffect' name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
+        {{/if}}
         {{/each}}
     </div>
 {{/if}}
@@ -9,7 +13,7 @@
 {{#if areaEffects.length}}
     <div class="test-buttons">
         {{#each areaEffects as |effect e|}}
-            <button class="place-area" data-uuid={{effect.uuid}} type="button"><i class="fa-solid fa-ruler-combined"></i><img src="{{effect.img}}" width="25" height="25"> {{localize "WH.PlaceEffect" name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
+            <button class="place-area" data-uuid={{effect.uuid}} type="button"><i data-tooltip="WH.ApplyTooltips.Area" data-tooltip-direction="LEFT" class="fa-solid fa-ruler-combined"></i><img src="{{effect.img}}" width="25" height="25"> {{localize "WH.PlaceEffect" name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
         {{/each}}
     </div>
 {{/if}}
@@ -17,7 +21,7 @@
 {{#if zoneEffects.length}}
     <div class="test-buttons">
         {{#each zoneEffects as |effect e|}}
-            <button class="place-zone" data-uuid={{effect.uuid}} type="button"><i class="fa-solid fa-game-board-simple"></i><img src="{{effect.img}}" width="25" height="25"> {{localize "WH.PlaceEffect" name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
+            <button class="place-zone" data-uuid={{effect.uuid}} type="button"><i data-tooltip="WH.ApplyTooltips.Zone" data-tooltip-direction="LEFT" class="fa-solid fa-game-board-simple"></i><img src="{{effect.img}}" width="25" height="25"> {{localize "WH.PlaceEffect" name=effect.name}}{{#if effect.testDisplay}}<br><span class="test-label">{{effect.testDisplay}}</span>{{/if}}</p></button>
         {{/each}}
     </div>
 {{/if}}

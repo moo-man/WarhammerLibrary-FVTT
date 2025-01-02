@@ -29,6 +29,8 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         // Replace transfer field with Effect Application data (used to derive transfer value)
         this.element.find("[name='transfer']").parents(".form-group").replaceWith(transferDataHTML);
 
+        this.element.find("[name='statuses']").parents(".form-group").remove();
+
         // // Replace attribute key field with a select field
         let effectsTab = this.element.find("section[data-tab='effects']");
 

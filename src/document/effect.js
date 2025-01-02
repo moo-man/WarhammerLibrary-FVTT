@@ -481,7 +481,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get baseName() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;;
     }
 
     get isCondition() 
