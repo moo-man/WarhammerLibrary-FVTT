@@ -476,17 +476,22 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get specifier() 
     {
-        return this.name.substring(this.name.indexOf("(") + 1, this.name.indexOf(")")).trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
     }
 
     get baseName() 
     {
-        return this.name.split("(")[0].trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;;
     }
 
     get isCondition() 
     {
         return !!systemConfig().conditions[this.key];
+    }
+
+    get testDisplay() 
+    {
+        return "";
     }
 
     get manualScripts()

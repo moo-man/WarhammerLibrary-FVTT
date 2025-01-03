@@ -27,7 +27,7 @@ export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(Ap
     };
 
     static PARTS = {
-        choices : {template : "modules/warhammer-lib/templates/scripts/script-config-v2.hbs"}
+        choices : {template : "modules/warhammer-lib/templates/scripts/script-editor.hbs"}
     };
 
     constructor(document, options)

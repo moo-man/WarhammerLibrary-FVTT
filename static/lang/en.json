@@ -160,6 +160,12 @@
             "Zone" : "Zone",
             "Other" : "Other"
         },
+        "ApplyTooltips" : {
+            "Self" : "Applies the Effect to the source Actor",
+            "Target" : "Applies the Effect to the targets of the action or the tokens currently targeted.",
+            "Area" : "Place an Area Template for the Effect, applying to tokens within.",
+            "Zone" : "Select a Zone to apply this Effect to, applying to tokens within."
+        },
         "Dialog.Modifiers": "Dialog Modifiers",
         "Dialog.UserEntry": "User Entry",
         "Dialog.Initial": "Initial",
