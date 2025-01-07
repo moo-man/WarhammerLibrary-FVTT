@@ -273,6 +273,27 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             };
         }
     }
+
+    async addEffectItems(uuids=[], effect, merge=[{}])
+    {
+        if (typeof uuids == "string")
+        {
+            uuids = [uuids];
+        }
+        if ((merge instanceof Array))
+        {
+            merge = [merge];
+        }
+
+        let items = (await Promise.all(uuids.map(fromUuid))).map(i => i.toObject());
+
+        for(let i = 0; i < uuids.length; i++)
+        {
+            items[i] = foundry.utils.mergeObject(items[i], merge[i]);
+        }
+
+        return this.createEmbeddedDocuments("Item", items, {fromEffect : effect?.id});
+    }
   
     get auraEffects() 
     {

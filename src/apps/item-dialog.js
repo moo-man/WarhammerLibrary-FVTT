@@ -130,13 +130,19 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
                 items = items.filter(i => 
                 {
                     let property = foundry.utils.getProperty(i, f.path);
+                    let value = f.value;
+                    if ((systemConfig().filterValues || {})[f.path])
+                    {
+                        property = systemConfig().filterValues[f.path][property];
+                        value = systemConfig().filterValues[f.path][value];
+                    }
                     if (f.operation == "includes")
                     {
-                        return property.includes(f.value);
+                        return property.includes(value);
                     }
                     else 
                     {
-                        return Roll.safeEval(`"${property}"${op}"${f.value}"`);
+                        return Roll.safeEval(`"${property}"${op}"${value}"`);
                     }
                 });
             }

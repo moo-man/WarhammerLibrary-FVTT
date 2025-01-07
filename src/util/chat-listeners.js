@@ -64,13 +64,14 @@ export default class WarhammerChatListeners
     
     static async onPlaceAreaEffect(ev) 
     {
+        let messageId = $(ev.currentTarget).parents('.message').attr("data-message-id");
         let effectUuid = ev.currentTarget.dataset.uuid;
         let effect = await fromUuid(effectUuid);
         if (!(await effect.runPreApplyScript()))
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect(effectUuid);
+        let template = await AreaTemplate.fromEffect(effectUuid, messageId);
         await template.drawPreview(ev);
     }
     

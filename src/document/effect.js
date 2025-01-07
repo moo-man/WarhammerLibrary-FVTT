@@ -10,7 +10,8 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     // Config object used by systems to hide properties that aren't relevant
     static CONFIGURATION = {
         zones : false,
-        exclude : {}
+        exclude : {},
+        bracket : ["(", ")"]
     };
 
     async _preCreate(data, options, user)
@@ -479,9 +480,33 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
     }
 
+    setSpecifier(specifier)
+    {
+        if (this.specifier)
+        {
+            return this.name.replace(this.specifier, specifier);
+        }
+        else 
+        {
+            return `${this.name} ${this.constructor.CONFIGURATION.bracket[0]}${specifier}${this.constructor.CONFIGURATION.bracket[1]}`;
+        }
+    }
+
     get baseName() 
     {
         return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;;
+    }
+
+    setBase(base)
+    {
+        if (this.specifier)
+        {
+            return `${base} (${this.specifier})`;
+        }
+        else 
+        {
+            return base;
+        }   
     }
 
     get isCondition() 

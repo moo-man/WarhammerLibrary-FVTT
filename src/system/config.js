@@ -66,5 +66,11 @@ export default {
     transferDocumentTypes : {
         "Actor" : "Actor",
         "Item" : "Item"
+    },
+
+    
+    filterValues : {
+
     }
+
 };
