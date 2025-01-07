@@ -175,7 +175,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get specifier() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
     }
 
     setSpecifier(specifier)
@@ -192,7 +192,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get baseName() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;
     }
 
     setBase(base)

@@ -477,7 +477,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get specifier() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
     }
 
     setSpecifier(specifier)
@@ -494,7 +494,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get baseName() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;;
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;
     }
 
     setBase(base)
