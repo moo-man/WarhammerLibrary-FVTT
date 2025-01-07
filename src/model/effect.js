@@ -49,7 +49,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
     
                 aura : new fields.SchemaField({
                     transferred : new fields.BooleanField({initial : false}),
-                    render: new fields.BooleanField({ initial: true }), // Whether or not to render the measured template
+                    render: new fields.BooleanField({ initial: false }), // Whether or not to render the measured template
                 }),
     
                 // Placed Template

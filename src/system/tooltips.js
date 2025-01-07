@@ -25,6 +25,7 @@ export class BaseDialogTooltips
             type : field.type,
             label : game.i18n.localize(field.label),
             path : field.path,
+            noCollect : field.noCollect,
             temp1 : null,
             temp2 : null,
             diff : null,
@@ -136,7 +137,7 @@ export class BaseDialogTooltips
     _formatTooltip(type, hideLabel=false)
     {
         let field = this[`_${type}`];
-        if (!field || field.list?.length == 0)
+        if (!field || field.list?.length == 0 || field.noCollect)
         {
             return "";
         }

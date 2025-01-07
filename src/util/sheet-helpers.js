@@ -36,9 +36,9 @@ class SheetHelpers
         return this._getDataAttribute(ev, "uuid");
     };
 
-    static _getList = function (ev) 
+    static _getList = function (ev, sheetDocument=false) 
     {
-        return foundry.utils.getProperty(this._getDocument(ev) || this.document, this._getPath(ev));
+        return foundry.utils.getProperty((sheetDocument ? this.document : (this._getDocument(ev) || this.document)), this._getPath(ev));
     };
 
 

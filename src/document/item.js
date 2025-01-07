@@ -3,6 +3,8 @@ import { WarhammerDocumentMixin } from "./mixin";
 
 export class WarhammerItem extends WarhammerDocumentMixin(Item)
 {
+    static bracket = ["(", ")"];
+
     async _preCreate(data, options, user) 
     {
         await super._preCreate(data, options, user);
@@ -173,12 +175,36 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get specifier() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
+    }
+
+    setSpecifier(specifier)
+    {
+        if (this.specifier)
+        {
+            return this.name.replace(this.specifier, specifier);
+        }
+        else 
+        {
+            return `${this.name} ${this.constructor.bracket[0]}${specifier}${this.constructor.bracket[1]}`;
+        }
     }
 
     get baseName() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.+?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.base.trim() || this.name;
+    }
+
+    setBase(base)
+    {
+        if (this.specifier)
+        {
+            return `${base} (${this.specifier})`;
+        }
+        else 
+        {
+            return base;
+        }   
     }
 
     // If item.getScripts is called, filter scripts specifying "Item" document type
