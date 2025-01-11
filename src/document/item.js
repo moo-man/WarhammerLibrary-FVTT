@@ -175,7 +175,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get specifier() 
     {
-        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
+        return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim() || "";
     }
 
     setSpecifier(specifier)

@@ -280,7 +280,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         {
             uuids = [uuids];
         }
-        if ((merge instanceof Array))
+        if (!(merge instanceof Array))
         {
             merge = [merge];
         }
