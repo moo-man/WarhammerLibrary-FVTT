@@ -25,6 +25,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             listCreate : this._onListCreate,
             listDelete : this._onListDelete,
             listForm : this._onListForm,
+            unset : this._unsetReference,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             togglePip : this._onTogglePip,
             clickEffectButton : this._onClickEffectButton,
@@ -436,6 +437,14 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             newValue = clicked + 1;
         }
         this.document.update({[path] : newValue});
+    }
+
+    async _unsetReference(ev)
+    {
+        let doc = await this._getDocumentAsync(ev) || this.document;
+        let path = this._getPath(ev);
+        let property = foundry.utils.getProperty(doc, path);
+        doc.update({[path] : property.unset()});
     }
 
     

@@ -138,7 +138,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
                     }
                     if (f.operation == "includes")
                     {
-                        return property.includes(value);
+                        return (property || "").includes(value);
                     }
                     else 
                     {
