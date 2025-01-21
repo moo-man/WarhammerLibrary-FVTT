@@ -41,6 +41,7 @@ import { ChoiceModel } from "./model/components/choices";
 import ChoiceDecision from "./apps/choice-decision";
 import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./model/components/reference";
 import WarhammerScriptEditor from "./apps/script-editor";
+import { WarhammerRollTable } from "./document/table";
 hooks();
 overrides();
 
@@ -121,6 +122,7 @@ warhammer.models = {
 warhammer.documents = {
     WarhammerActor,
     WarhammerItem,
+    WarhammerRollTable
 };
 
 globalThis.warhammer = warhammer;

@@ -3,6 +3,12 @@ export default function()
 
     Hooks.on("ready", async (app, html) => 
     {
+
+        if (game.mErr)
+        {
+            warhammer.utility.error("Failed to load compendium data", true);
+        }
+
         let currentLib = game.modules.get("warhammer-lib").version;
         let minimumLib = game.system.relationships.requires.find(i => i.id == "warhammer-lib").compatibility.minimum;
         if (foundry.utils.isNewerVersion(minimumLib, currentLib))
