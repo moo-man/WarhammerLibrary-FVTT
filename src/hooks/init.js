@@ -55,7 +55,7 @@ export default function ()
             }
             else 
             {
-                return foundry.utils.getProperty(obj, key.toString());
+                return foundry.utils.getProperty(obj, key?.toString());
             }
         });
     
