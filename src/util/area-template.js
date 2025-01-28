@@ -126,7 +126,8 @@ export default class AreaTemplate extends MeasuredTemplate
                     effectData: effectData,
                     aura : {
                         owner : token.actor?.uuid,
-                        transferred : effect.system.transferData.area.aura.transferred
+                        transferred : effect.system.transferData.area.aura.transferred,
+                        render: effect.system.transferData.area.aura.render
                     },
                     effectUuid : effectUuid,
                     instantaneous: false

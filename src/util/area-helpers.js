@@ -117,7 +117,7 @@ export default class AreaHelpers
 
     static async checkTokenAreaEffects(token, newCenter)
     {
-        if (!token.actor) return;
+        if (!token.actor) {return;}
 
         let scene = token.parent;
         let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
@@ -200,7 +200,8 @@ export default class AreaHelpers
     {   
         let document = template.document;
         let effect = document.areaEffect();
-        if (effect && !effect.system.transferData.area.aura.render)
+        let aura = document.getFlag(game.system.id, "aura");
+        if (effect && aura && aura.render == false)
         {
             template.visible = false;
             canvas.interface.grid.clearHighlightLayer(template.highlightId);
