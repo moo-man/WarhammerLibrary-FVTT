@@ -63,7 +63,7 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
         let item = await Item.implementation.fromDropData(data);
         if (item?.type == this.options.document.type)
         {
-            this.generatedDiff = {name : item.name, system : foundry.utils.diffObject(this.options.document.system.toObject(), item.system.toObject())};
+            this.generatedDiff = {name : item.name, flags : foundry.utils.diffObject(this.options.document.flags, item.flags), system : foundry.utils.diffObject(this.options.document.system.toObject(), item.system.toObject())};
             this.render(true);
         }
         else if (item.type)
