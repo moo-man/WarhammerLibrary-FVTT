@@ -9,10 +9,9 @@ export default class AreaHelpers
     static semaphore = new foundry.utils.Semaphore();
     /**
      * Determines if a coordinate is within a Template's strokes
-     * @param {object} {x, y} object being tested
-     * @param point
+     * @param {object} point object being tested
      * @param {Template} template Template object being tested
-     * @returns
+     * @returns {boolean} true if the point is within the template, false otherwise
      */
     static isInTemplate(point, template)
     {
@@ -28,6 +27,7 @@ export default class AreaHelpers
         {
             return this._isInEllipse(point, template.object);
         }
+        return false;
     }
 
     static setTokenAreas(token, update, options, user)
@@ -110,7 +110,10 @@ export default class AreaHelpers
         let promises = [];
         for(let token of tokens) 
         {
-            if (!token.actor) continue;
+            if (!token.actor) 
+            {
+                continue;
+            }
             let scene = token.parent;
             let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
             let effects = Array.from(token.actor?.effects);
@@ -142,7 +145,8 @@ export default class AreaHelpers
             }
             if (toAdd.length)
             {
-                if (token.actor){
+                if (token.actor)
+                {
                     promises.push(token.actor.applyEffect({effects : toAdd}));
                 }
             }
@@ -153,8 +157,8 @@ export default class AreaHelpers
 
     /**
      * Get all Tokens inside template
-     * @param template
-     * @returns
+     * @param {Template} template to check
+     * @returns {Array} tokens in template
      */
     static tokensInTemplate(template)
     {
@@ -199,7 +203,8 @@ export default class AreaHelpers
     {   
         let document = template.document;
         let effect = document.areaEffect();
-        if (effect && !effect.system.transferData.area.aura.render)
+        let aura = document.getFlag(game.system.id, "aura");
+        if (effect && aura && aura.render == false)
         {
             template.visible = false;
             canvas.interface.grid.clearHighlightLayer(template.highlightId);

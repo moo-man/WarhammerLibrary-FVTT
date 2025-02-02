@@ -31,6 +31,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         //_preCreate for effects is where immediate scripts run
         // Effects that come with Items aren't called, so handle them here
         await this.handleImmediateScripts(data, options, user);
+
+        if (options.abortItemCreation)
+        {
+            return false;
+        }
     }
     
     async _onCreate(data, options, user)

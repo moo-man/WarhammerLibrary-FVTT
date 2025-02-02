@@ -136,20 +136,27 @@ export class ChoiceModel extends foundry.abstract.DataModel
     }
 
     // Find a choice in the structure
-    findParent(id, structure)
+    findParent(id, type, structure)
     {   
         structure = structure || this.structure;
     
         if (structure.options?.find(i => i.id == id))
         {
-            return structure;
+            if (!type || structure.type == type)
+            {
+                return structure;
+            }
+            else if (type)
+            {
+                return this.findParent(structure.id, type);
+            }
         }
     
         if (structure.options)
         {
             for (let option of structure.options)
             {
-                let found = this.findParent(id, option);
+                let found = this.findParent(id, type, option);
                 if (found)
                 {
                     return found;   

@@ -61,6 +61,10 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
 
     static async awaitSubmit(choices, options={})
     {
+        if (choices.options.length == 0)
+        {
+            return [];
+        }
         return new Promise(resolve => 
         {
             new this(choices, mergeObject(options, {resolve})).render(true);
@@ -89,7 +93,8 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
     {
         let id = ev.target.dataset.id;
         let option = this.tree.find(id);
-        let parent = this.tree.findParent(id);
+        let orParent = this.tree.findParent(id, "or");
+        let andParent = this.tree.findParent(id, "and");
         let current = option.chosen;
 
         let _unselectSiblingTree = (sibling) => 
@@ -109,10 +114,10 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         
         if (option.type == "option")
         {
-            if (parent.type == "or")
+            if (orParent)
             {
                 option.chosen = !current;
-                parent.options.filter(o => o.id != option.id).forEach(sibling => 
+                orParent.options.filter(o => !this.tree.find(option.id, o)).forEach(sibling => 
                 {
                     // Invalidate sibling options
                     sibling.invalid = option.chosen;
@@ -124,10 +129,10 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
                     }
                 });
             }
-            if (parent.type == "and")
+            if (andParent)
             {
                 // Select all sibling options
-                parent.options.forEach(sibling => 
+                andParent.options.forEach(sibling => 
                 {
                     if (sibling.type == "option")
                     {sibling.chosen = !current;};
