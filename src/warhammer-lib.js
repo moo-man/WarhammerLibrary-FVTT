@@ -30,7 +30,6 @@ import overrides from "./util/overrides";
 import { error, findAllItems, findItemId, findKey, findUuid, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
-import WarhammerContextMenu from "./apps/context-menu";
 import { SingletonItemModel } from "./model/components/singleton-item";
 import WarhammerItemSheetV2 from "./sheets/v2/item";
 import addSheetHelpers from "./util/sheet-helpers";
@@ -83,7 +82,6 @@ warhammer.apps = {
     WarhammerRollDialog,
     WarhammerActiveEffectConfig,
     WarhammerEffectScriptConfig,
-    WarhammerContextMenu,
     SocketHandlers,
     defaultWarhammerConfig,
     TokenHelpers,

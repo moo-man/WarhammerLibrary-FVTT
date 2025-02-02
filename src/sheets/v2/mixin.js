@@ -1,5 +1,3 @@
-import WarhammerContextMenu from "../../apps/context-menu";
-import { ListPropertyForm } from "../../apps/list-form";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 
@@ -169,6 +167,23 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this._addEventListeners();
     }
 
+    async _onFirstRender(context, options)
+    {
+        ContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {
+            jQuery: false,
+            fixed: true
+        });
+        ContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {
+            eventName : "click",
+            jQuery: false,
+            fixed: true
+        });
+        ContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions(), {
+            jQuery: false,
+            fixed: true
+        });
+    }
+
     _addEventListeners()
     {    
         this.element.querySelectorAll("input").forEach((editor) => 
@@ -178,19 +193,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 ev.target.select();
             });
         });
-    
-        if (!this._contextMenu)
-        {
-            this._contextMenu = this._setupContextMenus();
-        }
-        else 
-        {
-            this._contextMenu.forEach(menu => 
-            {
-                menu.element = this.element;
-                menu.bind();
-            });
-        }
     
         this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
         {
@@ -208,17 +210,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         });
     }
 
-    _setupContextMenus()
-    {
-        // return  
-        return [
-            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContetMenuOptions()), 
-            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContetMenuOptions(), {eventName : "click"}),
-            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContetMenuOptions())
-        ];
-    }
-
-    _getContetMenuOptions() 
+    _getContextMenuOptions() 
     {
 
     }
