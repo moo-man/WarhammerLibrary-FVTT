@@ -27,7 +27,7 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { error, findAllItems, findItemId, findKey, findUuid, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep } from "./util/utility";
+import { error, findAllItems, findItemId, findKey, findUuid, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep, targetedOrAssignedActors } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import WarhammerContextMenu from "./apps/context-menu";
@@ -42,6 +42,7 @@ import ChoiceDecision from "./apps/choice-decision";
 import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./model/components/reference";
 import WarhammerScriptEditor from "./apps/script-editor";
 import { WarhammerRollTable } from "./document/table";
+import ChatCommands from "./system/commands";
 hooks();
 overrides();
 
@@ -69,7 +70,8 @@ warhammer.utility = {
     replacePopoutTokens,
     replacePopoutPath,
     addSheetHelpers,
-    sleep
+    sleep,
+    targetedOrAssignedActors
 };
 
 warhammer.apps = {
@@ -97,7 +99,8 @@ warhammer.apps = {
     WarhammerItemSheetV2,
     WarhammerZoneConfig,
     ChoiceConfigV2,
-    ChoiceDecision
+    ChoiceDecision,
+    ChatCommands
 };
 
 warhammer.models = {

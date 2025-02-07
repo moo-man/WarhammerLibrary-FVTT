@@ -184,7 +184,10 @@
             "NotValidChoiceType" : "Not a valid choice",
             "LibraryOutaded" : "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}.",
             "ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
-            "CreateZoneEffect" : "Effects must be created via an Active Effect with the 'Zone' Transfer Type"
+            "CreateZoneEffect" : "Effects must be created via an Active Effect with the 'Zone' Transfer Type",
+            "NoTargetedActors" : "No targeted Actors!",
+            "NoActorAssigned" : "No assigned Actor, you can assign Actors via Player Configuration at the bottom left of the screen.",
+            "NoTargets" : "No targeted Actors!"
         }
     }
 }
