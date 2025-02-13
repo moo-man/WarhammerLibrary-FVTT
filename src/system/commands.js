@@ -22,7 +22,8 @@ export default class ChatCommands
                 pattern : new RegExp(`^${command.prefix || this.prefix}(?<command>${command})\\s?(?<args>.*)`),
                 callback : commands[command].callback,
                 args : commands[command].args,
-                description : commands[command].description
+                defaultArg : commands[command].defaultArg,
+                description : commands[command].description,
             };
         }
     }
@@ -51,16 +52,34 @@ export default class ChatCommands
     {
         let commandData = this.commands[command];
         let foundArgs = [];
+        let foundDefault;
+        if (commandData.defaultArg)
+        {
+            let first = text.split(" ")[0];
+            if (!first.includes("="))
+            {
+                foundDefault = first;
+            }
+        }
         for(let commandArg of commandData.args)
         {
-            let regex = new RegExp(`${commandArg}=(?<data>.+?)(?:\\s+[A-Za-z]+=|$)+`);
-            let found = regex.exec(text);
-            if (found)
+            if (commandArg == commandData.defaultArg && foundDefault)
             {
-                foundArgs.push(found.groups.data);
+                foundArgs.push(foundDefault);
             }
-            else {
-                foundArgs.push(null);
+            else 
+            {
+                
+                let regex = new RegExp(`${commandArg}=(?<data>.+?)(?:\\s+[A-Za-z]+=|$)+`);
+                let found = regex.exec(text);
+                if (found)
+                {
+                    foundArgs.push(found.groups.data);
+                }
+                else 
+                {
+                    foundArgs.push(null);
+                }
             }
         }
         return foundArgs;

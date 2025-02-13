@@ -151,11 +151,6 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
         return this.transferData.type == "area";
     }
 
-    get isCrewApplied() 
-    {
-        return this.transferData.type == "crew";
-    }
-
     get itemTargets() 
     {
         if (this.itemTargetData.allItems)
