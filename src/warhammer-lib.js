@@ -3,12 +3,10 @@ import "../styles/warhammer.scss";
 import WarhammerScript from "./system/script";
 import ItemDialog from "./apps/item-dialog";
 import ValueDialog from "./apps/value-dialog";
-import WarhammerScriptConfig from "./apps/script-config";
 import WarhammerActiveEffect from "./document/effect";
 import WarhammerBugReport from "./modules/bug-report";
 import WarhammerRollDialog from "./apps/roll-dialog";
 import WarhammerActiveEffectConfig from "./sheets/effect";
-import WarhammerEffectScriptConfig from "./apps/effect-script-config";
 import { WarhammerActiveEffectModel } from "./model/effect";
 import { WarhammerActor } from "./document/actor";
 import { WarhammerItem } from "./document/item";
@@ -78,13 +76,11 @@ warhammer.apps = {
     WarhammerScript,
     ItemDialog,
     ValueDialog,
-    WarhammerScriptConfig,
     WarhammerScriptEditor,
     WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,
     WarhammerActiveEffectConfig,
-    WarhammerEffectScriptConfig,
     WarhammerContextMenu,
     SocketHandlers,
     defaultWarhammerConfig,

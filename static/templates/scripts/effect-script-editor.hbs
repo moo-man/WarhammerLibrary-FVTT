@@ -18,10 +18,18 @@
     </div>
 
     {{#if (eq scriptData.trigger "dialog")}}
-        <div class="form-group">
+        {{#if (eq effect.system.transferData.documentType "Actor")}}
+        <div class="form-group" data-tooltip="WH.TargeterTT">
             <label>{{localize "WH.Targeter"}}</label>
             <div class="form-fields">
                 <input name="targeter" type="checkbox" {{checked scriptData.options.targeter}}>
+            </div>
+        </div>
+        {{/if}}
+        <div class="form-group" data-tooltip="WH.DefendingAgainstTT">
+            <label>{{localize "WH.DefendingAgainst"}}</label>
+            <div class="form-fields">
+                <input name="defending" type="checkbox" {{checked scriptData.options.defending}}>
             </div>
         </div>
     {{/if}}
