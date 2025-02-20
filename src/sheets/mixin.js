@@ -101,7 +101,7 @@ const WarhammerSheetMixin = (cls) => class extends cls
     async _onEffectCreate(ev) 
     {
         let type = ev.currentTarget.dataset.category;
-        let effectData = { name: localize("WH.NewEffect"), img: "icons/svg/aura.svg" };
+        let effectData = { name: localize("WH.NewEffect"), img: this.document.img };
         if (type == "temporary") 
         {
             effectData["duration.rounds"] = 1;

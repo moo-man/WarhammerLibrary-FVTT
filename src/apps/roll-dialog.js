@@ -385,9 +385,9 @@ export default class WarhammerRollDialog extends Application
         {
             return (a.Label == b.Label) &&
              (a.script == b.script) && 
-             (a.options?.dialog?.hideScript == b.options?.dialog?.hideScript) && 
-             (a.options?.dialog?.activateScript == b.options?.dialog?.activateScript) &&
-             (a.options?.dialog?.submissionScript == b.options?.dialog?.submissionScript);
+             (a.options?.hideScript == b.options?.hideScript) && 
+             (a.options?.activateScript == b.options?.activateScript) &&
+             (a.options?.submissionScript == b.options?.submissionScript);
         }
         return consolidated;
     }
