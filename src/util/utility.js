@@ -351,3 +351,56 @@ export async function findAllItems(type, loadingLabel = "", index=false)
         return indexedItems;
     }
 }
+
+/**
+ * Sort the provided object by its values or by an inner sortKey.
+ * @param {object} obj                 The object to sort.
+ * @param {string|Function} [sortKey]  An inner key upon which to sort or sorting function.
+ * @returns {object}                   A copy of the original object that has been sorted.
+ */
+export function sortObjectEntries(obj, sortKey) {
+    let sorted = Object.entries(obj);
+
+    const sort = (lhs, rhs) => foundry.utils.getType(lhs) === "string" ? lhs.localeCompare(rhs, game.i18n.lang) : lhs - rhs;
+
+    if ( foundry.utils.getType(sortKey) === "function" ) sorted = sorted.sort((lhs, rhs) => sortKey(lhs[1], rhs[1]));
+    else if ( sortKey ) sorted = sorted.sort((lhs, rhs) => sort(lhs[1][sortKey], rhs[1][sortKey]));
+    else sorted = sorted.sort((lhs, rhs) => sort(lhs[1], rhs[1]));
+
+    return Object.fromEntries(sorted);
+}
+
+/**
+ * Returns TYPES of documentClass sorted by their localized label.
+ *
+ * @param {Document} documentClass
+ *
+ * @return {string[]}
+ */
+export function getSortedTypes(documentClass) {
+    return documentClass.TYPES.sort((a, b) =>
+      game.i18n.localize(CONFIG.Item.typeLabels[a]).localeCompare(game.i18n.localize(CONFIG.Item.typeLabels[b]))
+    );
+}
+
+/**
+ * Get the package associated with the given UUID, if any.
+ * @param {string} uuid  The UUID.
+ * @returns {ClientPackage|null}
+ */
+export function getPackage(uuid) {
+    if (!uuid) return null;
+
+    const pack = foundry.utils.parseUuid(uuid)?.collection?.metadata;
+
+    switch (pack?.packageType) {
+        case "module":
+            return game.modules.get(pack.packageName);
+        case "system":
+            return game.system;
+        case "world":
+            return game.world;
+    }
+
+    return null;
+}

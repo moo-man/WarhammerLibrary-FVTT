@@ -1,4 +1,5 @@
 import { systemConfig } from "../util/utility";
+import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
 const {hasProperty, getProperty} = foundry.utils;
 
 /**
@@ -129,6 +130,24 @@ export default function ()
         Handlebars.registerHelper("settings", function (key) 
         {
             return game.settings.get(game.system.id, key);
+        });
+
+        // Compendium Browser source exclusion
+        game.settings.registerMenu(game.system.id, "packSourceConfiguration", {
+            name: "DND5E.CompendiumBrowser.Sources.Name",
+            label: "DND5E.CompendiumBrowser.Sources.Label",
+            hint: "DND5E.CompendiumBrowser.Sources.Hint",
+            icon: "fas fa-book-open-reader",
+            type: CompendiumBrowserSettingsConfig,
+            restricted: true
+        });
+
+        game.settings.register(game.system.id, "packSourceConfiguration", {
+            name: "Pack Source Configuration",
+            scope: "world",
+            config: false,
+            type: Object,
+            default: {}
         });
     });
 }
