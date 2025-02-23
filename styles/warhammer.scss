@@ -7,6 +7,8 @@
 @use "./sheets/sheets";
 @use "./sheets/list";
 @use "./apps/embed";
+@use "./apps/elements";
+@use "./apps/browser";
 
 .warhammer {
   --tab-color : var(--color-cool-3);
