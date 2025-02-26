@@ -212,13 +212,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         // return  
         return [
-            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContetMenuOptions()), 
-            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContetMenuOptions(), {eventName : "click"}),
-            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContetMenuOptions())
+            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions()), 
+            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click"}),
+            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions())
         ];
     }
 
-    _getContetMenuOptions() 
+    _getContextMenuOptions() 
     {
 
     }
