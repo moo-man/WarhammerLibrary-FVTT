@@ -94,6 +94,14 @@ export default class AreaTemplate extends MeasuredTemplate
             }
         };
 
+        const sourceTemplateData = effect.system.transferData?.area?.templateData;
+        if (sourceTemplateData) 
+        {
+            templateData.fillColor = sourceTemplateData.fillColor || templateData.fillColor;
+            templateData.borderColor = sourceTemplateData.borderColor;
+            templateData.texture = sourceTemplateData.texture;
+        }
+
         const cls = CONFIG.MeasuredTemplate.documentClass;
         const template = new cls(templateData, {target: true, parent: canvas.scene });
 
@@ -220,8 +228,15 @@ export default class AreaTemplate extends MeasuredTemplate
         let now = Date.now(); // Apply a 20ms throttle
         if ( now - this.#moveTime <= 20 ) {return;}
         const center = event.data.getLocalPosition(this.layer);
-        const snapped = canvas.grid.getSnappedPosition(center.x, center.y, 2);
-        this.document.updateSource({x: snapped.x, y: snapped.y});
+        if (!canvas.grid.isGridless)
+        {
+            const snapped = canvas.grid.getSnappedPosition(center.x, center.y, 2);
+            this.document.updateSource({x: snapped.x, y: snapped.y});
+        }
+        else 
+        {
+            this.document.updateSource({x: center.x, y: center.y});
+        }
         this.refresh();
         this.#moveTime = now;
         if (this.document.getFlag(game.system.id, "target"))
