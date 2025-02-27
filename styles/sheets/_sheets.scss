@@ -105,8 +105,9 @@
         height: 1rem;
         display: flex;
         button {
-            flex : 0 0 content;
-            font-size: var(--font-size-12);
+            font-size: var(--font-size-10);
+            padding: 0px 0.5rem;
+            height: 1rem;
         } 
     }
 

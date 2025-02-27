@@ -162,6 +162,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _onRender(_context, _options) 
     {
+        super._onRender(_context, _options);
         this.#dragDrop.forEach((d) => d.bind(this.element));
 
         this._addEventListeners();
@@ -169,19 +170,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     async _onFirstRender(context, options)
     {
-        ContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {
-            jQuery: false,
-            fixed: true
-        });
-        ContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {
-            eventName : "click",
-            jQuery: false,
-            fixed: true
-        });
-        ContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions(), {
-            jQuery: false,
-            fixed: true
-        });
+        await super._onFirstRender(context, options);
+        ContextMenu.create(this, this.element, ".list-row:not(.nocontext)", {hookName : "ContextMenu", jQuery: false, fixed: true});
+        ContextMenu.create(this, this.element, ".context-menu", {hookName : "ContextMenu", jQuery: false, fixed: true});
+        ContextMenu.create(this, this.element, ".context-menu-alt", {hookName : "ContextMenu", jQuery: false, fixed: true});
     }
 
     _addEventListeners()

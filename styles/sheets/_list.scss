@@ -10,10 +10,12 @@
     --list-row-alternate : #3028318f; // cool-3 at half transparency
     
     .sheet-list {
+        &:not(:first-child)
+        {
+            margin-top: 0.5rem;
+        }
         display: flex;
         flex-direction: column;
-        margin-top: 3px;
-
         .list-row {
             display: flex;
             flex-direction: column;

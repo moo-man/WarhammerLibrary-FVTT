@@ -50,6 +50,7 @@
         border-top: 1px solid var(--tab-color);
         border-bottom: 1px solid var(--tab-color);
         gap: 0px;
+        margin: 0.5rem 0px;
         a {
             flex: 1
         }
@@ -62,6 +63,7 @@
         {
             padding: 8px 0px;
             flex: 1;
+            line-height: normal;
         }
     }
   }
@@ -94,6 +96,139 @@
   &#context-menu {
     z-index: 9999;
     width: unset;
+  }
+
+  // TEMP: V13 put all the form-field rules in the .standard-form class which I don't want to use so I'm adding these here for now
+  .form-group {
+      clear: both;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: 3px 0;
+      align-items: center;
+
+      >* {
+          flex: 3;
+      }
+
+      >label {
+          flex: 2;
+      }
+
+      label {
+          line-height: var(--form-field-height);
+      }
+
+      .form-fields {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          justify-content: flex-end;
+          align-items: center;
+          gap: 4px;
+
+          >* {
+              flex: 1;
+          }
+
+          >label {
+              flex: 0;
+              padding: 0 4px;
+              text-align: center;
+          }
+
+          >label.checkbox {
+              flex: none;
+              padding: 0;
+          }
+
+          >input[type="checkbox"] {
+              flex: 0 0 20px;
+          }
+
+          button {
+              flex: 0;
+              line-height: calc(var(--form-field-height) - 4px);
+          }
+
+          span.sep {
+              flex: none;
+          }
+      }
+
+      span.units {
+          flex: 0;
+          line-height: 28px;
+          font-size: var(--font-size-12);
+          color: var(--color-text-dark-secondary);
+      }
+  }
+
+  .form-group-stacked {
+      clear: both;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: 3px 0;
+      align-items: center;
+
+      >* {
+          flex: 0 0 100%;
+      }
+  }
+
+  .form-group.stacked {
+      >* {
+          flex: 0 0 100%;
+      }
+  }
+
+  .form-group.slim {
+      .form-fields {
+          flex: 1;
+
+          >label {
+              flex: none;
+              font-size: var(--font-size-12);
+              color: var(--color-text-dark-secondary);
+              text-align: right;
+          }
+
+          >input[type="number"] {
+              flex: 0 0 50px;
+              padding: 0;
+              text-align: center;
+          }
+
+          >input[type="text"] {
+              flex: 0 0 50px;
+              padding: 0;
+              text-align: center;
+          }
+      }
+  }
+
+  .form-group.hidden {
+      display: none;
+  }
+
+  h1.form-header,
+  h2.form-header,
+  h3.form-header {
+    margin: 0 0 5px;
+    padding: 3px 0;
+    color: var(--color-text-dark-header);
+    border-top: 1px solid var(--color-border-light-primary);
+    border-bottom: 1px solid var(--color-border-light-primary);
+  }
+
+  .notes,
+  .hint {
+    flex: 0 0 100%;
+    font-size: var(--font-size-12);
+    line-height: var(--line-height-16);
+    color: var(--color-text-dark-secondary);
+    margin: 3px 0;
   }
 }
 
