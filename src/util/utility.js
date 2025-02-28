@@ -379,7 +379,7 @@ export function sortObjectEntries(obj, sortKey) {
  */
 export function getSortedTypes(documentClass) {
     return documentClass.TYPES.sort((a, b) =>
-      game.i18n.localize(CONFIG.Item.typeLabels[a]).localeCompare(game.i18n.localize(CONFIG.Item.typeLabels[b]))
+      game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[a]).localeCompare(game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[b]))
     );
 }
 

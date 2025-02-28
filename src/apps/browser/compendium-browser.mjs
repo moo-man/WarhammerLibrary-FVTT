@@ -406,7 +406,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
    * @protected
    */
   async _prepareSidebarContext(partId, context, options) {
-    // debugger;
     context.isLocked = {};
     context.isLocked.filters = ("additional" in this.options.filters.locked);
     context.isLocked.types = ("types" in this.options.filters.locked) || context.isLocked.filters;
@@ -449,6 +448,8 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
         if (key === "description") sort = 15;
         if (key === "source") sort = 20;
+
+        if (data.config?.sort) sort = data.config.sort;
 
         arr.push(foundry.utils.mergeObject(data, {
           key, sort,
@@ -1112,7 +1113,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
           break;
         case "text":
           if (!value) continue;
-          debugger;
           value = value.includes(",") ? value.split(",").map(s => s.trim()).filter(s => !!s) : value;
           let operation = 'icontains';
           if (foundry.utils.getType(value) === "Array")

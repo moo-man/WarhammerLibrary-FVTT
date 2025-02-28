@@ -59,8 +59,6 @@ function _check(data, keyPath, value, operation="_", getter = undefined) {
   const comparison = COMPARISON_FUNCTIONS[operation];
   if ( !comparison ) throw new Error(`Comparison function "${operation}" could not be found.`);
 
-  debugger;
-
   const sourceValue = foundry.utils.getType(getter) === "function" ? getter(data) : foundry.utils.getProperty(data, keyPath);
   return comparison(sourceValue, value);
 }
