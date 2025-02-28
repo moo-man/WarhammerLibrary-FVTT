@@ -3,6 +3,8 @@ import {sortObjectEntries} from "../../util/utility.js";
 /**
  * Object representing a nested set of choices to be displayed in a grouped select list or a trait selector.
  *
+ * Based on SelectChoices from DND5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/documents/actor/select-choices.mjs
+ *
  * @typedef {object} SelectChoicesEntry
  * @property {string} label              Label, either pre- or post-localized.
  * @property {boolean} [chosen]          Has this choice been selected?

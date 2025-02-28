@@ -1,4 +1,6 @@
 /**
+ * Copied from DND5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/applications/components/filter-state.mjs
+ *
  * Input element that represents a three-state filter (include, exclude, or ignore). This is used for filters in
  * the compendium browser and in the inventory element. Returns a number with `1` indicating this filter should be
  * positively applied (show items that match the filter), `-1` indicating it should be negatively applied (hide

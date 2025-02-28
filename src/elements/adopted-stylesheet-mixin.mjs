@@ -1,6 +1,9 @@
 /**
  * Adds functionality to a custom HTML element for caching its stylesheet and adopting it into its Shadow DOM, rather
  * than having each stylesheet duplicated per element.
+ *
+ * Copied from DND5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/applications/components/adopted-stylesheet-mixin.mjs
+ *
  * @param {typeof HTMLElement} Base  The base class being mixed.
  * @returns {typeof AdoptedStyleSheetElement}
  */

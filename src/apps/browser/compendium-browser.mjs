@@ -4,10 +4,56 @@ import WarhammerSheetMixinV2 from "../../sheets/v2/mixin.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
+/**
+ * @typedef {ApplicationConfiguration} CompendiumBrowserConfiguration
+ * @property {{locked: CompendiumBrowserFilters, initial: CompendiumBrowserFilters}} filters  Filters to set to start.
+ *                                              Locked filters won't be able to be changed by the user. Initial filters
+ *                                              will be set to start but can be changed.
+ * @property {CompendiumBrowserSelectionConfiguration} selection  Configuration used to define document selections.
+ */
+
+/**
+ * @typedef {object} CompendiumBrowserSelectionConfiguration
+ * @property {number|null} min                  Minimum number of documents that must be selected.
+ * @property {number|null} max                  Maximum number of documents that must be selected.
+ */
+
+/**
+ * @typedef {object} CompendiumBrowserFilters
+ * @property {string} [documentClass]  Document type to fetch (e.g. Actor or Item).
+ * @property {Set<string>} [types]     Individual document subtypes to filter upon (e.g. "loot", "class", "npc").
+ * @property {object} [additional]     Additional type-specific filters applied.
+ * @property {FilterDescription[]} [arbitrary]  Additional arbitrary filters to apply, not displayed in the UI.
+ *                                     Only available as part of locked filters.
+ * @property {string} [name]           A substring to filter by Document name.
+ */
+
+/**
+ * Filter definition object for additional filters in the Compendium Browser.
+ *
+ * @typedef {object} CompendiumBrowserFilterDefinitionEntry
+ * @property {string} label                                   Localizable label for the filter.
+ * @property {"boolean"|"range"|"set"} type                   Type of filter control to display.
+ * @property {object} config                                  Type-specific configuration data.
+ * @property {CompendiumBrowserCreateFilters} [createFilter]  Method that can be called to create filters.
+ */
+
+/**
+ * @callback CompendiumBrowserFilterCreateFilters
+ * @param {FilterDescription[]} filters                        Array of filters to be applied that should be mutated.
+ * @param {*} value                                            Value of the filter.
+ * @param {CompendiumBrowserFilterDefinitionEntry} definition  Definition for this filter.
+ */
+
 
 /**
  * Application for browsing, filtering, and searching for content between multiple compendiums.
- * @extends Application5e
+ *
+ * Based on CompendiumBrowser from dnd5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/applications/compendium-browser.mjs
+ *
+ * @extends ApplicationV2
+ * @mixes HandlebarsApplicationMixin
+ * @mixes WarhammerSheetMixinV2
  * @template CompendiumBrowserConfiguration
  */
 export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsApplicationMixin(ApplicationV2)) {
@@ -119,7 +165,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
   /* -------------------------------------------- */
 
   /**
-   * @typedef {SheetTabDescriptor5e} CompendiumBrowserTabDescriptor5e
+   * @typedef {SheetTabDescriptor} CompendiumBrowserTabDescriptor
    * @property {string} documentClass  The class of Documents this tab contains.
    * @property {string[]} [types]      The sub-types of Documents this tab contains, otherwise all types of the Document
    *                                   class are assumed.
@@ -128,7 +174,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
   /**
    * Application tabs.
-   * @type {CompendiumBrowserTabDescriptor5e[]}
+   * @type {CompendiumBrowserTabDescriptor[]}
    */
   static TABS = [
     {

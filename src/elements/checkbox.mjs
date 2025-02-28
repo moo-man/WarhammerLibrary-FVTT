@@ -2,6 +2,9 @@ import AdoptedStyleSheetMixin from "./adopted-stylesheet-mixin.mjs";
 
 /**
  * A custom checkbox implementation with more styling options.
+ *
+ * Copied from DND5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/applications/components/checkbox.mjs
+ *
  * @mixes AdoptedStyleSheetMixin
  * @extends {AbstractFormInputElement}
  */

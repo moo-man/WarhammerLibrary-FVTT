@@ -45,6 +45,9 @@ const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 /**
  * An application for configuring which compendium packs contribute their content to the compendium browser.
+ *
+ * Based on CompendiumBrowserSettingsConfig from dnd5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/applications/settings/compendium-browser-settings.mjs
+ *
  * @extends ApplicationV2<CompendiumBrowserSourceConfiguration>
  */
 export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixinV2(HandlebarsApplicationMixin(ApplicationV2)) {

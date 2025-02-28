@@ -1,6 +1,8 @@
 /**
  * A filter description.
  *
+ * Copied from DND5e: https://github.com/foundryvtt/dnd5e/blob/4.4.x/module/filter.mjs
+ *
  * @typedef {object} FilterDescription
  * @property {string} k        Key on the data object to check.
  * @property {any} v           Value to compare.
