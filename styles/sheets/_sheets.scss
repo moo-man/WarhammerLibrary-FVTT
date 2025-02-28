@@ -170,6 +170,7 @@
             text-align: center;
             background-color: var(--attribute-input);
             border : 1px solid var(--attribute-input-border);
+            padding: 0px;
         }
 
         input:disabled,
@@ -199,6 +200,9 @@
             width: 100%;
             background: var(--attribute-label);
             white-space: nowrap;
+            i {
+                margin: 0px 3px;
+            }
         }
     }
 

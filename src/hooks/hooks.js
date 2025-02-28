@@ -9,6 +9,7 @@ import ready from "./ready";
 import template from "./template";
 import token from "./token";
 import zones from "./zones";
+import debug from "./debug";
 
 /**
  *
@@ -25,6 +26,10 @@ export default function()
     note();
     template();
     token();
+
+    // #if _ENV == "development"
+    debug();
+    // #endif
 
     Hooks.on("preCreateJournalEntry", keepIDHook);
     Hooks.on("preCreateScene", keepIDHook);

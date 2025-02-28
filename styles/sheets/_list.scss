@@ -1,12 +1,14 @@
 .theme-light .warhammer.application {
     --list-header : rgba(0, 0, 0, 0.1);
     --list-header-border : var(--color-dark-6);
+    --list-row : none;
     --list-row-alternate : rgba(0, 0, 0, 0.05);
 }
 
 .warhammer.application {
     --list-header : var(--color-cool-4);
     --list-header-border : var(--color-cool-3);
+    --list-row : none;
     --list-row-alternate : #3028318f; // cool-3 at half transparency
     
     .sheet-list {
@@ -21,6 +23,7 @@
             flex-direction: column;
             width: 100%;
             line-height: 2rem;
+            background: var(--list-row);
             &:nth-child(even)
             {
                 background-color: var(--list-row-alternate);
