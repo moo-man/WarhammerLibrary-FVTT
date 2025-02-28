@@ -404,3 +404,16 @@ export function getPackage(uuid) {
 
     return null;
 }
+
+/**
+ * Get the compendium's name associated with the given UUID, if any.
+ * @param {string} uuid  The UUID.
+ * @returns {string|ull}
+ */
+export function getCompendiumName(uuid) {
+    if (!uuid) return null;
+
+    const label = foundry.utils.parseUuid(uuid)?.collection?.metadata?.label;
+
+    return label ?? null;
+}

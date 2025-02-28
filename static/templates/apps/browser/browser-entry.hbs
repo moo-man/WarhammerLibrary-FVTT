@@ -17,9 +17,12 @@
 
         {{!-- TODO: Display dynamic columns as appropriate --}}
 
-        <div class="item-detail item-source {{#unless entry.source}}empty{{/unless}}">
+        <div class="item-detail item-source {{#unless entry.sourceLabel}}empty{{/unless}}">
+            {{#if entry.sourceLabel}}
+            <span>{{ entry.sourceLabel }}</span>
+            {{/if}}
             {{#if entry.source}}
-            <span class="condensed">{{ entry.source }}</span>
+            <span class="subtitle">{{ entry.source }}</span>
             {{/if}}
         </div>
 

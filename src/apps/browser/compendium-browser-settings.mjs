@@ -1,5 +1,6 @@
 import WarhammerSheetMixinV2 from "../../sheets/v2/mixin.js";
-const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 /**
  * @typedef {ApplicationConfiguration} CompendiumBrowserSourceConfiguration
@@ -7,18 +8,18 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
  */
 
 /**
- * @typedef CompendiumSourceConfig5e
+ * @typedef CompendiumSourceConfig
  * @property {object} packages
- * @property {CompendiumSourcePackageConfig5e} packages.world
- * @property {CompendiumSourcePackageConfig5e} packages.system
- * @property {Record<string, CompendiumSourcePackageConfig5e>} packages.modules
+ * @property {CompendiumSourcePackageConfig} packages.world
+ * @property {CompendiumSourcePackageConfig} packages.system
+ * @property {Record<string, CompendiumSourcePackageConfig>} packages.modules
  * @property {object} packs
- * @property {CompendiumSourcePackGroup5e} packs.items
- * @property {CompendiumSourcePackGroup5e} packs.actors
+ * @property {CompendiumSourcePackGroup} packs.items
+ * @property {CompendiumSourcePackGroup} packs.actors
  */
 
 /**
- * @typedef CompendiumSourcePackageConfig5e
+ * @typedef CompendiumSourcePackageConfig
  * @property {string} title           The package title.
  * @property {string} id              The package ID.
  * @property {number} count           The number of packs provided by this package.
@@ -29,14 +30,14 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
  */
 
 /**
- * @typedef CompendiumSourcePackGroup5e
+ * @typedef CompendiumSourcePackGroup
  * @property {boolean} checked        True if all members of this pack group are included.
  * @property {boolean} indeterminate  True if only some of this pack group are included.
- * @property {CompendiumSourcePackConfig5e[]} entries
+ * @property {CompendiumSourcePackConfig[]} entries
  */
 
 /**
- * @typedef CompendiumSourcePackConfig5e
+ * @typedef CompendiumSourcePackConfig
  * @property {string} title     The pack title.
  * @property {string} id        The pack ID.
  * @property {boolean} checked  True if the pack is included.
@@ -44,12 +45,13 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
  * An application for configuring which compendium packs contribute their content to the compendium browser.
- * @extends Application5e<CompendiumBrowserSourceConfiguration>
+ * @extends ApplicationV2<CompendiumBrowserSourceConfiguration>
  */
 export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixinV2(HandlebarsApplicationMixin(ApplicationV2)) {
   constructor(options) {
     super(options);
     this.#selected = this.options.selected;
+    this.#worldItems = game.settings.get(game.system.id, "compendiumWorldItems");
   }
 
   /* -------------------------------------------- */
@@ -60,7 +62,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
     classes: ["dialog-lg"],
     tag: "form",
     window: {
-      title: "DND5E.CompendiumBrowser.Sources.Label",
+      title: "WH.CompendiumBrowser.Sources.Label",
       icon: "fas fa-book-open-reader",
       resizable: true
     },
@@ -69,6 +71,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
       height: 650
     },
     actions: {
+      toggleWorldItems: CompendiumBrowserSettingsConfig.#onToggleWorldItems,
       clearFilter: CompendiumBrowserSettingsConfig.#onClearPackageFilter,
       selectPackage: CompendiumBrowserSettingsConfig.#onSelectPackage
     },
@@ -115,35 +118,38 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    */
   #selected;
 
+  #worldItems;
+
+
   /* -------------------------------------------- */
 
   _debouncedFilter = foundry.utils.debounce(this._onFilterPackages.bind(this), this.constructor.FILTER_DELAY);
 
   /* -------------------------------------------- */
   /*  Rendering                                   */
+
   /* -------------------------------------------- */
 
   /** @inheritDoc */
   async _prepareContext(options) {
     const sources = this.constructor.collateSources();
-    const byPackage = { world: new Set(), system: new Set() };
+    const byPackage = {world: new Set(), system: new Set()};
 
-    for ( const { collection, documentName, metadata } of game.packs ) {
-      if ( (documentName !== "Actor") && (documentName !== "Item") ) continue;
+    for (const {collection, documentName, metadata} of game.packs) {
+      if ((documentName !== "Actor") && (documentName !== "Item")) continue;
       let entry;
-      if ( (metadata.packageType === "world") || (metadata.packageType === "system") ) {
+      if ((metadata.packageType === "world") || (metadata.packageType === "system")) {
         entry = byPackage[metadata.packageType];
-      }
-      else entry = byPackage[`module.${metadata.packageName}`] ??= new Set();
+      } else entry = byPackage[`module.${metadata.packageName}`] ??= new Set();
       entry.add(collection);
     }
 
-    const packages = { };
+    const packages = {};
     packages.world = this._preparePackageContext("world", game.world, byPackage.world, sources);
     packages.system = this._preparePackageContext("system", game.system, byPackage.system, sources);
 
     const modules = Object.entries(byPackage).reduce((arr, [k, packs]) => {
-      if ( (k === "world") || (k === "system") ) return arr;
+      if ((k === "world") || (k === "system")) return arr;
       const id = k.slice(7);
       const module = game.modules.get(id);
       arr.push(this._preparePackageContext(k, module, packs, sources));
@@ -152,7 +158,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
     modules.sort((a, b) => a.title.localeCompare(b.title, game.i18n.lang));
     packages.modules = Object.fromEntries(modules.map(m => [m.id, m]));
 
-    const packs = { actors: {}, items: {} };
+    const packs = {actors: {}, items: {}};
     [["actors", "Actor"], ["items", "Item"]].forEach(([p, type]) => {
       packs[p] = this._preparePackGroupContext(type, byPackage[this.#selected], sources);
     });
@@ -160,6 +166,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
     return {
       ...await super._prepareContext(options),
       packages, packs,
+      worldItems: this.#worldItems,
       filter: this.#filter
     };
   }
@@ -172,11 +179,11 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    * @param {ClientPackage} pkg    The package.
    * @param {Set<string>} packs    The packs belonging to this package.
    * @param {Set<string>} sources  The packs currently selected for inclusion.
-   * @returns {CompendiumSourcePackageConfig5e}
+   * @returns {CompendiumSourcePackageConfig}
    * @protected
    */
   _preparePackageContext(id, pkg, packs, sources) {
-    const { title } = pkg;
+    const {title} = pkg;
     const all = packs.isSubsetOf(sources);
     const indeterminate = !all && packs.intersects(sources);
     return {
@@ -195,7 +202,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    * @param {string} documentType    The pack group's Document type.
    * @param {Set<string>} packs      The packs provided by the selected package.
    * @param {Set<string>} sources    The packs currently selected for inclusion.
-   * @returns {CompendiumSourcePackGroup5e}
+   * @returns {CompendiumSourcePackGroup}
    * @protected
    */
   _preparePackGroupContext(documentType, packs, sources) {
@@ -209,7 +216,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
       indeterminate,
       checked: indeterminate || all,
       entries: Array.from(packs.map(id => {
-        const { collection, title } = game.packs.get(id);
+        const {collection, title} = game.packs.get(id);
         return {
           title,
           id: collection,
@@ -221,12 +228,13 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
 
   /* -------------------------------------------- */
   /*  Event Listeners & Handlers                  */
+
   /* -------------------------------------------- */
 
   /** @inheritDoc */
   _attachFrameListeners() {
     super._attachFrameListeners();
-    this.element.addEventListener("keydown", this._debouncedFilter, { passive: true });
+    this.element.addEventListener("keydown", this._debouncedFilter, {passive: true});
   }
 
   /* -------------------------------------------- */
@@ -234,7 +242,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
   /** @inheritDoc */
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
-    if ( partId === "sidebar" ) this._filterPackages();
+    if (partId === "sidebar") this._filterPackages();
   }
 
   /* -------------------------------------------- */
@@ -255,7 +263,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
   /** @inheritDoc */
   _onChangeForm(formConfig, event) {
     super._onChangeForm(formConfig, event);
-    if ( event.target.dataset.type ) this._onToggleSource(event.target);
+    if (event.target.dataset.type) this._onToggleSource(event.target);
   }
 
   /* -------------------------------------------- */
@@ -266,7 +274,7 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    * @protected
    */
   _onFilterPackages(event) {
-    if ( !event.target.matches("search > input") ) return;
+    if (!event.target.matches("search > input")) return;
     this.#filter = event.target.value;
     this._filterPackages();
   }
@@ -281,19 +289,18 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    */
   _onTogglePack(target) {
     const packs = {};
-    const { name, checked, indeterminate } = target;
-    if ( (name === "all-items") || (name === "all-actors") ) {
+    const {name, checked, indeterminate} = target;
+    if ((name === "all-items") || (name === "all-actors")) {
       const [, documentType] = name.split("-");
       const pkg = this.#selected === "world"
         ? game.world
         : this.#selected === "system"
           ? game.system
           : game.modules.get(this.#selected.slice(7));
-      for ( const { id, type } of pkg.packs ) {
-        if ( game[documentType].documentName === type ) packs[id] = indeterminate ? false : checked;
+      for (const {id, type} of pkg.packs) {
+        if (game[documentType].documentName === type) packs[id] = indeterminate ? false : checked;
       }
-    }
-    else packs[name] = checked;
+    } else packs[name] = checked;
     return packs;
   }
 
@@ -307,9 +314,9 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    */
   _onTogglePackage(target) {
     const packs = {};
-    const { name, checked, indeterminate } = target;
+    const {name, checked, indeterminate} = target;
     const pkg = name === "world" ? game.world : name === "system" ? game.system : game.modules.get(name.slice(7));
-    for ( const { id } of pkg.packs ) packs[id] = indeterminate ? false : checked;
+    for (const {id} of pkg.packs) packs[id] = indeterminate ? false : checked;
     return packs;
   }
 
@@ -322,12 +329,17 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    */
   async _onToggleSource(target) {
     let packs;
-    switch ( target.dataset.type ) {
-      case "pack": packs = this._onTogglePack(target); break;
-      case "package": packs = this._onTogglePackage(target); break;
-      default: return;
+    switch (target.dataset.type) {
+      case "pack":
+        packs = this._onTogglePack(target);
+        break;
+      case "package":
+        packs = this._onTogglePackage(target);
+        break;
+      default:
+        return;
     }
-    const setting = { ...game.settings.get(game.system.id, "packSourceConfiguration"), ...packs };
+    const setting = {...game.settings.get(game.system.id, "packSourceConfiguration"), ...packs};
     await game.settings.set(game.system.id, "packSourceConfiguration", setting);
     this.render();
   }
@@ -346,6 +358,11 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
     this._filterPackages();
   }
 
+  static #onToggleWorldItems() {
+    this.#worldItems = !this.#worldItems;
+    game.settings.set(game.system.id, "compendiumWorldItems", this.#worldItems)
+  }
+
   /* -------------------------------------------- */
 
   /**
@@ -355,14 +372,15 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
    * @param {HTMLElement} target  The target of the click event.
    */
   static #onSelectPackage(event, target) {
-    const { packageId } = target.closest("[data-package-id]")?.dataset ?? {};
-    if ( !packageId ) return;
+    const {packageId} = target.closest("[data-package-id]")?.dataset ?? {};
+    if (!packageId) return;
     this.#selected = packageId;
     this.render();
   }
 
   /* -------------------------------------------- */
   /*  Helpers                                     */
+
   /* -------------------------------------------- */
 
   /**
@@ -372,9 +390,9 @@ export default class CompendiumBrowserSettingsConfig extends WarhammerSheetMixin
   static collateSources() {
     const sources = new Set();
     const setting = game.settings.get(game.system.id, "packSourceConfiguration");
-    for ( const { collection, documentName } of game.packs ) {
-      if ( (documentName !== "Actor") && (documentName !== "Item") ) continue;
-      if ( setting[collection] !== false ) sources.add(collection);
+    for (const {collection, documentName} of game.packs) {
+      if ((documentName !== "Actor") && (documentName !== "Item")) continue;
+      if (setting[collection] !== false) sources.add(collection);
     }
     return sources;
   }

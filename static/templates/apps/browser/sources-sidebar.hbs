@@ -1,8 +1,8 @@
 {{#*inline ".package"}}
 
 <li {{#if active}}class="active"{{/if}} data-package-id="{{ id }}" data-filter="{{ filter }}">
-    <input type="checkbox" name="{{ id }}" {{ checked checked }} {{#if indeterminate}}indeterminate{{/if}}
-                    data-type="package">
+    <warhammer-checkbox name="{{ id }}" {{ checked checked }} {{#if indeterminate}}indeterminate{{/if}}
+                        data-type="package"></warhammer-checkbox>
     <div class="package" data-action="selectPackage">
         <span class="title">{{ title }}</span>
         <span class="value">{{ count }}</span>

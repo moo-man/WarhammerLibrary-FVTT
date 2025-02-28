@@ -196,6 +196,7 @@
             "NoTargets" : "No targeted Actors!"
         },
         "CompendiumBrowser": {
+            "WorldItems": "Show World Items in Browser",
             "FilterClear": "Clear Filters",
             "Column": {
                 "Results": "Results",

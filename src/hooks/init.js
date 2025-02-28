@@ -133,10 +133,10 @@ export default function ()
         });
 
         // Compendium Browser source exclusion
-        game.settings.registerMenu(game.system.id, "packSourceConfiguration", {
-            name: "DND5E.CompendiumBrowser.Sources.Name",
-            label: "DND5E.CompendiumBrowser.Sources.Label",
-            hint: "DND5E.CompendiumBrowser.Sources.Hint",
+        game.settings.registerMenu("warhammer-lib", "packSourceConfiguration", {
+            name: "WH.CompendiumBrowser.Sources.Name",
+            label: "WH.CompendiumBrowser.Sources.Label",
+            hint: "WH.CompendiumBrowser.Sources.Hint",
             icon: "fas fa-book-open-reader",
             type: CompendiumBrowserSettingsConfig,
             restricted: true
@@ -147,7 +147,16 @@ export default function ()
             scope: "world",
             config: false,
             type: Object,
-            default: {}
+            default: {},
+            onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
+        });
+
+        game.settings.register(game.system.id, "compendiumWorldItems", {
+            scope: "client",
+            config: false,
+            type: Boolean,
+            default: true,
+            onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
         });
     });
 }

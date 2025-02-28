@@ -1,4 +1,4 @@
-import {getPackage} from "../util/utility.js";
+import {getCompendiumName, getPackage} from "../util/utility.js";
 
 export class BaseWarhammerModel extends foundry.abstract.DataModel 
 {
@@ -44,7 +44,8 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
 
         return {
             slug: pckg?.id ?? 'world',
-            value: pckg?.title ?? game.i18n.localize('PACKAGE.Type.world')
+            value: pckg?.title ?? '',
+            label: getCompendiumName(uuid) ?? game.i18n.localize('PACKAGE.Type.world'),
         }
     }
 

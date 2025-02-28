@@ -43,3 +43,22 @@ filter-state {
     outline: 2px solid var(--filter-state-focus-color);
   }
 }
+
+warhammer-checkbox {
+  width: 14px;
+  height: 14px;
+
+  &[disabled]:not([checked]) {
+    --checkbox-border-color: var(--color-text-light-6);
+    --checkbox-empty-color: transparent;
+  }
+}
+
+.theme-dark {
+  warhammer-checkbox {
+    &[disabled]:not([checked]) {
+      --checkbox-border-color: #434857;
+      --checkbox-empty-color: #434857;
+    }
+  }
+}

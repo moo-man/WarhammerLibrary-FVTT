@@ -37,7 +37,8 @@ import { error,
     sleep,
     targetedOrAssignedActors,
     sortObjectEntries,
-    getPackage
+    getPackage,
+    getCompendiumName
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
@@ -55,7 +56,8 @@ import WarhammerScriptEditor from "./apps/script-editor";
 import { WarhammerRollTable } from "./document/table";
 import ChatCommands from "./system/commands";
 import CompendiumBrowser from "./apps/browser/compendium-browser.mjs";
-import FilterStateElement from "./apps/browser/filter-state.mjs";
+import FilterStateElement from "./elements/filter-state.mjs";
+import CheckboxElement from "./elements/checkbox.mjs";
 hooks();
 overrides();
 
@@ -86,8 +88,8 @@ warhammer.utility = {
     sleep,
     targetedOrAssignedActors,
     sortObjectEntries,
-    getPackage
-
+    getPackage,
+    getCompendiumName,
 };
 
 warhammer.apps = {
@@ -146,3 +148,4 @@ warhammer.documents = {
 globalThis.warhammer = warhammer;
 
 window.customElements.define("filter-state", FilterStateElement);
+window.customElements.define("warhammer-checkbox", CheckboxElement);
