@@ -216,6 +216,38 @@ export function getActiveDocumentOwner(document)
     return owningUser;
 }
 
+export function targetedOrAssignedActors(allowPlayerTargets=false)
+{
+    let targets = Array.from(game.user.targets);
+    if (game.user.isGM)
+    {
+        if (targets.length)
+        {
+            return targets.map(i => i.actor).filter(a => a);
+        }
+        else 
+        {
+            ui.notifications.error("WH.Error.NoTargetedActors", {localize: true});
+        }
+    }
+    else 
+    {
+        if (allowPlayerTargets && targets.length)
+        {
+            return targets.map(i => i.actor).filter(a => a);
+        }
+        else if (game.user.character)
+        {
+            return [game.user.character];
+        }
+        else 
+        {
+            ui.notifications.error("WH.Error.NoActorAssigned", {localize: true});
+        }
+    }
+    return [];
+}
+
 /**
  *
  * @param ms

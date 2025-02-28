@@ -75,7 +75,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      * @param {boolean} roll Whether to evaluate the test or not
      * @returns {object} test class instance
      */
-    async _setupTest(dialogClass, testClass, data, options = {}, roll = true) 
+    async _setupTest(dialogClass, testClass, data, options = {}, roll = true, sendToChat=true) 
     {
         let dialogData = await dialogClass.setupData(data, this, options);
         let setupData;
@@ -93,7 +93,10 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             if (roll) 
             {
                 await test[testClass.rollFunction || "roll"]();
-                test.sendToChat();
+                if (sendToChat)
+                {
+                    test.sendToChat();
+                }
             }
             return test;
         }
@@ -297,12 +300,12 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
   
     get auraEffects() 
     {
-        return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
+        return this.items.reduce((acc, item) => acc.concat(Array.from(item.allApplicableEffects())), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
     }
 
     get followedZoneEffects()
     {
-        return this.items.reduce((acc, item) => acc.concat(item.effects.contents), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "zone" && e.system.transferData.zone.type == "follow" && !e.system.transferData.zone.transferred).filter(i => i.active);
+        return this.items.reduce((acc, item) => acc.concat(Array.from(item.allApplicableEffects())), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "zone" && e.system.transferData.zone.type == "follow" && !e.system.transferData.zone.transferred).filter(i => i.active);
     }
   
 }

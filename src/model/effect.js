@@ -78,6 +78,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             trigger: new fields.StringField(),
             options: new fields.SchemaField({
                 targeter: new fields.BooleanField({initial : false}),
+                defending: new fields.BooleanField({initial : false}),
                 hideScript: new fields.StringField({}),
                 activateScript: new fields.StringField({}),
                 submissionScript: new fields.StringField({}),
@@ -149,11 +150,6 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
     get isAreaApplied() 
     {
         return this.transferData.type == "area";
-    }
-
-    get isCrewApplied() 
-    {
-        return this.transferData.type == "crew";
     }
 
     get itemTargets() 

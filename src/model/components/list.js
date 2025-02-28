@@ -5,12 +5,12 @@ import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } fr
 export class ListModel extends foundry.abstract.DataModel
 {
     
-    static createListModel(schema, options)
+    static createListModel(schema, options, context)
     {
         return new foundry.data.fields.EmbeddedDataField(class cls extends ListModel 
         {
             static listSchema = schema;
-        }, options);
+        }, options, context);
     }
     
     static listSchema = new foundry.data.fields.ObjectField();

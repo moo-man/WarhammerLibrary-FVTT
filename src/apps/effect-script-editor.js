@@ -2,7 +2,7 @@ import { systemConfig } from "../util/utility";
 import WarhammerScriptEditor from "./script-editor";
 
 export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
-{    
+{
     unlocked = false; // User lock toggled
 
     static DEFAULT_OPTIONS = {
@@ -29,15 +29,15 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         this.document = document;
     }
 
-    
     get scriptLocked()
     {
         return this._hasScriptReferences() && !this.unlocked;
     }
 
-    async _prepareContext() 
+    async _prepareContext()
     {
         let data = await super._prepareContext();
+        data.effect = this.document;
         data.hasScriptReferences = this._hasScriptReferences();
         data.scriptLock = data.hasScriptReferences && !this.unlocked;
         // only lock script if it's an actual reference, otherwise, it's not locked and can be edited even if script lock is turned on
@@ -93,7 +93,7 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         {
             return !!object.script.match(regex);
         }
-        else 
+        else
         {
             return !!(foundry.utils.getProperty(object, "options." + type) || "").match(regex);
         }
@@ -107,7 +107,7 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
 
     static async submit(ev, form, formData)
     {
-        let script = formData.object.script; 
+        let script = formData.object.script;
         let array = foundry.utils.deepClone(this.document.system.scriptData);
         let scriptObject = array[this.index];
         scriptObject.label = formData.object.label;
@@ -125,8 +125,9 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         {
             foundry.utils.setProperty(scriptObject, "options.submissionScript", formData.object.submissionScript);
         }
-        
+
         foundry.utils.setProperty(scriptObject, "options.targeter", formData.object.targeter);
+        foundry.utils.setProperty(scriptObject, "options.defending", formData.object.defending);
         foundry.utils.setProperty(scriptObject, "options.deleteEffect", formData.object.deleteEffect);
         if(!foundry.utils.isEmpty(script))
         {
