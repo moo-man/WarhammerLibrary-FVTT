@@ -19,8 +19,8 @@ import { SocketHandlers } from "./util/socket-handlers";
 import TokenHelpers from "./util/token-helpers";
 import { WarhammerTestBase } from "./system/test";
 import AreaTemplate from "./util/area-template";
-import WarhammerChatListeners from "./util/chat-listeners";
-import { WarhammerTestMessageModel } from "./model/message";
+import { WarhammerMessageModel} from "./model/message";
+import { WarhammerTestMessageModel} from "./model/test";
 import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
@@ -40,6 +40,8 @@ import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } fr
 import WarhammerScriptEditor from "./apps/script-editor";
 import { WarhammerRollTable } from "./document/table";
 import ChatCommands from "./system/commands";
+import { WarhammerContextMenu } from "./util/context-menu";
+import WarhammerChatMessage from "./document/message";
 hooks();
 overrides();
 
@@ -85,7 +87,6 @@ warhammer.apps = {
     TokenHelpers,
     WarhammerTestBase,
     AreaTemplate,
-    WarhammerChatListeners,
     WarhammerModuleInitializer,
     WarhammerActorSheet,
     WarhammerItemSheet,
@@ -94,7 +95,8 @@ warhammer.apps = {
     WarhammerZoneConfig,
     ChoiceConfigV2,
     ChoiceDecision,
-    ChatCommands
+    ChatCommands,
+    WarhammerContextMenu
 };
 
 warhammer.models = {
@@ -111,6 +113,7 @@ warhammer.models = {
     DiffReferenceListModel,
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
+    WarhammerMessageModel,
     WarhammerActiveEffect,
     ChoiceModel
 
@@ -119,7 +122,8 @@ warhammer.models = {
 warhammer.documents = {
     WarhammerActor,
     WarhammerItem,
-    WarhammerRollTable
+    WarhammerRollTable,
+    WarhammerChatMessage
 };
 
 globalThis.warhammer = warhammer;

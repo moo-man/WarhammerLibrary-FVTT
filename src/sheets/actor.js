@@ -56,8 +56,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         {
             return;
         }
-        game.user.updateTokenTargets([]);
-        game.user.broadcastActivity({ targets: [] });
+        game.canvas.tokens.setTargets([]);
     
         for (let target of targets) 
         {

@@ -1,5 +1,4 @@
 import { keepID } from "../util/utility";
-import chat from "./chat";
 import combat from "./combat";
 import handlebars from "./handlebars";
 import init from "./init";
@@ -21,7 +20,6 @@ export default function()
     init();
     combat();
     zones();
-    chat();
     journal();
     note();
     template();

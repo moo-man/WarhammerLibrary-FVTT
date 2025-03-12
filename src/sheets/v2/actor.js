@@ -225,8 +225,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         {
             return;
         }
-        game.user.updateTokenTargets([]);
-        game.user.broadcastActivity({ targets: [] });
+        game.canvas.tokens.setTargets([]);
     
         for (let target of targets) 
         {

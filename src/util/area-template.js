@@ -298,8 +298,9 @@ export default class AreaTemplate extends MeasuredTemplate
             if ((t.x + (t.width / 2)) < maxx && (t.x + (t.width / 2)) > minx && (t.y + (t.height / 2)) < maxy && (t.y + (t.height / 2)) > miny)
             {newTokenTargets.push(t.id);};
         });
-        game.user.updateTokenTargets(newTokenTargets);
-        game.user.broadcastActivity({targets: newTokenTargets});
+
+        game.canvas.tokens.setTargets(newTokenTargets);
+
     }
 
 }

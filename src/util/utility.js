@@ -265,7 +265,7 @@ export async function sleep(ms)
  */
 export function addLinkSources(html)
 {
-    html.find(".content-link").each((index, element) => 
+    html.querySelectorAll(".content-link").forEach(element => 
     {
         let uuid = element.dataset.uuid;
         let tooltip = element.dataset.tooltip || "";

@@ -1,3 +1,4 @@
+import { WarhammerContextMenu } from "../../util/context-menu";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 
@@ -165,15 +166,23 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         super._onRender(_context, _options);
         this.#dragDrop.forEach((d) => d.bind(this.element));
 
+        addLinkSources(this.element);
+        
         this._addEventListeners();
     }
 
     async _onFirstRender(context, options)
     {
         await super._onFirstRender(context, options);
-        ContextMenu.create(this, this.element, ".list-row:not(.nocontext)", {hookName : "ContextMenu", jQuery: false, fixed: true});
-        ContextMenu.create(this, this.element, ".context-menu", {hookName : "ContextMenu", jQuery: false, fixed: true});
-        ContextMenu.create(this, this.element, ".context-menu-alt", {hookName : "ContextMenu", jQuery: false, fixed: true});
+
+        // Anything in a list row should be right clickable (usually items) unless otherwise specified (nocontext)
+        WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", {hookName : "ContextMenu", jQuery: false, fixed: true});
+
+        // Left clickable context menus (3 vertical pips)
+        WarhammerContextMenu.create(this, this.element, ".context-menu", {hookName : "ContextMenu", jQuery: false, fixed: true, eventName : "click"});
+
+        // Anything else that should be right clickable for context menus
+        WarhammerContextMenu.create(this, this.element, ".context-menu-alt", {hookName : "ContextMenu", jQuery: false, fixed: true});
     }
 
     _addEventListeners()
@@ -448,12 +457,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             left: this.position.left + 10
         });
         await fp.browse();
-    }
-
-    modifyHTML()
-    {
-        // replacePopoutTokens(this.element);
-        addLinkSources(this.element);
     }
 
     

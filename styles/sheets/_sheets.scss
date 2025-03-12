@@ -171,6 +171,8 @@
             background-color: var(--attribute-input);
             border : 1px solid var(--attribute-input-border);
             padding: 0px;
+            height: 1.5rem;
+            line-height: 1.5rem;
         }
 
         input:disabled,
@@ -184,6 +186,8 @@
             border-right: 1px solid var(--attribute-border);
             width: 100%;
             background: var(--attribute-field);
+            height: 1.5rem;
+            line-height: 1.5rem;
         }
 
         .interact {
@@ -200,6 +204,8 @@
             width: 100%;
             background: var(--attribute-label);
             white-space: nowrap;
+            height: 1.5rem;
+            line-height: 1.5rem;
             i {
                 margin: 0px 3px;
             }

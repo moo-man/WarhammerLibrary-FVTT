@@ -519,6 +519,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return "";
     }
 
+    /**
+     * Some effects are created in memory, not in the database.
+     * Most notably item traits/properties
+     */
+    get path()
+    {
+        return this.getFlag(game.system.id, "path");
+    }
+
     get manualScripts()
     {
         if (this.disabled)
