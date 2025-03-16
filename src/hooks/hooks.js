@@ -9,6 +9,7 @@ import template from "./template";
 import token from "./token";
 import zones from "./zones";
 import debug from "./debug";
+import sidebar from "./sidebar";
 
 /**
  *
@@ -24,6 +25,7 @@ export default function()
     note();
     template();
     token();
+    sidebar();
 
     // #if _ENV == "development"
     debug();
@@ -39,10 +41,8 @@ export default function()
         let folder = data.target.split("/")[0];
         if (folder == "systems" || folder == "modules") 
         {
-            html.find("input[name='upload']").css("display", "none");
-            let label = html.find(".upload-file label");
-            label.text("Upload Disabled");
-            label.append(`<i data-tooltip="Upload disabled while in system directory. DO NOT put your assets within any system or module folder." style="display:inline-block; margin-left:5px;" class="fa-regular fa-circle-question"></i>`);
+            let upload = html.querySelector(".upload-file");
+            upload.innerHTML = `<p style="text-align: center" data-tooltip="Upload disabled while in system directory. DO NOT put your assets within any system or module folder.">Upload Disabled <i style="display:inline-block; margin-left:5px;" class="fa-regular fa-circle-question"></i></p>`;
         }
     });  
 }

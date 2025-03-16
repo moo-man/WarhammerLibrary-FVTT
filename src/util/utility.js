@@ -298,8 +298,8 @@ export function addLinkSources(html)
 export function replacePopoutTokens(html) 
 {
     // Try to replace popout tokens in chat
-    let images = html.find('img:not(.profile)'); // This is required to prevent saving the absolute actor image path
-    Array.from(images).forEach(async element => 
+    let images = html.querySelectorAll('img:not(.profile)'); // This is required to prevent saving the absolute actor image path
+    images.forEach(async element => 
     {
         element.src = replacePopoutPath(element.src);
     });

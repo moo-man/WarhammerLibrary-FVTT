@@ -1,0 +1,12 @@
+body.theme-light {
+    .warhammer {
+        &.application {
+            --tab-color : var(--color-border-light-primary);
+        }
+        .script-list {
+            .script {
+                background: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}

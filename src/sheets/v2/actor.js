@@ -13,7 +13,6 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         actions: {
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
-            editImage : this._onEditImage,
             sortItems : this._onSortItemTypes
         }
     };

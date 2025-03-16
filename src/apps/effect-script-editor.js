@@ -9,7 +9,8 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         tag : "form",
         classes : ["effect-script"],
         actions : {
-            toggleLock : this._onToggleLock
+            toggleLock : this._onToggleLock,
+            copyScript : this._onCopyScript
         },
         form: {
             handler: this.submit,
@@ -19,7 +20,7 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
     };
 
     static PARTS = {
-        choices : {scrollable : [""], template : "modules/warhammer-lib/templates/scripts/effect-script-editor.hbs"}
+        scripts : {scrollable : [""], template : "modules/warhammer-lib/templates/scripts/effect-script-editor.hbs"}
     };
 
     constructor(document, options={})
@@ -48,6 +49,7 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
             "submissionScript" : this._isScriptReference("submissionScript") && !this.unlocked
         };
         data.dereferencedScripts = this._dereferencedScripts();
+        data.fields = this.document.system.schema.fields.scriptData.element.fields;
         data.script = this._getScript();
         data.scriptData = this._getScriptData();
         return data;
@@ -137,9 +139,21 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         return this.document.update({"system.scriptData" : array}).then(_ => this.render(true));
     }
 
-    static async _onToggleLock(ev)
+    static async _onToggleLock(ev, target)
     {
-        this.unlocked = !ev.target.checked;
+        this.unlocked = !target.checked;
         this.render(true);
+    }
+
+    static async _onCopyScript(ev, target)
+    {
+        let script = target.dataset.script;
+        let deref = this._dereferencedScripts();
+        if (script != "script")
+        {
+            script = `options.${script}`;
+        }
+        game.clipboard.copyPlainText(foundry.utils.getProperty(deref, script));
+        ui.notifications.info("Script copied");
     }
 }

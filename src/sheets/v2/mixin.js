@@ -28,7 +28,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             togglePip : this._onTogglePip,
             clickEffectButton : this._onClickEffectButton,
-            editImage : this._onEditImage
         },
         window: {
             resizable: true
@@ -438,25 +437,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let path = this._getPath(ev);
         let property = foundry.utils.getProperty(doc, path);
         doc.update({[path] : property.unset()});
-    }
-
-    
-    // TODO: Remove in V13
-    static async _onEditImage(event) 
-    {
-        const attr = event.target.dataset.edit;
-        const current = foundry.utils.getProperty(this.document, attr);
-        const fp = new FilePicker({
-            current,
-            type: "image",
-            callback: path => 
-            {
-                this.document.update({img : path});
-            },
-            top: this.position.top + 40,
-            left: this.position.left + 10
-        });
-        await fp.browse();
     }
 
     

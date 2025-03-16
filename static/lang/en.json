@@ -1,5 +1,13 @@
 {
     "WH" : {
+
+        "Badge" : {
+            "Notes" : "NOTES",
+            "Issues" : "ISSUES",
+            "Wiki" : "WIKI",
+            "Discord" : "DISCORD"
+        },
+        "AdvancedConfig": "Advanced Effect Config",
         "Scripts": "Scripts",
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "ItemDialog": "Item Dialog",
@@ -55,19 +63,21 @@
             "DeleteModuleContentPrompt": "<p><strong>WARNING</strong>: This will delete all content associated with the <strong>{id}</strong> module that has been imported in this world.</p><p>Are you sure you wish to proceed?</p>",
             "ResolveDuplicates": "Resolve Duplicates"
         },
-        "ScriptLock": "Script Lock",
+        "ScriptLock": "Scripts Locked",
+        "ScriptLockTT": "Scripts are not editable when they are references. If you want to make changes: copy a script, unlock, paste, then make your desired changes.",
         "Script": "Script",
         "ScriptTrigger" : "Trigger",
         "Targeter" : "Targeter",
         "TargeterTT" : "Run this script in the dialog of any Actor that is targeting this Actor.",
         "DefendingAgainst" : "Defending Against",
         "DefendingAgainstTT" : "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
+        "DialogScript" : "Dialog Script",
         "HideScript" : "Hide Script",
         "ActivateScript" : "Activate Script",
         "SubmissionScript" : "Submission Script",
         "ManualEffectKeys": "Manual Effect Keys",
         "DeleteEffect" : "Delete Effect",
-        "DeleteEffectHint" : "Delete the Active Effect after running this script.",
+        "DeleteEffectHint" : "Delete the Active Effect after running this script",
         "NewScript": "New Script",
         "NewEffect": "New Effect",
         "NewItem": "New Item",
@@ -152,7 +162,8 @@
             "SkipImmediatePlacement" : "Skip Immediate on Placement",
             "SkipImmediatePlacementHint" : "Prevents Immediate scripts from running when the effect is placed.",
             "ZoneType" : "Zone Type",
-            "ZoneTypeHint" : "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in"
+            "ZoneTypeHint" : "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in",
+            "AdvancedConfig" : "Open Advanced Configuration"
         },
         "TransferType" : {
             "Document" : "Owning Document",
@@ -192,5 +203,6 @@
             "NoActorAssigned" : "No assigned Actor, you can assign Actors via Player Configuration at the bottom left of the screen.",
             "NoTargets" : "No targeted Actors!"
         }
-    }
+    },
+    "EFFECT.TABS.scripts" : "Scripts"
 }
