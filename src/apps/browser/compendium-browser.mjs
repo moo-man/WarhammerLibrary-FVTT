@@ -62,14 +62,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
     this.#filters = this.options.filters?.initial ?? {};
 
-    if ("mode" in this.options) {
-      this._mode = this.options.mode;
-      this._applyModeFilters(this.options.mode);
-    }
-
-    const isAdvanced = this._mode === this.constructor.MODES.ADVANCED;
-    const tab = this.constructor.TABS.find(t => t.tab === this.options.tab);
-    if (!tab || (!!tab.advanced !== isAdvanced)) this.options.tab = isAdvanced ? "actors" : "classes";
     this._applyTabFilters(this.options.tab);
   }
 
@@ -93,7 +85,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       setFilter: CompendiumBrowser.#onSetFilter,
       setType: CompendiumBrowser.#onSetType,
       toggleCollapse: CompendiumBrowser.#onToggleCollapse,
-      toggleMode: CompendiumBrowser.#onToggleMode
     },
     form: {
       handler: CompendiumBrowser.#onHandleSubmit,
@@ -121,11 +112,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
   /** @override */
   static PARTS = {
-    // header: {
-    //   id: "header",
-    //   classes: ["header"],
-    //   template: "modules/warhammer-lib/templates/apps/browser/browser-header.hbs"
-    // },
     tabs: {
       id: "tabs",
       classes: ["tabs", "tabs-left"],
@@ -192,17 +178,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       advanced: true
     }
   ];
-
-  /* -------------------------------------------- */
-
-  /**
-   * Available filtering modes.
-   * @enum {number}
-   */
-  static MODES = {
-    BASIC: 1,
-    ADVANCED: 2
-  };
 
   /* -------------------------------------------- */
 
@@ -341,14 +316,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
   /* -------------------------------------------- */
 
   /**
-   * The mode the browser is currently in.
-   * @type {CompendiumBrowser.MODES}
-   */
-  _mode = this.constructor.MODES.ADVANCED;
-
-  /* -------------------------------------------- */
-
-  /**
    * The function to invoke when searching results by name.
    * @type {Function}
    */
@@ -405,7 +372,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
   async _preparePartContext(partId, context, options) {
     await super._preparePartContext(partId, context, options);
     switch (partId) {
-      case "documentClass":
       case "types":
       case "filters":
         return this._prepareSidebarContext(partId, context, options);
@@ -440,21 +406,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
     context.summary = suffix ? game.i18n.format(
       `WH.CompendiumBrowser.Selection.Summary.${suffix}`, {max, min, value}
     ) : value;
-    return context;
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Prepare the header context.
-   * @param {ApplicationRenderContext} context  Shared context provided by _prepareContext.
-   * @param {HandlebarsRenderOptions} options   Options which configure rendering behavior.
-   * @returns {Promise<ApplicationRenderContext>}
-   * @protected
-   */
-  async _prepareHeaderContext(context, options) {
-    context.showModeToggle = foundry.utils.isEmpty(this.options.filters.locked);
-    context.isAdvanced = this._mode === this.constructor.MODES.ADVANCED;
     return context;
   }
 
@@ -567,8 +518,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       return context;
     }
 
-    const advanced = this._mode === this.constructor.MODES.ADVANCED;
-    context.tabs = foundry.utils.deepClone(this.constructor.TABS.filter(t => !!t.advanced === advanced));
+    context.tabs = foundry.utils.deepClone(this.constructor.TABS);
     const tab = options.isFirstRender ? this.options.tab : this.tabGroups.primary;
     const activeTab = context.tabs.find(t => t.tab === tab) ?? context.tabs[0];
     activeTab.active = true;
@@ -723,24 +673,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       if (options.isFirstRender || options.changedTab) this._renderSourceFilters();
     });
     // else if (partId === "types") this.#adjustCheckboxStates(htmlElement);
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Apply filters based on the compendium browser's mode.
-   * @param {CompendiumBrowser.MODES} mode  The mode.
-   * @protected
-   */
-  _applyModeFilters(mode) {
-    const isAdvanced = mode === this.constructor.MODES.ADVANCED;
-    delete this.#filters.types;
-    delete this.#filters.additional;
-    if (isAdvanced) this.#filters.documentClass = "Actor";
-    else {
-      this.#filters.documentClass = "Item";
-      this.#filters.types = new Set(["class"]);
-    }
   }
 
   /* -------------------------------------------- */
@@ -991,25 +923,6 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
    */
   static async #onToggleCollapse(event, target) {
     target.closest(".collapsible")?.classList.toggle("collapsed");
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Handle toggling the compendium browser mode.
-   * @this {CompendiumBrowser}
-   * @param {PointerEvent} event  The originating click event.
-   * @param {HTMLElement} target  The element that was clicked.
-   */
-  static #onToggleMode(event, target) {
-    // TODO: Consider persisting this choice in a client setting.
-    this._mode = target.checked ? this.constructor.MODES.ADVANCED : this.constructor.MODES.BASIC;
-    const tabs = foundry.utils.deepClone(this.constructor.TABS.filter(t => !!t.advanced === target.checked));
-    const activeTab = tabs.find(t => t.tab === this.tabGroups.primary) ?? tabs[0];
-    const types = target.checked ? [] : (activeTab?.types ?? ["class"]);
-    this._applyModeFilters(this._mode);
-    this._applyTabFilters(activeTab?.tab);
-    this.render({parts: ["results", "filters", "types", "tabs"], warhammer: {browser: {types}}, changedTab: true});
   }
 
   /* -------------------------------------------- */
