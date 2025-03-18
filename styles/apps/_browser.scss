@@ -152,6 +152,12 @@
 
         .form-fields {
           width: 100%;
+          --input-height: 1.5rem;
+
+          .sep {
+            font-size: 14px;
+            color: #00000088;
+          }
         }
       }
 

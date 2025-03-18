@@ -14,7 +14,7 @@
             <input {{#if config.text}}type="text"{{else}}type="number"{{/if}} name="additional.{{ key }}.min" value="{{ value.min }}"
                    min="{{ config.min }}" max="{{ config.max }}" step="any" placeholder="{{ config.min }}"
                    {{ disabled locked.min }}>
-            <span class="sep"></span>
+            <span class="sep"><i class="fa-solid fa-arrows-left-right-to-line"></i></span>
             <input {{#if config.text}}type="text"{{else}}type="number"{{/if}} name="additional.{{ key }}.max" value="{{ value.max }}"
                    min="{{ config.min }}" max="{{ config.max }}" step="any" placeholder="{{ config.max }}"
                    {{ disabled locked.max }}>
