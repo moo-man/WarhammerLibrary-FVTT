@@ -1,7 +1,6 @@
 <div>
-    <div class="editor">
-        <textarea {{#unless (isGM)}}disabled{{/unless}} name="script" spellcheck="false">{{script}}</textarea>
-    </div>
+    {{formInput script value=script language="javascript" elementType="code-mirror"}}
+
     {{#if (isGM)}}
     <button type="submit">{{localize "Submit"}}</button>
     {{/if}}
