@@ -277,7 +277,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         }
     }
 
-    async addEffectItems(uuids=[], effect, merge=[{}])
+    async addEffectItems(uuids=[], effect, merge=[{}], options={})
     {
         if (typeof uuids == "string")
         {
@@ -295,7 +295,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             items[i] = foundry.utils.mergeObject(items[i], merge[i]);
         }
 
-        return this.createEmbeddedDocuments("Item", items, {fromEffect : effect?.id});
+        return this.createEmbeddedDocuments("Item", items, foundry.utils.mergeObject({fromEffect : effect?.id}, options));
     }
   
     get auraEffects() 

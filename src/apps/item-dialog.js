@@ -57,7 +57,18 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 
     static async submit(event, form, fromData)
     {
-        let items = this.items.filter((_, index) => this.chosen.includes(index));
+        let items = await Promise.all(this.items.filter((_, index) => this.chosen.includes(index)).map(i => 
+        {
+            // If index is provided instead of actual documents, make sure they are retrieved before sending them back
+            if (this.options.indexed)
+            {
+                return fromUuid(i.uuid);
+            }
+            else 
+            {
+                return i;
+            }
+        }));
         if (this.options.resolve)
         {
             this.options.resolve(items);
@@ -65,7 +76,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         return items;
     }
 
-    static async create(items, count = 1, {title, text, skipSingularItemPrompt}={})
+    static async create(items, count = 1, {title, text, skipSingularItemPrompt, indexed}={})
     {
 
         if (typeof items == "object" && !Array.isArray(items) && !(items instanceof Collection))
@@ -85,13 +96,14 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 
         return new Promise((resolve) => 
         {
-            new this({items, count}, {text, resolve}).render(true, {window : {title}});
+            new this({items, count}, {text, resolve, indexed}).render(true, {window : {title}});
         });
     }
 
     static async createFromFilters(filters, count, {title, text, items}={})
     {
         items = await ItemDialog.filterItems(filters, items);
+        // TODO handle indexing for filters
         return ItemDialog.create(items, count, {title, text});    
     }
 
