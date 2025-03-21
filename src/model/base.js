@@ -1,6 +1,13 @@
+import {getCompendiumName, getPackage} from "../util/utility.js";
 
 export class BaseWarhammerModel extends foundry.abstract.DataModel 
 {
+    static metadata = {};
+
+    get metadata() {
+        return this.constructor.metadata;
+    }
+
     get id () 
     {
         return this.parent.id;
@@ -23,6 +30,34 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
         schema.name = "system";
         return schema;
     }
+
+    /**
+     * Filters available for this item type when using the compendium browser.
+     * @returns {CompendiumBrowserFilterDefinition}
+     */
+    static get compendiumBrowserFilters() {
+        return new Map();
+    }
+
+    static _deriveSource(uuid) {
+        const pckg = getPackage(uuid);
+
+        return {
+            slug: pckg?.id ?? 'world',
+            value: pckg?.title ?? '',
+            label: getCompendiumName(uuid) ?? game.i18n.localize('PACKAGE.Type.world'),
+        }
+    }
+
+    static addSourceData(data) {
+        foundry.utils.setProperty(data, "system.source", this._deriveSource(data.uuid));
+    }
+
+
+    get source() {
+        return this.constructor._deriveSource(this.parent.uuid);
+    }
+
 
     async _preCreate(data, options, user) 
     {

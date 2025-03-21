@@ -1,4 +1,5 @@
 import { systemConfig } from "../util/utility";
+import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
 const {hasProperty, getProperty} = foundry.utils;
 
 /**
@@ -129,6 +130,33 @@ export default function ()
         Handlebars.registerHelper("settings", function (key) 
         {
             return game.settings.get(game.system.id, key);
+        });
+
+        // Compendium Browser source exclusion
+        game.settings.registerMenu("warhammer-lib", "packSourceConfiguration", {
+            name: "WH.CompendiumBrowser.Sources.Name",
+            label: "WH.CompendiumBrowser.Sources.Label",
+            hint: "WH.CompendiumBrowser.Sources.Hint",
+            icon: "fas fa-book-open-reader",
+            type: CompendiumBrowserSettingsConfig,
+            restricted: true
+        });
+
+        game.settings.register(game.system.id, "packSourceConfiguration", {
+            name: "Pack Source Configuration",
+            scope: "world",
+            config: false,
+            type: Object,
+            default: {},
+            onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
+        });
+
+        game.settings.register(game.system.id, "compendiumWorldItems", {
+            scope: "client",
+            config: false,
+            type: Boolean,
+            default: true,
+            onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
         });
     });
 }
