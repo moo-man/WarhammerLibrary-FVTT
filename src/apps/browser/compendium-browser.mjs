@@ -519,7 +519,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
     }
 
     context.tabs = foundry.utils.deepClone(this.constructor.TABS);
-    const tab = options.isFirstRender ? this.options.tab : this.tabGroups.primary;
+    const tab = this.tabGroups.primary ?? this.options.tab;
     const activeTab = context.tabs.find(t => t.tab === tab) ?? context.tabs[0];
     activeTab.active = true;
 
