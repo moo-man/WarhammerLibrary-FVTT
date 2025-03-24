@@ -996,7 +996,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       .concat(
         game.settings.get(game.system.id, "compendiumWorldItems")
           ? game[documentClass.collectionName].contents
-            .filter(i => (!types.size || types.has(i.type)) && (!filters.length || Filter.performCheck(i, filters)))
+            .filter(i => i.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED) && (!types.size || types.has(i.type)) && (!filters.length || Filter.performCheck(i, filters)))
           : []
       );
 
