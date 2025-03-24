@@ -152,7 +152,7 @@ export default function ()
         });
 
         game.settings.register(game.system.id, "compendiumWorldItems", {
-            scope: "client",
+            scope: "world",
             config: false,
             type: Boolean,
             default: true,

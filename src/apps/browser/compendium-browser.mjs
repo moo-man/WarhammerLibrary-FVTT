@@ -519,7 +519,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
     }
 
     context.tabs = foundry.utils.deepClone(this.constructor.TABS);
-    const tab = options.isFirstRender ? this.options.tab : this.tabGroups.primary;
+    const tab = this.tabGroups.primary ?? this.options.tab;
     const activeTab = context.tabs.find(t => t.tab === tab) ?? context.tabs[0];
     activeTab.active = true;
 
@@ -982,7 +982,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
         // Derive source values
         .map(i => {
-          if (i.uuid) CONFIG[documentClass.metadata.name].dataModels[i.type].addSourceData(i);
+          if (i.uuid && CONFIG[documentClass.metadata.name].dataModels[i.type]) CONFIG[documentClass.metadata.name].dataModels[i.type].addSourceData(i);
           return i;
         })
 
@@ -996,7 +996,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       .concat(
         game.settings.get(game.system.id, "compendiumWorldItems")
           ? game[documentClass.collectionName].contents
-            .filter(i => (!types.size || types.has(i.type)) && (!filters.length || Filter.performCheck(i, filters)))
+            .filter(i => i.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED) && (!types.size || types.has(i.type)) && (!filters.length || Filter.performCheck(i, filters)))
           : []
       );
 
