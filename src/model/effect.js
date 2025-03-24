@@ -156,11 +156,11 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
     {
         if (this.itemTargetData.allItems)
         {
-            return this.actor.items.contents;
+            return this.parent.actor.items.contents;
         }
         else 
         {
-            return this.itemTargetData.ids.map(i => this.actor.items.get(i)).map(i => i);;
+            return this.itemTargetData.ids.map(i => this.parent.actor.items.get(i)).map(i => i);;
         }
     }
 

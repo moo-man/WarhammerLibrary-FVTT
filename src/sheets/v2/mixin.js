@@ -402,7 +402,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let index = this._getIndex(ev);
         let internalPath = this._getDataAttribute(ev, "ipath");
         let value = ev.target.value;
-
+        if (ev.target.type == "number" && value == "")
+        {
+            value = null;
+        }
         if (list)
         {
             if (list instanceof Array)
