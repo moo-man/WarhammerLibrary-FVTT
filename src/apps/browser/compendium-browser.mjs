@@ -982,7 +982,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
 
         // Derive source values
         .map(i => {
-          if (i.uuid) CONFIG[documentClass.metadata.name].dataModels[i.type].addSourceData(i);
+          if (i.uuid && CONFIG[documentClass.metadata.name].dataModels[i.type]) CONFIG[documentClass.metadata.name].dataModels[i.type].addSourceData(i);
           return i;
         })
 
