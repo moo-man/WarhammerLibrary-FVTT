@@ -4,6 +4,7 @@
   --color-fieldset-border: var(--color-border-light-tertiary);
   --items-section-shadow: rgba(0, 0, 0, 0.45);
   --items-section-background-color: none;
+  --checkbox-icon-size: 68%;
 }
 
 .theme-dark {
@@ -11,7 +12,7 @@
     --color-fieldset-border: #434857;
     --card-background: #252830;
     --color-gold: #242731;
-    --checkbox-fill-color: #665e4b;
+    --checkbox-fill-color: #80765e;
     --checkbox-border-color: var(--checkbox-fill-color);
     --items-section-shadow: rgba(150, 150, 150, 0.45);
     --items-section-background-color: var(--color-cool-5);
