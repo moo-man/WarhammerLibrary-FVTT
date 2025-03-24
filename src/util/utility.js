@@ -324,7 +324,7 @@ export function replacePopoutPath(path)
  * @param loadingLabel
  * @param index
  */
-export async function findAllItems(type, loadingLabel = "", index=false) 
+export async function findAllItems(type, loadingLabel = "", index=false, indexFields=[]) 
 {
     let items = game.items.contents.filter(i => i.type == type);
 
@@ -338,7 +338,7 @@ export async function findAllItems(type, loadingLabel = "", index=false)
             packCounter++;
             SceneNavigation.displayProgressBar({label: loadingLabel, pct: (packCounter / packs.length)*100 });
         }
-        indexedItems = indexedItems.concat(p.index.filter(i => i.type == type)); 
+        indexedItems = indexedItems.concat((await p.getIndex({fields: indexFields})).filter(i => i.type == type)); 
     }
 
     if (!index)
@@ -348,7 +348,7 @@ export async function findAllItems(type, loadingLabel = "", index=false)
     }
     else 
     {
-        return indexedItems;
+        return indexedItems.concat(items);
     }
 }
 

@@ -212,13 +212,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         // return  
         return [
-            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContetMenuOptions()), 
-            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContetMenuOptions(), {eventName : "click"}),
-            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContetMenuOptions())
+            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions()), 
+            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click"}),
+            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions())
         ];
     }
 
-    _getContetMenuOptions() 
+    _getContextMenuOptions() 
     {
 
     }
@@ -402,7 +402,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let index = this._getIndex(ev);
         let internalPath = this._getDataAttribute(ev, "ipath");
         let value = ev.target.value;
-
+        if (ev.target.type == "number" && value == "")
+        {
+            value = null;
+        }
         if (list)
         {
             if (list instanceof Array)
