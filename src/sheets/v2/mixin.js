@@ -231,7 +231,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         return context;
     }
 
-    async _preparePartContext(partId, context) 
+    async _preparePartContext(partId, context, options)
     {
         context.partId = `${this.id}-${partId}`;
         if (context.tabs)
@@ -242,7 +242,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let fn = this[`_prepare${partId.capitalize()}Context`]?.bind(this);
         if (typeof fn == "function")
         {
-            fn(context);
+            fn(context, options);
         }
 
         return context;
@@ -394,7 +394,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let index = this._getIndex(ev);
         let internalPath = this._getDataAttribute(ev, "ipath");
         let value = ev.target.value;
-
+        if (ev.target.type == "number" && value == "")
+        {
+            value = null;
+        }
         if (list)
         {
             if (list instanceof Array)
@@ -487,6 +490,24 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                     return val;
                 }
             })});
+        }
+    }
+
+    _onFirstRender(context, options) {
+        super._onFirstRender(context, options);
+        const containers = {};
+        for (const [part, config] of Object.entries(this.constructor.PARTS)) {
+            if (!config.container?.id) continue;
+            const element = this.element.querySelector(`[data-application-part="${part}"]`);
+            if (!element) continue;
+            if (!containers[config.container.id]) {
+                const div = document.createElement("div");
+                div.dataset.containerId = config.container.id;
+                div.classList.add(...config.container.classes ?? []);
+                containers[config.container.id] = div;
+                element.replaceWith(div);
+            }
+            containers[config.container.id].append(element);
         }
     }
 };

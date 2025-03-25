@@ -10,6 +10,8 @@
 @use "./apps/journal";
 @use "./apps/misc";
 @use "./apps/light";
+@use "./apps/elements";
+@use "./apps/browser";
 
 .warhammer {
   --tab-color : var(--color-cool-3);
@@ -99,6 +101,14 @@
   &#context-menu {
     z-index: 9999;
     width: unset;
+  }
+  
+  &.application {
+    .unlist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
   }
 
   // TEMP: V13 put all the form-field rules in the .standard-form class which I don't want to use so I'm adding these here for now

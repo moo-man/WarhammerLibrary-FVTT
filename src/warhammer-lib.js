@@ -25,7 +25,21 @@ import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
-import { error, findAllItems, findItemId, findKey, findUuid, getActiveDocumentOwner, log, replacePopoutPath, replacePopoutTokens, sleep, targetedOrAssignedActors } from "./util/utility";
+import { error,
+    findAllItems,
+    findItemId,
+    findKey,
+    findUuid,
+    getActiveDocumentOwner,
+    log,
+    replacePopoutPath,
+    replacePopoutTokens,
+    sleep,
+    targetedOrAssignedActors,
+    sortObjectEntries,
+    getPackage,
+    getCompendiumName
+} from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
 import { SingletonItemModel } from "./model/components/singleton-item";
@@ -42,6 +56,9 @@ import { WarhammerRollTable } from "./document/table";
 import ChatCommands from "./system/commands";
 import { WarhammerContextMenu } from "./util/context-menu";
 import WarhammerChatMessage from "./document/message";
+import CompendiumBrowser from "./apps/browser/compendium-browser.mjs";
+import FilterStateElement from "./elements/filter-state.mjs";
+import CheckboxElement from "./elements/checkbox.mjs";
 hooks();
 overrides();
 
@@ -70,7 +87,10 @@ warhammer.utility = {
     replacePopoutPath,
     addSheetHelpers,
     sleep,
-    targetedOrAssignedActors
+    targetedOrAssignedActors,
+    sortObjectEntries,
+    getPackage,
+    getCompendiumName,
 };
 
 warhammer.apps = {
@@ -96,7 +116,8 @@ warhammer.apps = {
     ChoiceConfigV2,
     ChoiceDecision,
     ChatCommands,
-    WarhammerContextMenu
+    WarhammerContextMenu,
+    CompendiumBrowser
 };
 
 warhammer.models = {
@@ -127,3 +148,6 @@ warhammer.documents = {
 };
 
 globalThis.warhammer = warhammer;
+
+window.customElements.define("filter-state", FilterStateElement);
+window.customElements.define("warhammer-checkbox", CheckboxElement);

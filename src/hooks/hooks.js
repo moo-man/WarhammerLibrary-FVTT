@@ -10,6 +10,7 @@ import token from "./token";
 import zones from "./zones";
 import debug from "./debug";
 import sidebar from "./sidebar";
+import directories from "./directories.js";
 
 /**
  *
@@ -21,6 +22,8 @@ export default function()
     init();
     combat();
     zones();
+    chat();
+    directories();
     journal();
     note();
     template();

@@ -1,0 +1,35 @@
+{{#*inline "type-entry"}}
+<div class="type-entry">
+    <label>
+        <warhammer-checkbox value="{{ @key }}" data-action="setType" {{ checked chosen }} {{#if indeterminate}}indeterminate{{/if}}
+            {{ disabled @root.isLocked.types }}></warhammer-checkbox>
+        <span>{{ localize label }}</span>
+    </label>
+</div>
+{{/inline}}
+
+<div class="flexcol" {{#unless showTypes}}hidden{{/unless}}>
+    {{#each types}}
+    {{#if children}}
+    <div class="type-group collapsible collapsed">
+        <div class="type-group-header">
+            <label>
+                <warhammer-checkbox data-action="setType" {{ checked chosen }} {{#if indeterminate}}indeterminate{{/if}}
+                    {{ disabled @root.isLocked.types }}></warhammer-checkbox>
+                <span>{{ localize label }}</span>
+            </label>
+            <div data-action="toggleCollapse"><i class="fa-solid fa-caret-down"></i></div>
+        </div>
+        <div class="collapsible-content">
+            <div class="wrapper">
+                {{#each children}}
+                {{> "type-entry" }}
+                {{/each}}
+            </div>
+        </div>
+    </div>
+    {{else}}
+    {{> "type-entry" }}
+    {{/if}}
+    {{/each}}
+</div>
