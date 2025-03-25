@@ -120,6 +120,19 @@
 
     .attribute-box {
         margin: 5px 5px;
+        
+
+        &.top-label {
+            .label {
+                border-bottom: 1px solid var(--attribute-border);
+            }
+        }
+
+        &.bottom-label {
+            .label {
+                border-top: 1px solid var(--attribute-border);
+            }
+        }
 
         &:first-child {
             margin-left: 0px;
@@ -184,6 +197,7 @@
             border-right: 1px solid var(--attribute-border);
             width: 100%;
             background: var(--attribute-label);
+            white-space: nowrap;
         }
     }
 

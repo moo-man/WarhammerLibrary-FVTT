@@ -7,6 +7,8 @@
 @use "./sheets/sheets";
 @use "./sheets/list";
 @use "./apps/embed";
+@use "./apps/elements";
+@use "./apps/browser";
 
 .warhammer {
   --tab-color : var(--color-cool-3);
@@ -94,6 +96,14 @@
   &#context-menu {
     z-index: 9999;
     width: unset;
+  }
+
+  &.application {
+    .unlist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
   }
 }
 

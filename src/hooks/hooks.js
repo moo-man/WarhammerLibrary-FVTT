@@ -9,6 +9,7 @@ import ready from "./ready";
 import template from "./template";
 import token from "./token";
 import zones from "./zones";
+import directories from "./directories.js";
 
 /**
  *
@@ -21,6 +22,7 @@ export default function()
     combat();
     zones();
     chat();
+    directories();
     journal();
     note();
     template();

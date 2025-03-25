@@ -5,6 +5,7 @@ import TokenHelpers from "../util/token-helpers";
 import { getActiveDocumentOwner } from "../util/utility";
 import WarhammerActiveEffect from "./effect";
 import { WarhammerDocumentMixin } from "./mixin";
+import SelectChoices from "../apps/browser/select-choices.mjs";
 const {hasProperty} = foundry.utils;
 
 export class WarhammerActor extends WarhammerDocumentMixin(Actor)
@@ -277,7 +278,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         }
     }
 
-    async addEffectItems(uuids=[], effect, merge=[{}])
+    async addEffectItems(uuids=[], effect, merge=[{}], options={})
     {
         if (typeof uuids == "string")
         {
@@ -295,7 +296,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
             items[i] = foundry.utils.mergeObject(items[i], merge[i]);
         }
 
-        return this.createEmbeddedDocuments("Item", items, {fromEffect : effect?.id});
+        return this.createEmbeddedDocuments("Item", items, foundry.utils.mergeObject({fromEffect : effect?.id}, options));
     }
   
     get auraEffects() 
@@ -307,5 +308,20 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
     {
         return this.items.reduce((acc, item) => acc.concat(Array.from(item.allApplicableEffects())), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "zone" && e.system.transferData.zone.type == "follow" && !e.system.transferData.zone.transferred).filter(i => i.active);
     }
-  
+
+    /**
+     * Types that can be selected within the compendium browser.
+     * @param {object} [options={}]
+     * @param {Set<string>} [options.chosen]  Types that have been selected.
+     * @returns {SelectChoices}
+     */
+    static compendiumBrowserTypes({chosen = new Set()} = {}) {
+        return new SelectChoices(Actor.TYPES.filter(t => t !== CONST.BASE_DOCUMENT_TYPE).reduce((obj, type) => {
+            obj[type] = {
+                label: CONFIG.Actor.typeLabels[type],
+                chosen: chosen.has(type)
+            };
+            return obj;
+        }, {}));
+    }
 }
