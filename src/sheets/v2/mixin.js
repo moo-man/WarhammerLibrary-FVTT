@@ -173,15 +173,16 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     async _onFirstRender(context, options)
     {
         await super._onFirstRender(context, options);
+        this._handleContainers();
 
         // Anything in a list row should be right clickable (usually items) unless otherwise specified (nocontext)
-        WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", {hookName : "ContextMenu", jQuery: false, fixed: true});
+        new WarhammerContextMenu(this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {jQuery: false, fixed: true});
 
         // Left clickable context menus (3 vertical pips)
-        WarhammerContextMenu.create(this, this.element, ".context-menu", {hookName : "ContextMenu", jQuery: false, fixed: true, eventName : "click"});
+        new WarhammerContextMenu(this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click", jQuery: false, fixed: true});
 
         // Anything else that should be right clickable for context menus
-        WarhammerContextMenu.create(this, this.element, ".context-menu-alt", {hookName : "ContextMenu", jQuery: false, fixed: true});
+        new WarhammerContextMenu(this.element, ".context-menu-alt", this._getContextMenuOptions(), {jQuery: false, fixed: true});
     }
 
     _addEventListeners()
@@ -493,14 +494,16 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    _onFirstRender(context, options) {
-        super._onFirstRender(context, options);
+    _handleContainers(context, options)
+    {
         const containers = {};
-        for (const [part, config] of Object.entries(this.constructor.PARTS)) {
-            if (!config.container?.id) continue;
+        for (const [part, config] of Object.entries(this.constructor.PARTS)) 
+        {
+            if (!config.container?.id) {continue;}
             const element = this.element.querySelector(`[data-application-part="${part}"]`);
-            if (!element) continue;
-            if (!containers[config.container.id]) {
+            if (!element) {continue;}
+            if (!containers[config.container.id]) 
+            {
                 const div = document.createElement("div");
                 div.dataset.containerId = config.container.id;
                 div.classList.add(...config.container.classes ?? []);
@@ -510,6 +513,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             containers[config.container.id].append(element);
         }
     }
+
+    
 };
 
 export default WarhammerSheetMixinV2;
