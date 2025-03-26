@@ -22,7 +22,6 @@ export default function()
     init();
     combat();
     zones();
-    chat();
     directories();
     journal();
     note();
