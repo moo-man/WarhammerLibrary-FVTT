@@ -11,6 +11,7 @@
         "Scripts": "Scripts",
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "ItemDialog": "Item Dialog",
+        "ValueDialog": "Value Dialog",
         "Initialize": "Initialize",
         "ScriptConfig": "Script Config",
         "DiffEditor": "Diff Editor",
