@@ -30,14 +30,14 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return await this.document.createEmbeddedDocuments(data.type, [document]);
+            return await this.document.createEmbeddedDocuments(data.type, [document], data.options || {});
         }
     }
 
     async _onDropActiveEffect(data)
     {
         let document = await fromUuid(data.uuid);
-        return await this.document.createEmbeddedDocuments(data.type, [document]);
+        return await this.document.createEmbeddedDocuments(data.type, [document], data.options || {});
     }
 
     async _onSortItem(document, event)
