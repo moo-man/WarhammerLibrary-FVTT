@@ -1,4 +1,8 @@
-import { localize } from "../util/utility";
+/**
+ * Generic helper used to conveniently prompt for some basic input
+ * Has the ability to provide preset values, turning the input element into a select element
+ */
+
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV2)  
@@ -27,6 +31,15 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         }
     };
 
+    /**
+     * 
+     * @param {Object} obj 
+     * @param {string} obj.text Text display in the dialog
+     * @param {string} obj.title Window title for the dialog
+     * @param {string} defaultValue Define a default value if desired
+     * @param {Object|Array} values Define some preset options
+     * @param {Object} options Foundry ApplicationV2 options 
+     */
     constructor({text, title}, defaultValue = "", values={}, options)
     {
         super(options);
@@ -49,6 +62,14 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         }
     }
 
+    /**
+     * Submits the dialog, returning the input value
+     * 
+     * @param {Event} event event triggering submission
+     * @param {HTMLElement} form HTML Element for the form
+     * @param {Object} formData form data from the dialog
+     * @returns 
+     */
     static async submit(event, form, formData)
     {
         if (this.options.resolve)
@@ -58,6 +79,7 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         return formData.object.value;
     }
 
+    /** @inheritdoc */
     async _prepareContext(options)
     {
         let context = await super._prepareContext(options);
@@ -80,6 +102,16 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
     }
 
 
+    /**
+     * Typical entry point for using the dialog, returns a promise that is resolved when the 
+     * dialog is submitted
+     * 
+     * @param {Object} obj 
+     * @param {string} obj.text Text display in the dialog
+     * @param {string} obj.title Window title for the dialog
+     * @param {string} defaultValue Define a default value if desired
+     * @param {Object|Array} values Define some preset options
+     */
     static async create({text, title}, defaultValue = "", values={})
     {
         return new Promise(resolve => 

@@ -59,6 +59,7 @@ import WarhammerChatMessage from "./document/message";
 import CompendiumBrowser from "./apps/browser/compendium-browser.mjs";
 import FilterStateElement from "./elements/filter-state.mjs";
 import CheckboxElement from "./elements/checkbox.mjs";
+import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
 hooks();
 overrides();
 
@@ -101,6 +102,7 @@ warhammer.apps = {
     WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,
+    WarhammerRollDialogV2,
     WarhammerActiveEffectConfig,
     SocketHandlers,
     defaultWarhammerConfig,
