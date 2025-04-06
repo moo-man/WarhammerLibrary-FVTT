@@ -171,8 +171,9 @@
             background-color: var(--attribute-input);
             border : 1px solid var(--attribute-input-border);
             padding: 0px;
-            height: 1.5rem;
-            line-height: 1.5rem;
+            // Prevents input from hiding border
+            height: 1.4rem;
+            line-height: 1.4rem;
         }
 
         input:disabled,
@@ -186,6 +187,7 @@
             border-right: 1px solid var(--attribute-border);
             width: 100%;
             background: var(--attribute-field);
+            
             height: 1.5rem;
             line-height: 1.5rem;
         }

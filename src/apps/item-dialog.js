@@ -7,7 +7,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 {
 
     static DEFAULT_OPTIONS = {
-        classes: ["item-dialog", "warhammer"],
+        classes: ["item-dialog", "warhammer", "standard-form"],
         tag : "form",
         form : {
             handler : this.submit,

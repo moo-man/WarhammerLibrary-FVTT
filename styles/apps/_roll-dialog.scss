@@ -21,14 +21,23 @@
     }
 
     .dialog-modifiers {
+        display: flex;
+        flex-direction: column;
         text-align: center;
+        flex: 1;
         ul {
             text-align: left;
             list-style: none;
             padding: 0px;
+            flex: 1;
+            margin: 0px;
         }
-        .modifier.active {
-            background: var(--modifier-bg);
+        .modifier {
+            margin: 0px;
+            padding: 0.3rem 0.3rem;
+            &.active {
+                background: var(--modifier-bg);
+            }
         }
     }
 }

@@ -13,12 +13,12 @@ export class ListModel extends foundry.abstract.DataModel
         }, options, context);
     }
     
-    static listSchema = new foundry.data.fields.ObjectField();
+    static get listSchema() {return new foundry.data.fields.ObjectField();};
     
     static defineSchema() 
     {
         let schema = {};
-        schema.list = new foundry.data.fields.ArrayField(this.listSchema instanceof foundry.data.fields.DataField ? this.listSchema : new foundry.data.fields.EmbeddedDataField(this.listSchema) );
+        schema.list = new foundry.data.fields.ArrayField(foundry.utils.deepClone(this.listSchema instanceof foundry.data.fields.DataField ? this.listSchema : new foundry.data.fields.EmbeddedDataField(this.listSchema)));
         return schema;
     }
 

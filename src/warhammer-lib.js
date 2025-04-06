@@ -60,6 +60,8 @@ import CompendiumBrowser from "./apps/browser/compendium-browser.mjs";
 import FilterStateElement from "./elements/filter-state.mjs";
 import CheckboxElement from "./elements/checkbox.mjs";
 import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
+import DraggableApp from "./apps/draggable";
+import ContainerizedApp from "./apps/containerized";
 hooks();
 overrides();
 
@@ -119,7 +121,9 @@ warhammer.apps = {
     ChoiceDecision,
     ChatCommands,
     WarhammerContextMenu,
-    CompendiumBrowser
+    CompendiumBrowser,
+    DraggableApp,
+    ContainerizedApp
 };
 
 warhammer.models = {

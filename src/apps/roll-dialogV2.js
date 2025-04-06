@@ -7,7 +7,6 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsApplicationMixin(ApplicationV2))
 {
-    subTemplate = "";       // path to optional html template that can be inserted inside the dialog
     selectedScripts = [];   // List of scripts that have been manually selected by the user
     unselectedScripts = []; // List of scripts that have been manually UNselected by the user
     #onKeyPress;            // Keep track of Enter key listener so it can be removed when submitted
@@ -31,7 +30,7 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
             resizable : true,
         },
         position : {
-
+            width: 500
         },
         actions : {
             clickModifier :this._onModifierClicked
@@ -345,7 +344,6 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
             data : this.data,
             fields : this.fields,
             tooltips : this.tooltips.getTooltips(),
-            subTemplate : await this.getSubTemplate()
         };
     }
 
@@ -576,27 +574,6 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
         this.render(true);
     }
 
-
-    
-    /**
-     * Allows subclasses to insert custom fields
-     * @returns {Promise<string>} Rendered subtemplate HTML
-     */
-    async getSubTemplate()
-    {
-        if (this.subTemplate && !foundry.utils.isEmpty(this.subTemplate))
-        {
-            let templateData = {fields : this.fields, data: this.data, context : this.context, options : this.options, tooltips: this.tooltips.getTooltips()};
-            if (this.subTemplate instanceof Array)
-            {
-                return (await Promise.all(this.subTemplate.map(t => renderTemplate(t, templateData)))).join("");
-            }
-            else 
-            {
-                return await renderTemplate(this.subTemplate, templateData);
-            }
-        }
-    }
 
     static awaitSubmit({data={}, fields={}, context={}, options={}}={})
     {
