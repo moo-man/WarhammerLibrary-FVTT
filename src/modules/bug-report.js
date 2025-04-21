@@ -155,7 +155,7 @@ export default class WarhammerBugReport extends Application
         {
             for(let i = 1; i <= 10; i++)
             {
-                SceneNavigation.displayProgressBar({label: localize("WH.LoadingIssues"), pct: Math.round((i / 10) * 100) });
+                foundry.applications.ui.SceneNavigation.displayProgressBar({label: localize("WH.LoadingIssues"), pct: Math.round((i / 10) * 100) });
 
                 this.constructor.issues = this.constructor.issues.concat((await fetch(this.github + `issues?per_page=100&page=${i}&state=all`)
                     .then(r => r.json())

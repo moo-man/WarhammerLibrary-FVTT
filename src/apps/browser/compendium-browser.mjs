@@ -561,7 +561,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       displaySelection: this.displaySelection,
       selected: this.#selected.has(uuid)
     };
-    const html = await renderTemplate("modules/warhammer-lib/templates/apps/browser/browser-entry.hbs", context);
+    const html = await foundry.applications.handlebars.renderTemplate("modules/warhammer-lib/templates/apps/browser/browser-entry.hbs", context);
     const template = document.createElement("template");
     template.innerHTML = html;
     const element = template.content.firstElementChild;
@@ -623,7 +623,7 @@ export default class CompendiumBrowser extends WarhammerSheetMixinV2(HandlebarsA
       obj[k.slugify({strict: true})] = v;
       return obj;
     }, {});
-    const filter = await renderTemplate("modules/warhammer-lib/templates/apps/browser/browser-sidebar-filter-set.hbs", {
+    const filter = await foundry.applications.handlebars.renderTemplate("modules/warhammer-lib/templates/apps/browser/browser-sidebar-filter-set.hbs", {
       locked,
       value: locked,
       key: "source",

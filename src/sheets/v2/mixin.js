@@ -71,7 +71,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 dragover: this._onDragOver.bind(this),
                 drop: this._onDrop.bind(this),
             };
-            return new DragDrop(d);
+            return new foundry.applications.ux.DragDrop.implementation(d);
         });
     }
 
@@ -143,7 +143,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
      */
     async _onDrop(event) 
     {
-        const data = TextEditor.getDragEventData(event);
+        const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
 
         if (data.type && typeof this["_onDrop" + data.type] == "function")
         {

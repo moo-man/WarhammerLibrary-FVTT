@@ -154,7 +154,7 @@ export default class WarhammerRollDialog extends Application
         this.form = html[0];
         this.form.onsubmit = this.submit.bind(this);
 
-        let fieldSelector = Object.keys(new FormDataExtended(this.form).object).map(i => `[name='${i}']`).join(",");
+        let fieldSelector = Object.keys(new foundry.applications.ux.FormDataExtended(this.form).object).map(i => `[name='${i}']`).join(",");
 
         // Listen on all elements with 'name' property
         html.find(fieldSelector).change(this._onFieldChange.bind(this));
@@ -556,11 +556,11 @@ export default class WarhammerRollDialog extends Application
             let templateData = {fields : this.fields, data: this.data, options : this.options, tooltips: this.tooltips.getTooltips()};
             if (this.subTemplate instanceof Array)
             {
-                return (await Promise.all(this.subTemplate.map(t => renderTemplate(t, templateData)))).join("");
+                return (await Promise.all(this.subTemplate.map(t => foundry.applications.handlebars.renderTemplate(t, templateData)))).join("");
             }
             else 
             {
-                return await renderTemplate(this.subTemplate, templateData);
+                return await foundry.applications.handlebars.renderTemplate(this.subTemplate, templateData);
             }
         }
     }
