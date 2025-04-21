@@ -10,6 +10,7 @@ export default function ()
 
     Hooks.on("init", () => 
     {
+        CONFIG.ux.ContextMenu = warhammer.apps.WarhammerContextMenu;
 
         CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
         {

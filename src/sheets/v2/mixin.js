@@ -176,13 +176,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this._handleContainers();
 
         // Anything in a list row should be right clickable (usually items) unless otherwise specified (nocontext)
-        new WarhammerContextMenu(this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".list-row:not(.nocontext)", {jQuery: false, fixed: true});
 
         // Left clickable context menus (3 vertical pips)
-        new WarhammerContextMenu(this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click", jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu", {eventName : "click", jQuery: false, fixed: true});
 
         // Anything else that should be right clickable for context menus
-        new WarhammerContextMenu(this.element, ".context-menu-alt", this._getContextMenuOptions(), {jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu-alt", {jQuery: false, fixed: true});
     }
 
     _addEventListeners()
