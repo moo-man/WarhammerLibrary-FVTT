@@ -169,19 +169,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     async _onFirstRender(context, options)
     {
-        ContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {
-            jQuery: false,
-            fixed: true
-        });
-        ContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {
-            eventName : "click",
-            jQuery: false,
-            fixed: true
-        });
-        ContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions(), {
-            jQuery: false,
-            fixed: true
-        });
+        this._createContextMenu(this._getContextMenuOptions, ".list-row:not(.nocontext)", {jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu", {eventName : "click", jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu-alt", {jQuery: false, fixed: true});
     }
 
     _addEventListeners()

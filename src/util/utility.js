@@ -2,7 +2,7 @@
 /**
  *@returns {object} Returns the config object for the system
  */
-export function systemConfig() 
+export function systemConfig()
 {
     switch(game.system.id)
     {
@@ -10,7 +10,7 @@ export function systemConfig()
         return game.wng.config;
     case "age-of-sigmar-soulbound":
         return game.aos.config;
-    case "wfrp-tow" : 
+    case "wfrp-tow" :
         return game.oldworld.config;
     default:
         return game[game.system.id].config;
@@ -23,7 +23,7 @@ export function systemConfig()
  * @param force
  * @param args
  */
-export function log(message, force=false, args, options={}) 
+export function log(message, force=false, args, options={})
 {
     if (CONFIG.debug.warhammer || force)
     {
@@ -33,7 +33,7 @@ export function log(message, force=false, args, options={})
         {
             console.groupCollapsed(...format, args || "");
         }
-        else 
+        else
         {
             console.log(...format, args || "");
         }
@@ -47,7 +47,7 @@ export function log(message, force=false, args, options={})
  * @param force
  * @param args
  */
-export function error(message, force=false, args) 
+export function error(message, force=false, args)
 {
     if (CONFIG.debug.warhammer || force)
     {
@@ -80,28 +80,28 @@ export function format(string, args)
 
 /**
  * Finds the first key that matches the value provided
- * @param {*} value value being test 
+ * @param {*} value value being test
  * @param {*} obj object being searched
  * @param {*} options options for the search
  * @param {*} options.caseInsensitive compare value without considering case
  * @returns {string|undefined} The key found, if any
  */
-export function findKey(value, obj, options = {}) 
+export function findKey(value, obj, options = {})
 {
     if (!value || !obj)
     {return undefined;}
 
-    if (options.caseInsensitive) 
+    if (options.caseInsensitive)
     {
-        for (let key in obj) 
+        for (let key in obj)
         {
             if (obj[key].toLowerCase() == value.toLowerCase())
             {return key;}
         }
     }
-    else 
+    else
     {
-        for (let key in obj) 
+        for (let key in obj)
         {
             if (obj[key] == value)
             {return key;}
@@ -112,20 +112,20 @@ export function findKey(value, obj, options = {})
 
 /**
  * This function tests whether an existing ID is already present in the collection that the document is being created in
- * If there is no conflict in ID, keep the ID 
+ * If there is no conflict in ID, keep the ID
  * @param {string} id The ID being tested
  * @param {Document} document The document the id belongs to
  * @returns {boolean} whether or not to keep the id
  */
-export function keepID(document) 
+export function keepID(document)
 {
-    try 
+    try
     {
         let compendium = !!document.pack;
         let world = !compendium;
         let collection;
 
-        if (compendium) 
+        if (compendium)
         {
             let pack = game.packs.get(document.pack);
             collection = pack.index;
@@ -133,14 +133,14 @@ export function keepID(document)
         else if (world)
         {collection = document.collection;}
 
-        if (collection.has(document.id)) 
+        if (collection.has(document.id))
         {
             ui.notifications.notify(`${game.i18n.format("WH.Error.ID", {name: document.name})}`);
             return false;
         }
         else {return true;}
     }
-    catch (e) 
+    catch (e)
     {
         console.error(e);
         return false;
@@ -152,7 +152,7 @@ export function keepID(document)
  * @param id
  * @param type
  */
-export function findItemId(id, type) 
+export function findItemId(id, type)
 {
     if (id.includes("."))
     {return fromUuid(id);}
@@ -161,9 +161,9 @@ export function findItemId(id, type)
     {return game.items.get(id);};
 
     let packs = game.packs.contents;
-    for (let pack of packs) 
+    for (let pack of packs)
     {
-        if (pack.index.has(id)) 
+        if (pack.index.has(id))
         {
             return pack.getDocument(id);
         }
@@ -171,12 +171,12 @@ export function findItemId(id, type)
 }
 
 // Given a ID, find the compendium UUID
-export function findUuid(id) 
+export function findUuid(id)
 {
     let packs = game.packs.contents;
-    for (let pack of packs) 
+    for (let pack of packs)
     {
-        if (pack.index.has(id)) 
+        if (pack.index.has(id))
         {
             return pack.index.get(id).uuid;
         }
@@ -184,35 +184,35 @@ export function findUuid(id)
 }
 
 /**
- * Find the owner of a document, prioritizing non-GM users 
+ * Find the owner of a document, prioritizing non-GM users
  * @param {object} document Document whose owner is being found
  * @returns {User} Owning user found
  */
-export function getActiveDocumentOwner(document) 
+export function getActiveDocumentOwner(document)
 {
     // let document = fromUuidSync(uuid);
-    if (document.documentName == "Item" && document.isOwned) 
+    if (document.documentName == "Item" && document.isOwned)
     {
         document = document.actor;
     }
-    let activePlayers = game.users.contents.filter(u => u.active && u.role <= 2); // Not assistant or GM 
+    let activePlayers = game.users.contents.filter(u => u.active && u.role <= 2); // Not assistant or GM
     let owningUser;
 
     // First, prioritize if any user has this document as their assigned character
     owningUser = activePlayers.find(u => u.character?.id == document.id);
 
     // If not found, find the first non-GM user that can update this document
-    if (!owningUser) 
+    if (!owningUser)
     {
         owningUser = activePlayers.find(u => document.testUserPermission(u, "OWNER"));
     }
 
     // If still no owning user, simply find the first GM
-    if (!owningUser) 
+    if (!owningUser)
     {
         owningUser = game.users.contents.filter(u => u.active).find(u => u.isGM);
     }
-    
+
     return owningUser;
 }
 
@@ -220,7 +220,7 @@ export function getActiveDocumentOwner(document)
  *
  * @param ms
  */
-export async function sleep(ms) 
+export async function sleep(ms)
 {
     await new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -233,7 +233,7 @@ export async function sleep(ms)
  */
 export function addLinkSources(html)
 {
-    html.find(".content-link").each((index, element) => 
+    html.find(".content-link").each((index, element) =>
     {
         let uuid = element.dataset.uuid;
         let tooltip = element.dataset.tooltip || "";
@@ -246,7 +246,7 @@ export function addLinkSources(html)
                 {
                     tooltip = `${systemConfig().premiumModules[moduleKey]}`;
                 }
-                else 
+                else
                 {
                     tooltip += ` (${systemConfig().premiumModules[moduleKey]})`;
                 }
@@ -263,11 +263,12 @@ export function addLinkSources(html)
  *
  * @param html
  */
-export function replacePopoutTokens(html) 
+export function replacePopoutTokens(html)
 {
-    // Try to replace popout tokens in chat
-    let images = html.find('img:not(.profile)'); // This is required to prevent saving the absolute actor image path
-    Array.from(images).forEach(async element => 
+    const selector = "img:not(.profile)"; // This is required to prevent saving the absolute actor image path
+    // Try to replace popout tokens in chat. Support jQuery for wfrp4e
+    const images = html instanceof jQuery ? Array.from(html.find(selector)) : html.querySelectorAll(selector);
+    images.forEach(element =>
     {
         element.src = replacePopoutPath(element.src);
     });
@@ -277,10 +278,10 @@ export function replacePopoutTokens(html)
  *
  * @param path
  */
-export function replacePopoutPath(path) 
+export function replacePopoutPath(path)
 {
-    if (path.includes("tokens/popout/")) 
-    { 
+    if (path.includes("tokens/popout/"))
+    {
         log("Replacing popout token: " + path);
     }
     return path.replace("tokens/popout/", "tokens/");
@@ -292,21 +293,21 @@ export function replacePopoutPath(path)
  * @param loadingLabel
  * @param index
  */
-export async function findAllItems(type, loadingLabel = "", index=false) 
+export async function findAllItems(type, loadingLabel = "", index=false)
 {
     let items = game.items.contents.filter(i => i.type == type);
 
     let packCounter = 0;
     let packs = [...game.packs];
     let indexedItems = [];
-    for (let p of packs) 
+    for (let p of packs)
     {
         if (loadingLabel)
         {
             packCounter++;
             SceneNavigation.displayProgressBar({label: loadingLabel, pct: (packCounter / packs.length)*100 });
         }
-        indexedItems = indexedItems.concat(p.index.filter(i => i.type == type)); 
+        indexedItems = indexedItems.concat(p.index.filter(i => i.type == type));
     }
 
     if (!index)
@@ -314,7 +315,7 @@ export async function findAllItems(type, loadingLabel = "", index=false)
         items = items.concat(await Promise.all(indexedItems.map(i => fromUuid(i.uuid))));
         return items.sort((a, b) => a.name > b.name ? 1 : -1);
     }
-    else 
+    else
     {
         return indexedItems;
     }
