@@ -1,4 +1,4 @@
-export class WarhammerContextMenu extends ContextMenu
+export class WarhammerContextMenu extends foundry.applications.ux.ContextMenu
 {
 
     render(target, options)
