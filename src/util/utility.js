@@ -336,7 +336,7 @@ export async function findAllItems(type, loadingLabel = "", index=false, indexFi
         if (loadingLabel)
         {
             packCounter++;
-            SceneNavigation.displayProgressBar({label: loadingLabel, pct: (packCounter / packs.length)*100 });
+            foundry.applications.ui.SceneNavigation.displayProgressBar({label: loadingLabel, pct: (packCounter / packs.length)*100 });
         }
         indexedItems = indexedItems.concat((await p.getIndex({fields: indexFields})).filter(i => i.type == type)); 
     }

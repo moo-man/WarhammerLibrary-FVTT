@@ -31,7 +31,7 @@ export default class WarhammerModuleUpdater extends Dialog
 
     static async create(module)
     {
-        let html = await renderTemplate("modules/warhammer-lib/templates/modules/module-updater.hbs", module);
+        let html = await foundry.applications.handlebars.renderTemplate("modules/warhammer-lib/templates/modules/module-updater.hbs", module);
 
         return new this(module, html);
     }

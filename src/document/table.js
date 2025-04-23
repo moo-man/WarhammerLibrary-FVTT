@@ -6,7 +6,7 @@ export class WarhammerRollTable extends RollTable
         let noCenter = config.noCenter;
         console.log(config, options);
 
-        return $(await TextEditor.enrichHTML(`<table class="${game.system.id} embedded">
+        return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<table class="${game.system.id} embedded">
         <thead>
         <tr class="title"><td colspan="2">@UUID[${this.uuid}]{${this.name}}</td></tr>
         <tr class="subheader">

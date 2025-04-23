@@ -46,7 +46,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         if (target)
         {
             let siblings = Array.from(this._getParent(event.target, ".list-content").querySelectorAll(".list-row")).map(i => fromUuidSync(i.dataset.uuid)).filter(i => i).filter(i => document.uuid != i.uuid);
-            let sorted = SortingHelpers.performIntegerSort(document, {target, siblings});
+            let sorted = foundry.utils.SortingHelpers.performIntegerSort(document, {target, siblings});
             this.actor.updateEmbeddedDocuments(document.documentName, sorted.map(s => 
             {
                 return foundry.utils.mergeObject({
