@@ -11,7 +11,7 @@
         <label>{{localize "WH.ScriptTrigger"}}</label>
         <div class="form-fields">
             <select name="trigger">
-                {{selectOptions (config "scriptTriggers") selected=scriptData.trigger}}
+                {{selectOptions (config "scriptTriggers") selected=scriptData.trigger localize=true}}
             </select>
         </div>
     </div>

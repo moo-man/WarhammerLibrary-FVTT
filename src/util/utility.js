@@ -10,7 +10,7 @@ export function systemConfig()
         return game.wng.config;
     case "age-of-sigmar-soulbound":
         return game.aos.config;
-    case "wfrp-tow" : 
+    case "whtow" : 
         return game.oldworld.config;
     default:
         return game[game.system.id].config;
@@ -190,6 +190,10 @@ export function findUuid(id)
  */
 export function getActiveDocumentOwner(document) 
 {
+    if (!document)
+    {
+        return null;
+    }
     // let document = fromUuidSync(uuid);
     if (document.documentName == "Item" && document.isOwned) 
     {
