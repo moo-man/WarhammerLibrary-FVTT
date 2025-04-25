@@ -2,7 +2,7 @@ import AdvancedEffectConfig from "../apps/advanced-effect";
 import WarhammerEffectScriptEditor from "../apps/effect-script-editor";
 import { localize, systemConfig } from "../util/utility";
 
-export default class WarhammerActiveEffectConfig extends ActiveEffectConfig
+export default class WarhammerActiveEffectConfig extends foundry.applications.sheets.ActiveEffectConfig
 {
     systemTemplate = "";
     effectKeysTemplate = "";
@@ -49,7 +49,7 @@ export default class WarhammerActiveEffectConfig extends ActiveEffectConfig
     {
         await super._onRender(context);
 
-        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-transfer-config.hbs", {system : this.document.system, document : this.document, hidden : this.hiddenProperties()});
+        let transferDataHTML = await foundry.applications.handlebars.renderTemplate("modules/warhammer-lib/templates/effect/effect-transfer-config.hbs", {system : this.document.system, document : this.document, hidden : this.hiddenProperties()});
 
         // Replace transfer field with Effect Application data (used to derive transfer value)
         this.element.querySelector("[name='transfer']")?.closest(".form-group").remove();//replaceWith(transferDataHTML);
@@ -74,7 +74,7 @@ export default class WarhammerActiveEffectConfig extends ActiveEffectConfig
         {
             for (let element of changes.querySelectorAll(".key input"))
             {
-                element.parentElement.innerHTML = await renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value});
+                element.parentElement.innerHTML = await foundry.applications.handlebars.renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value});
             }
         }
 

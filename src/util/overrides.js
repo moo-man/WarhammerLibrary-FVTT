@@ -5,11 +5,11 @@ export default function ()
 {
 
     // Convert functions that move data between world and compendium to retain ID
-    Actors.prototype.fromCompendium = addKeepIdOption(Actors.prototype.fromCompendium);
-    Items.prototype.fromCompendium = addKeepIdOption(Items.prototype.fromCompendium);
-    Journal.prototype.fromCompendium = addKeepIdOption(Journal.prototype.fromCompendium);
-    Scenes.prototype.fromCompendium = addKeepIdOption(Scenes.prototype.fromCompendium);
-    RollTables.prototype.fromCompendium = addKeepIdOption(RollTables.prototype.fromCompendium);
+    foundry.documents.collections.Actors.prototype.fromCompendium = addKeepIdOption(foundry.documents.collections.Actors.prototype.fromCompendium);
+    foundry.documents.collections.Items.prototype.fromCompendium = addKeepIdOption(foundry.documents.collections.Items.prototype.fromCompendium);
+    foundry.documents.collections.Journal.prototype.fromCompendium = addKeepIdOption(foundry.documents.collections.Journal.prototype.fromCompendium);
+    foundry.documents.collections.Scenes.prototype.fromCompendium = addKeepIdOption(foundry.documents.collections.Scenes.prototype.fromCompendium);
+    foundry.documents.collections.RollTables.prototype.fromCompendium = addKeepIdOption(foundry.documents.collections.RollTables.prototype.fromCompendium);
 
     Actor.implementation.prototype.toCompendium = addKeepIdOption(Actor.implementation.prototype.toCompendium);
     Item.implementation.prototype.toCompendium = addKeepIdOption(Item.implementation.prototype.toCompendium);
@@ -47,7 +47,7 @@ export default function ()
      * @param {object} data       The dropped data transfer data
      * @protected
      */
-    NotesLayer.prototype._onDropData = async function(event, data) 
+    foundry.canvas.layers.NotesLayer.prototype._onDropData = async function(event, data)
     {
         let entry;
         const coords = this._canvasCoordinatesFromDrop(event);
@@ -71,9 +71,9 @@ export default function ()
         return this._createPreview(noteData, {top: event.clientY - 20, left: event.clientX + 40});
     };
 
-    let _NoteConfigSubmitData = NoteConfig.prototype._getSubmitData;
+    let _NoteConfigSubmitData = foundry.applications.sheets.NoteConfig.prototype._getSubmitData;
   
-    NoteConfig.prototype._getSubmitData = function(updateData={})
+    foundry.applications.sheets.NoteConfig.prototype._getSubmitData = function(updateData={})
     {
         let data = _NoteConfigSubmitData.bind(this)(updateData);
 

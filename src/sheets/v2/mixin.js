@@ -71,7 +71,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 dragover: this._onDragOver.bind(this),
                 drop: this._onDrop.bind(this),
             };
-            return new DragDrop(d);
+            return new foundry.applications.ux.DragDrop.implementation(d);
         });
     }
 
@@ -143,7 +143,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
      */
     async _onDrop(event) 
     {
-        const data = TextEditor.getDragEventData(event);
+        const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
 
         if (data.type && typeof this["_onDrop" + data.type] == "function")
         {
@@ -176,13 +176,13 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this._handleContainers();
 
         // Anything in a list row should be right clickable (usually items) unless otherwise specified (nocontext)
-        new WarhammerContextMenu(this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions(), {jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".list-row:not(.nocontext)", {jQuery: false, fixed: true});
 
         // Left clickable context menus (3 vertical pips)
-        new WarhammerContextMenu(this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click", jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu", {eventName : "click", jQuery: false, fixed: true});
 
         // Anything else that should be right clickable for context menus
-        new WarhammerContextMenu(this.element, ".context-menu-alt", this._getContextMenuOptions(), {jQuery: false, fixed: true});
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu-alt", {jQuery: false, fixed: true});
     }
 
     _addEventListeners()

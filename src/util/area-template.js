@@ -4,7 +4,7 @@ import { getActiveDocumentOwner } from "./utility";
  * Shamelessly copied from dnd5e's spell template implementation
  * @augments {MeasuredTemplate}
  */
-export default class AreaTemplate extends MeasuredTemplate 
+export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemplate
 {
 
     /**

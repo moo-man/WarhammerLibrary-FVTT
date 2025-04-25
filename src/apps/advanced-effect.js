@@ -44,7 +44,7 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
         context.hidden = this.options.hiddenProperties?.() || {};
         if (this.options.systemTemplate)
         {
-            context.systemTemplate = await renderTemplate(this.options.systemTemplate, context);
+            context.systemTemplate = await foundry.applications.handlebars.renderTemplate(this.options.systemTemplate, context);
         }
         context.avoidTypes = {
             "none" : "WH.TransferData.AvoidTestNone",
