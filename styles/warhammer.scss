@@ -110,6 +110,10 @@
     }
   }
 
+  code-mirror {
+    min-height: unset;
+  }
+
   // TEMP: V13 put all the form-field rules in the .standard-form class which I don't want to use so I'm adding these here for now
   .form-group {
       clear: both;

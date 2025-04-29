@@ -213,7 +213,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _getContextMenuOptions() 
     {
-
+        return [];
     }
 
     

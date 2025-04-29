@@ -54,7 +54,8 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
         let current = foundry.utils.getProperty(this, path);
         if (current >= value)
         {
-            return this.update({[path] : current - value});
+            await this.update({[path] : current - value});
+            return true;
         }
         else 
         {

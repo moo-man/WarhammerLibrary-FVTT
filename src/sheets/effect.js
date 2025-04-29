@@ -21,11 +21,11 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
 
     /** @override */
     static PARTS = {
-        header: {template: "templates/sheets/active-effect-config/header.hbs"},
+        header: {template: "templates/sheets/active-effect/header.hbs"},
         tabs: {template: "templates/generic/tab-navigation.hbs"},
-        details: {template: "templates/sheets/active-effect-config/details.hbs"},
-        duration: {template: "templates/sheets/active-effect-config/duration.hbs"},
-        changes: {template: "templates/sheets/active-effect-config/changes.hbs"},
+        details: {template: "templates/sheets/active-effect/details.hbs"},
+        duration: {template: "templates/sheets/active-effect/duration.hbs"},
+        changes: {template: "templates/sheets/active-effect/changes.hbs"},
         scripts: {template: "modules/warhammer-lib/templates/effect/effect-scripts.hbs"},
         footer: {template: "templates/generic/form-footer.hbs"}
     };
