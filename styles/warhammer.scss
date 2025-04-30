@@ -12,6 +12,7 @@
 @use "./apps/light";
 @use "./apps/elements";
 @use "./apps/browser";
+@use "./apps/module-initializer";
 
 .warhammer {
   --tab-color : var(--color-cool-3);

@@ -7,6 +7,34 @@
             "Wiki" : "WIKI",
             "Discord" : "DISCORD"
         },
+        "Initializer" : {
+            "SettingName" : "Warhammer Premium Content",
+            "SettingLabel" : "Manage Content",
+            "SettingHint" : "Manage your imported content from premium Warhammer Modules",
+            "Title" : "Warhammer Module Initialization",
+            "Text" : "<h3>Initialize, update, or deleted imported content from official Warhammer premium modules</h3>",
+            "HelpText" : "<p>Need Help? Check <a href=https://moo-man.github.io/WFRP4e-FoundryVTT/pages/premium.html#initializiation>the Wiki</a></p>",
+            "Tooltips" : {
+                "NotInstalled" : "Module not installed! If you've purchased this module, make sure to install it in Foundry's <strong>Setup Menu</strong>",
+                "NotActive" : "Module not active! Go to <strong>Manage Modules</strong> in the Settings sidebar to activate this module in the world."
+            },
+            "Action" : {
+                "Initialize" : "Initialize Content",
+                "Update" : "Update Content",
+                "Delete" : "Delete Content"
+            },
+
+            "UpdaterTitle": "Update {module} Content",
+            "UpdaterText" : "<p>This process will import new documents and overwrite previously imported documents with their content from the Compendium.</p><p>THIS MEANS ANY CHANGES YOU'VE MADE WILL BE OVERWRITTEN.</p><p>Only use this if you've initialized this module previously.</p>",
+            "UpdaterExclude" : "Exclude Name Change",
+            "UpdaterExcludeHint" : "Checking this will not update documents if their names have been changed",
+
+            "OverwriteActors": "Overwrite Actors",
+            "OverwriteMacros": "Overwrite Macros",
+            "OverwriteJournals": "Overwrite Journals",
+            "OverwriteTables": "Overwrite Tables",
+            "OverwriteScenes": "Overwrite Scenes"
+        },
         "AdvancedConfig": "Advanced Effect Config",
         "Scripts": "Scripts",
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
