@@ -25,7 +25,7 @@
             },
 
             "UpdaterTitle": "Update {module} Content",
-            "UpdaterText" : "<p>This process will import new documents and overwrite previously imported documents with their content from the Compendium.</p><p>THIS MEANS ANY CHANGES YOU'VE MADE WILL BE OVERWRITTEN.</p><p>Only use this if you've initialized this module previously.</p>",
+            "UpdaterText" : "<p>This process will import new documents and overwrite previously imported documents with their content from the Compendium.</p><p>THIS MEANS ANY CHANGES YOU'VE MADE WILL BE OVERWRITTEN. This does not apply to any Document owned by a Player.</p><p>Only use this if you've initialized this module previously.</p>",
             "UpdaterExclude" : "Exclude Name Change",
             "UpdaterExcludeHint" : "Checking this will not update documents if their names have been changed",
 
