@@ -1,10 +1,20 @@
 export default class ChatCommands
 {
-    commands = {};
+    commands = {
+
+    };
     prefix = "/";
 
     constructor(commands={})
     {
+        this._addCommands({
+            help : {
+
+                args : [],
+                callback : this.printHelp.bind(this),
+                description : "Print instructions for how to use commands"
+            }
+        });
         this._addCommands(commands);
         this._callHook();
     }
@@ -24,6 +34,8 @@ export default class ChatCommands
                 args : commands[command].args,
                 defaultArg : commands[command].defaultArg,
                 description : commands[command].description,
+                notes : commands[command].notes,
+                examples : commands[command].examples,
             };
         }
     }
@@ -43,7 +55,7 @@ export default class ChatCommands
     call(command, text)
     {
         let args = this.parseArgs(command, text);
-        this.commands[command].callback(...args);;
+        this.commands[command].callback(...args);
     }
 
 
@@ -83,6 +95,33 @@ export default class ChatCommands
             }
         }
         return foundArgs;
+    }
+
+    printHelp()
+    {
+        let content = `
+        <p>Below is the list of chat commands and available parameters. You can assign some value to a parmeter by using <span style='font-family:monospaced'>=</span>. If a command has a default argument, it does not need to be assigned, but must be the first value provided.</p>
+
+        <p>e.g. <span style='font-family:monospaced'>${this.prefix}command 100 someArg=value1 anotherArg=value2</span></p>
+        `;
+
+        for(let command in this.commands)
+        {
+            if (command != "help")
+            {
+                let commandData = this.commands[command];
+                content += `<p><strong>${commandData.description}</strong></p>
+                <p><span style='font-family:monospaced'>${this.prefix}${command}</span></p>
+                <p><strong>Arguments</strong>: ${commandData.args?.length == 0 ? "None" : "<span style='font-family:monospaced'>" + commandData.args.join("</span>, <span style='font-family:monospaced'>")}</span></p>
+                ${commandData.defaultArg ? "<p><strong>Default Argument</strong>: " + commandData.defaultArg +  "</p>" : ""}
+                ${commandData.notes ? "<p><strong>Notes</strong>: " + commandData.notes +  "</p>" : ""}
+                ${commandData.examples ? "<p><strong>Examples</strong>: " + commandData.examples +  "</p>" : ""}
+                <hr>
+            `;
+            }
+        }
+
+        ChatMessage.implementation.create(ChatMessage.applyRollMode({content, speaker : {alias : "Command Help"}}, "selfroll"));
     }
 
     _callHook()

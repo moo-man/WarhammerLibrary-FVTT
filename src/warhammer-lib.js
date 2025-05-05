@@ -38,7 +38,8 @@ import { error,
     targetedOrAssignedActors,
     sortObjectEntries,
     getPackage,
-    getCompendiumName
+    getCompendiumName,
+    targetsWithFallback
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
@@ -91,6 +92,7 @@ warhammer.utility = {
     addSheetHelpers,
     sleep,
     targetedOrAssignedActors,
+    targetsWithFallback,
     sortObjectEntries,
     getPackage,
     getCompendiumName,

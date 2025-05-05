@@ -22,6 +22,7 @@ export function systemConfig()
  * @param message
  * @param force
  * @param args
+ * @param options
  */
 export function log(message, force=false, args, options={}) 
 {
@@ -171,6 +172,10 @@ export function findItemId(id, type)
 }
 
 // Given a ID, find the compendium UUID
+/**
+ *
+ * @param id
+ */
 export function findUuid(id) 
 {
     let packs = game.packs.contents;
@@ -220,6 +225,10 @@ export function getActiveDocumentOwner(document)
     return owningUser;
 }
 
+/**
+ *
+ * @param allowPlayerTargets
+ */
 export function targetedOrAssignedActors(allowPlayerTargets=false)
 {
     let targets = Array.from(game.user.targets);
@@ -250,6 +259,22 @@ export function targetedOrAssignedActors(allowPlayerTargets=false)
         }
     }
     return [];
+}
+
+/**
+ *
+ */
+export function targetsWithFallback()
+{
+    let targets = Array.from(game.user.targets);
+    if (targets.length)
+    {
+        return targets.map(i => i.actor);
+    }
+    else 
+    {
+        return canvas.tokens.controlled.map(i => i.actor);
+    }
 }
 
 /**
@@ -327,6 +352,7 @@ export function replacePopoutPath(path)
  * @param type
  * @param loadingLabel
  * @param index
+ * @param indexFields
  */
 export async function findAllItems(type, loadingLabel = "", index=false, indexFields=[]) 
 {
@@ -362,28 +388,28 @@ export async function findAllItems(type, loadingLabel = "", index=false, indexFi
  * @param {string|Function} [sortKey]  An inner key upon which to sort or sorting function.
  * @returns {object}                   A copy of the original object that has been sorted.
  */
-export function sortObjectEntries(obj, sortKey) {
+export function sortObjectEntries(obj, sortKey) 
+{
     let sorted = Object.entries(obj);
 
     const sort = (lhs, rhs) => foundry.utils.getType(lhs) === "string" ? lhs.localeCompare(rhs, game.i18n.lang) : lhs - rhs;
 
-    if ( foundry.utils.getType(sortKey) === "function" ) sorted = sorted.sort((lhs, rhs) => sortKey(lhs[1], rhs[1]));
-    else if ( sortKey ) sorted = sorted.sort((lhs, rhs) => sort(lhs[1][sortKey], rhs[1][sortKey]));
-    else sorted = sorted.sort((lhs, rhs) => sort(lhs[1], rhs[1]));
+    if ( foundry.utils.getType(sortKey) === "function" ) {sorted = sorted.sort((lhs, rhs) => sortKey(lhs[1], rhs[1]));}
+    else if ( sortKey ) {sorted = sorted.sort((lhs, rhs) => sort(lhs[1][sortKey], rhs[1][sortKey]));}
+    else {sorted = sorted.sort((lhs, rhs) => sort(lhs[1], rhs[1]));}
 
     return Object.fromEntries(sorted);
 }
 
 /**
  * Returns TYPES of documentClass sorted by their localized label.
- *
  * @param {Document} documentClass
- *
- * @return {string[]}
+ * @returns {string[]}
  */
-export function getSortedTypes(documentClass) {
+export function getSortedTypes(documentClass) 
+{
     return documentClass.TYPES.sort((a, b) =>
-      game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[a]).localeCompare(game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[b]))
+        game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[a]).localeCompare(game.i18n.localize(CONFIG[documentClass.documentName].typeLabels[b]))
     );
 }
 
@@ -392,18 +418,20 @@ export function getSortedTypes(documentClass) {
  * @param {string} uuid  The UUID.
  * @returns {ClientPackage|null}
  */
-export function getPackage(uuid) {
-    if (!uuid) return null;
+export function getPackage(uuid) 
+{
+    if (!uuid) {return null;}
 
     const pack = foundry.utils.parseUuid(uuid)?.collection?.metadata;
 
-    switch (pack?.packageType) {
-        case "module":
-            return game.modules.get(pack.packageName);
-        case "system":
-            return game.system;
-        case "world":
-            return game.world;
+    switch (pack?.packageType) 
+    {
+    case "module":
+        return game.modules.get(pack.packageName);
+    case "system":
+        return game.system;
+    case "world":
+        return game.world;
     }
 
     return null;
@@ -414,8 +442,9 @@ export function getPackage(uuid) {
  * @param {string} uuid  The UUID.
  * @returns {string|ull}
  */
-export function getCompendiumName(uuid) {
-    if (!uuid) return null;
+export function getCompendiumName(uuid) 
+{
+    if (!uuid) {return null;}
 
     const label = foundry.utils.parseUuid(uuid)?.collection?.metadata?.label;
 

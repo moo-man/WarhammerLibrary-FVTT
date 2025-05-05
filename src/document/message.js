@@ -30,7 +30,7 @@ export default class WarhammerChatMessage extends ChatMessage
     onChatAction(event, target)
     {
         let action = target.dataset.action;
-        let actionFn = this.system.constructor?.actions[action]?.bind(this.system);
+        let actionFn = this.system.constructor?.actions?.[action]?.bind(this.system);
         if (actionFn)
         {
             actionFn(event, target);
