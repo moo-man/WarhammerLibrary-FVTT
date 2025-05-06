@@ -2,7 +2,7 @@
   "id": "warhammer-lib",
   "title": "Warhammer Library",
   "description": "Common code used by the various Warhammer Systems",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "authors": [{"name": "Moo Man", "id": "Moo Man", "discord": "moo.man"}],
   "scripts" : ["warhammer-lib.js"],
   "styles" : [{"src": "warhammer.css", "layer" : "system"}],
@@ -26,5 +26,5 @@
   },
   "socket": true,
   "manifest": "https://github.com/moo-man/WarhammerLibrary-FVTT/releases/latest/download/module.json",
-  "download": "https://github.com/moo-man/WarhammerLibrary-FVTT/releases/download/2.0.0/warhammer-lib.zip"
+  "download": "https://github.com/moo-man/WarhammerLibrary-FVTT/releases/download/2.0.1/warhammer-lib.zip"
 }

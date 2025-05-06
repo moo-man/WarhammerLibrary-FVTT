@@ -450,3 +450,24 @@ export function getCompendiumName(uuid)
 
     return label ?? null;
 }
+
+/**
+ *
+ */
+export function registerPremiumModuleInitialization()
+{
+    for(let module in systemConfig().premiumModules)
+    {
+        if (game.modules.get(module)?.active)
+        {
+            game.settings.register(module, "initialized", {
+                name: "Initialization",
+                scope: "world",
+                config: false,
+                default: false,
+                type: Boolean
+            });
+        }
+    }
+
+}

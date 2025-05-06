@@ -39,7 +39,8 @@ import { error,
     sortObjectEntries,
     getPackage,
     getCompendiumName,
-    targetsWithFallback
+    targetsWithFallback,
+    registerPremiumModuleInitialization
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
@@ -96,6 +97,7 @@ warhammer.utility = {
     sortObjectEntries,
     getPackage,
     getCompendiumName,
+    registerPremiumModuleInitialization
 };
 
 warhammer.apps = {
