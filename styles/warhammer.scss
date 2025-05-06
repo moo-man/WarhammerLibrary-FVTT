@@ -253,14 +253,20 @@
 .warhammer.sidebar-info {
     ul.links {
         flex: 1;
-        list-style: none;
         margin: 0;
+        list-style: none;
         padding: 0;
         display: flex;
-        gap: 0.5rem;
+        gap: 0.1rem;
         text-transform: uppercase;
         font-size: var(--font-size-11);
         justify-content: center;
+
+        li:not(:last-child)::after {
+            content: " • ";
+            margin-inline: 3px;
+            font-weight: bold;
+        }
       }
 
       .system-badge {
