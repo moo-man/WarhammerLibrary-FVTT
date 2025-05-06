@@ -131,7 +131,18 @@ export default function ()
 
         Handlebars.registerHelper("settings", function (key) 
         {
-            return game.settings.get(game.system.id, key);
+            let path = key.split(".");
+
+            let setting = game.settings.get(game.system.id, path[0]);
+
+            if (path.length > 1)
+            {
+                return foundry.utils.getProperty(setting, path.slice(1).join("."));
+            }
+            else 
+            {
+                return setting;
+            }
         });
 
         game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
