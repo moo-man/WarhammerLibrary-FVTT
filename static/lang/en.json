@@ -93,6 +93,12 @@
             "DeleteModuleContentPrompt": "<p><strong>WARNING</strong>: This will delete all content associated with the <strong>{id}</strong> module that has been imported in this world.</p><p>Are you sure you wish to proceed?</p>",
             "ResolveDuplicates": "Resolve Duplicates"
         },
+        "Item": {
+            "Category": {
+                "Physical": "Physical",
+                "Vehicle": "Vehicle"
+            }
+        },
         "ScriptLock": "Scripts Locked",
         "ScriptLockTT": "Scripts are not editable when they are references. If you want to make changes: copy a script, unlock, paste, then make your desired changes.",
         "Script": "Script",
