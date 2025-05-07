@@ -37,7 +37,7 @@ export class ListModel extends foundry.abstract.DataModel
 
     add(value)
     {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat(value || this.constructor.listSchema.initial())};
+        return {[this.schema.fields.list.fieldPath] : this.list.concat(value || this.constructor.listSchema.toObject())};
     }
 
     edit(index, value, path)
