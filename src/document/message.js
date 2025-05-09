@@ -3,6 +3,11 @@ import { addLinkSources } from "../util/utility";
 export default class WarhammerChatMessage extends ChatMessage 
 {
 
+    static get actions() 
+    { 
+        return {};
+    }
+
     /** @inheritDoc */
     async renderHTML(options)
     {
@@ -30,7 +35,7 @@ export default class WarhammerChatMessage extends ChatMessage
     onChatAction(event, target)
     {
         let action = target.dataset.action;
-        let actionFn = this.system.constructor?.actions?.[action]?.bind(this.system);
+        let actionFn = (this.system.constructor?.actions?.[action]?.bind(this.system) || this.constructor?.actions?.[action]?.bind(this));
         if (actionFn)
         {
             actionFn(event, target);

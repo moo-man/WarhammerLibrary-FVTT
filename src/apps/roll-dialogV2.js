@@ -125,6 +125,7 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
         dialogData.data.actor = actor;
         dialogData.data.speaker = CONFIG.ChatMessage.documentClass.getSpeaker({actor});
         dialogData.data.targets = (context.skipTargets) ? [] : context.targets || Array.from(game.user.targets).filter(t => t.document.id != dialogData.data.speaker.token); // Remove self from targets
+        delete context.targets;
         if (actor && !actor?.token)
         {
             // getSpeaker retrieves tokens even if this sheet isn't a token's sheet
