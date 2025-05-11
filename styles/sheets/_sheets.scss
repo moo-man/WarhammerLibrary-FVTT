@@ -86,6 +86,12 @@
         border: 1px solid var(--form-group-border);
     }
 
+    prose-mirror {
+        .editor-content {
+            position: static; 
+        }
+    }
+
     .editor-section {
         .header {
             height: 1.5rem;
@@ -95,8 +101,6 @@
             border: 1px solid var(--editor-header-border);
         }
         min-height: 100px;
-        .editor-content {
-        }
     }
 
     

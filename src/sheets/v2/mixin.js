@@ -1,4 +1,3 @@
-import { WarhammerContextMenu } from "../../util/context-menu";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 

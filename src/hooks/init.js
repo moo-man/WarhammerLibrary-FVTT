@@ -82,7 +82,7 @@ export default function ()
         {
             if (typeof cls == "string")
             {
-                let htmlProperties = Object.keys(args.hash).reduce((html, key) => html + " " + `data-${key}=${args.hash[key]}`, "");
+                let htmlProperties = Object.keys(args.hash).reduce((html, key) => html + " " + `data-${key}="${args.hash[key]}"`, "");
                 return array.map((value, index) => `<a data-index=${index} class="${cls}" ${htmlProperties}>${value}</a>`).join(`<span class="separator ${cls}">, </span>`);
             }
             else
