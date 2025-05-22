@@ -20,13 +20,24 @@
 
 .warhammer.diff-editor {
 
-    .window-content > div {
-        height: calc(100% - 110px);
+    .diff {
+        height: 92%;
+    }
+    .diff-container {
+        overflow: auto;
+        max-height: 80%;
+    }
+}
+
+.warhammer.rich-editor {
+    .window-content >:first-of-type {
+        height: 100%;
+    }
+    prose-mirror {
+        height: 100%;
     }
 
-    .editor {
-        height: 100%;
-        overflow: hidden
+    .editor-container {
+        overflow-y: hidden;
     }
-    textarea { height: 100%; resize: none;}
 }

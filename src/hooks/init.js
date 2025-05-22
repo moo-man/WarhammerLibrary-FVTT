@@ -145,6 +145,11 @@ export default function ()
             }
         });
 
+        Handlebars.registerHelper("fallback", function (value, fallback) 
+        {
+            return value ? value : fallback;
+        });
+
         game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
             name: "WH.Initializer.SettingName",
             label: "WH.Initializer.SettingLabel",

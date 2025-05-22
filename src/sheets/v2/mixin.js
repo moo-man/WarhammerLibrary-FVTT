@@ -1,3 +1,4 @@
+import WarhammerRichEditor from "../../apps/rich-editor";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 
@@ -26,6 +27,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             unset : this._unsetReference,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             togglePip : this._onTogglePip,
+            editRichText : this._onEditRichText,
             clickEffectButton : this._onClickEffectButton,
         },
         window: {
@@ -298,34 +300,34 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
 
-    static async _onEditEmbeddedDoc(ev)
+    static async _onEditEmbeddedDoc(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc?.sheet.render(true);
     }
 
-    static async _onDeleteEmbeddedDoc(ev)
+    static async _onDeleteEmbeddedDoc(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc?.delete();
     }
 
-    static async _onEffectToggle(ev)
+    static async _onEffectToggle(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc.update({"disabled" : !doc.disabled});
     }
 
-    static async _onEditProperty(ev)
+    static async _onEditProperty(ev, target)
     {
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = ev.target.dataset.path;
         document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
     static async _onToggleProperty(ev, target)
     {
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = target.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
@@ -334,7 +336,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         ev.stopPropagation();
         ev.preventDefault();
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = target.dataset.path;
         let step = ev.button == 0 ? 1 : -1;
         step = ev.target.dataset.reversed ? -1 * step : step;
@@ -345,10 +347,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         document.update({[path] : foundry.utils.getProperty(document, path) + step});
     }
 
-    static async _onListCreate(ev)
+    static async _onListCreate(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
 
         if (list)
         {
@@ -356,10 +358,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListCreateWithValue(ev)
+    static async _onListCreateWithValue(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
 
         if (list)
         {
@@ -371,10 +373,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListDelete(ev)
+    static async _onListDelete(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
 
         if (list)
@@ -387,10 +389,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListEdit(ev)
+    static async _onListEdit(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
         let internalPath = this._getDataAttribute(ev, "ipath");
         let value = ev.target.value;
@@ -409,10 +411,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     }
 
-    static async _onListForm(ev)
+    static async _onListForm(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
         list.toForm(index, doc);
     }
@@ -434,12 +436,12 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.update({[path] : newValue});
     }
 
-    async _unsetReference(ev)
+    static async _unsetReference(ev)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
+        let doc = this.document;
         let path = this._getPath(ev);
         let property = foundry.utils.getProperty(doc, path);
-        doc.update({[path] : property.unset()});
+        doc.update(property.unset());
     }
 
     
@@ -468,6 +470,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             doc.update({[list] : arr.filter((_, i) => i != index)});
         }
     }
+
     _handleArrayEdit(doc, ev)
     {
         let list = this._getPath(ev);
@@ -490,6 +493,38 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                     return val;
                 }
             })});
+        }
+    }
+
+    static async _onEditRichText(ev, target)
+    {
+        new WarhammerRichEditor(this.document, {path : target.dataset.path, index : target.dataset.index, ipath : target.dataset.ipath}).render(true);
+    }
+
+    async _toggleDropdown(ev, content, parentSelector=".list-row")
+    {
+        let dropdownElement = this._getParent(ev.target, parentSelector).querySelector(".dropdown-content");
+        this._toggleDropdownAt(dropdownElement, content);
+    }
+
+    async _toggleDropdownAt(element, content)
+    {
+        let dropdownElement = element.querySelector(".dropdown-content") || element;
+
+        if (dropdownElement.classList.contains("collapsed"))
+        {
+            dropdownElement.innerHTML = content;
+            dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.classList.replace("collapsed", "expanded");
+            // Fit content can't be animated, but we would like it be flexible height, so wait until animation finishes then add fit-content
+            // sleep(500).then(() => dropdownElement.style.height = `fit-content`);
+        
+        }
+        else if (dropdownElement.classList.contains("expanded"))
+        {
+        // dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.style.height = `0px`;
+            dropdownElement.classList.replace("expanded", "collapsed");
         }
     }
 

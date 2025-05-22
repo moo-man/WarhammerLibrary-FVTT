@@ -63,20 +63,46 @@
         }
     }
 
+    
+    .like-input  {
+        width: 100%;
+        height: var(--input-height);
+        line-height: var(--input-height);
+        padding: 0 0.5rem;
+        background: var(--form-input);
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: var(--input-text-color);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        > * {
+            flex: 1;
+        };
+        .control {
+            flex: 0 0 1rem;
+        }
+    }
 
     .form-group {
         select,
-        input {
+        input:not([type='checkbox']) {
             border-radius: 0px;
             background: var(--form-input);
             border-color: var(--form-input-border);
         }
         label {
-            border-right: 1px solid var(--form-group-border);
-            height: var(--input-height);
-            line-height: var(--input-height);
-            text-align: center;
-            background: var(--form-label)
+                border-right: 1px solid var(--form-group-border);
+                height: var(--input-height);
+                line-height: var(--input-height);
+                text-align: center;
+                background: var(--form-label)
+            }
+        &.stacked
+        {
+            label {
+                border-right: none;
+            }
         }
         .hint {
             margin : 0px;
@@ -106,7 +132,6 @@
     
     .sheet-effect-buttons {
         margin: 3px 0px;
-        height: 1rem;
         display: flex;
         button {
             font-size: var(--font-size-10);
@@ -220,15 +245,43 @@
 
     .choice-group {
         text-align: center;
+        margin: 1rem 0px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         label {
             font-size : var(--font-size-18);
         }
         .choice-text {
+
             margin-top: 5px;
             text-align: center;
-            border: 2px solid var(--color-cool-3);
+            border: 2px solid var(--attribute-border);
             padding: 5px;
             border-radius: 5px;
+            width:fit-content;
+        }
+    }
+
+    .document-reference  {
+        position: relative; 
+        .floating {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.1rem;
+            height: 1rem;
+            width: 1rem;
+        }
+    }
+
+    .header-rule {
+        margin: 1rem 0px;
+        text-align: center;
+        &:before {
+
+        }
+        :after {
+            
         }
     }
 }

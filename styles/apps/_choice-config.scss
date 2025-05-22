@@ -45,16 +45,3 @@
         }
     }
 }
-
-.warhammer.diff-editor {
-
-    .window-content > div {
-        height: calc(100% - 110px);
-    }
-
-    .editor {
-        height: 100%;
-        overflow: hidden
-    }
-    textarea { height: 100%; resize: none;}
-}

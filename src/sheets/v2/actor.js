@@ -23,7 +23,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
 
     async _onDropItem(data, ev)
     {
-        let document = data.uuid ? await fromUuid(data.uuid) : data.data;
+        let document = await Item.fromDropData(data);
         if (document.actor?.uuid == this.actor.uuid)
         {
             this._onSortItem(document, ev);

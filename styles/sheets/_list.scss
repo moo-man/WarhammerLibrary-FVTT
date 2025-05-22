@@ -3,6 +3,9 @@
     --list-header-border : var(--color-dark-6);
     --list-row : none;
     --list-row-alternate : rgba(0, 0, 0, 0.05);
+    --name-bg : rgba(0, 0, 0, 0.05);
+    --name-border : var(--color-dark-6);
+    --name-label : rgba(0, 0, 0, 0.1)
 }
 
 .warhammer.application {
@@ -10,6 +13,9 @@
     --list-header-border : var(--color-cool-3);
     --list-row : none;
     --list-row-alternate : #3028318f; // cool-3 at half transparency
+    --name-bg : var(--color-cool-3);
+    --name-border : var(--color-cool-3);
+    --name-label : var(--color-cool-4);
     
     .sheet-list {
         &:not(:first-child)
@@ -146,6 +152,10 @@
             }
         }
 
+        .description {
+            line-height: 1rem;
+        }
+
         .dropdown-content {
 
             transition: height 0.3s ease-in-out;
@@ -175,5 +185,46 @@
             }
         }
     
+    }
+
+    .name-list {
+        display: flex;
+        flex-direction: column;
+        margin: 0.5rem 0px;
+        border: 1px solid var(--name-border);
+        label {
+            text-align: center;
+            height: 2rem;
+            line-height: 2rem;
+            background: var(--name-label);
+        }   
+        .list-content {
+            border-top: 1px solid var(--name-border);
+            min-height: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem 0.5rem;
+
+            .list-element {
+                border: 1px solid var(--name-bg);
+                border-radius: 10px;
+                padding: 0.5rem;
+                background:  var(--name-bg);
+                position: relative;
+                .floating {
+                    position: absolute;
+                    right: -7px;
+                    top: -5px;
+                    border-radius: 50%;
+                    padding: 2px;
+                    display: flex;
+                    align-items: center;
+                    background: var(--name-bg)
+                }
+            }
+        }
     }
 }

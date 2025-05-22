@@ -45,6 +45,7 @@
         "ScriptConfig": "Script Config",
         "DiffEditor": "Diff Editor",
         "ScriptEditor": "Script Editor",
+        "RichEditor": "Rich Text Editor",
         "AddScript": "Add Script",
         "EffectFiltered": "Effect Filtered",
         "EffectPrevented": "Effect Prevented",

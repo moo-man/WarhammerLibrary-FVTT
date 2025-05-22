@@ -410,6 +410,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return effect;
     }
 
+    get show()
+    {
+        return true;
+    }
+
     get scripts()
     {
         return this.system.scripts;

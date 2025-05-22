@@ -36,9 +36,9 @@ class SheetHelpers
         return this._getDataAttribute(ev, "uuid");
     };
 
-    static _getList = function (ev, sheetDocument=false) 
+    static _getList = function (ev, target) 
     {
-        return foundry.utils.getProperty((sheetDocument ? this.document : (this._getDocument(ev) || this.document)), this._getPath(ev));
+        return foundry.utils.getProperty(this._getDocument(ev, target) || this.document, this._getPath(ev));
     };
 
 
@@ -66,41 +66,33 @@ class SheetHelpers
 
     static _getParent = function (element, selector) 
     {
-        if (element.matches(selector)) 
-        {
-            return element;
-        }
-        if (!element.parentElement) 
-        {
-            return null;
-        }
-        if (element.parentElement.matches(selector)) 
-        {
-            return element.parentElement;
-        }
-        else 
-        {
-            return this._getParent(element.parentElement, selector);
-        }
-
+        return element.closest(selector);
     };
 
-    static _getDocument = function (event) 
+    static _getDocument = function (event, target) 
     {
+        if (target?.dataset.document == "this" || event.target.dataset.document == "this")
+        {
+            return this.document;
+        }
         let id = this._getId(event);
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuidSync(uuid) : this.document[collection]?.get(id));
+        return (uuid ? fromUuidSync(uuid) : this.document[collection || "items"]?.get(id));
     };
 
-    static _getDocumentAsync = function (event) 
+    static _getDocumentAsync = function (event, target) 
     {
+        if (target?.dataset.document == "this" || event.target.dataset.document == "this")
+        {
+            return this.document;
+        }
         let id = this._getId(event);
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuid(uuid) : this.document[collection]?.get(id));
+        return (uuid ? fromUuid(uuid) : this.document[collection || "items"]?.get(id));
     };
 };
 

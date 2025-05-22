@@ -7,7 +7,7 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
 {    
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes: ["diff-editor", "warhammer"],
+        classes: ["diff-editor", "warhammer", "standard-form"],
         window: {
             resizable : true,
             title : "WH.DiffEditor",
@@ -27,7 +27,10 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
     };
 
     static PARTS = {
-        choices : {template : "modules/warhammer-lib/templates/scripts/diff-editor.hbs"}
+        diff : {template : "modules/warhammer-lib/templates/scripts/diff-editor.hbs", classes: ["diff"]},
+        footer : {
+            template : "templates/generic/form-footer.hbs"
+        }
     };
 
     constructor(diff, options)
@@ -47,10 +50,11 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
 
     async _prepareContext() 
     {
-        let data = await super._prepareContext();
-        data.document = this.options.document;
-        data.content = this.getContent();
-        return data;
+        let context = await super._prepareContext();
+        context.document = this.options.document;
+        context.content = this.getContent();
+        context.buttons = [{ type: "submit", label: "Submit" }];
+        return context;
     }
 
     getContent()
@@ -86,27 +90,6 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
         return true;
     }
       
-
-    _onRender(options)
-    {
-        super._onRender(options);
-        this.element.querySelector("textarea").addEventListener("keydown", ev => 
-        {
-            if (ev.key == "Tab")
-            {
-                ev.preventDefault();
-                let target = ev.target;
-                var start = target.selectionStart;
-                var end = target.selectionEnd;
-    
-                target.value = target.value.substring(0, start) + "\t" + target.value.substring(end);
-    
-                target.selectionStart = target.selectionEnd = start + 1;
-            }
-        });
-
-    }
-
     static async _onClickContentLink(ev)
     {
         let document = await this._getDocumentAsync(ev);

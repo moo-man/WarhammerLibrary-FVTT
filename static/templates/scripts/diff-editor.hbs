@@ -1,10 +1,7 @@
 <div>
     <label>{{localize "WH.DiffDescription"}}</label>
     <p><strong>Original Document: </strong><a class="content-link" data-action="contentLink" data-uuid="{{document.uuid}}"><i class="fa-solid fa-suitcase"></i> {{document.name}}</a></p>
-    <div class="editor">
-        <textarea {{#unless (isGM)}}disabled{{/unless}} name="diff" spellcheck="false">{{content}}</textarea>
+    <div class="diff-container">
+        <code-mirror {{#if (not (isGM))}}disabled{{/if}} name="diff">{{content}}</code-mirror>
     </div>
-    {{#if (isGM)}}
-    <button type="submit">{{localize "Submit"}}</button>
-    {{/if}}
 </div>
