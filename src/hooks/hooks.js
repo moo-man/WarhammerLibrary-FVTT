@@ -37,19 +37,6 @@ export default function()
     Hooks.on("preCreateScene", keepIDHook);
     Hooks.on("preCreateRollTable", keepIDHook);
 
-    
-    Hooks.on("renderFilePicker", (app, html, data) => 
-    {
-        let folder = data.target.split("/")[0];
-        if (folder == "systems" || folder == "modules") 
-        {
-            let upload = html.querySelector(".upload-file");
-            if (upload)
-            {
-                upload.innerHTML = `<p style="text-align: center" data-tooltip="Upload disabled while in system directory. DO NOT put your assets within any system or module folder.">Upload Disabled <i style="display:inline-block; margin-left:5px;" class="fa-regular fa-circle-question"></i></p>`;
-            }
-        }
-    });  
 }
 
 /**
