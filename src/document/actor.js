@@ -82,7 +82,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         let setupData;
         if (context.skipDialog) 
         {
-            setupData = await (new dialogClass(dialogData.data, dialogData.fields, dialogData.context, null).bypass());
+            setupData = await (new dialogClass(dialogData.data, dialogData.fields, dialogData.context).bypass());
         }
         else 
         {

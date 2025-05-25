@@ -477,7 +477,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get key () 
     {
-        return Array.from(this.statuses)[0];
+        return Array.from(this.statuses)[0] || this.getFlag("core", "statusId");
     }
 
     get specifier() 

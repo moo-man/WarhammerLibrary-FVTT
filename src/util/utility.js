@@ -277,6 +277,23 @@ export function targetsWithFallback()
     }
 }
 
+export function selectedWithFallback()
+{
+    let actors = canvas.tokens.controlled.map(i => i.actor).filter(i => i);
+    if (actors.length)
+    {
+        return actors;
+    }
+    else if (game.user.character)
+    {
+        return [game.user.character];
+    }
+    else 
+    {
+        return [];
+    }
+}
+
 /**
  *
  * @param ms

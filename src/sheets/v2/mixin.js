@@ -210,6 +210,33 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         {
             element.addEventListener("change", this.constructor._onListEdit.bind(this));
         });
+
+        this.element.querySelectorAll(".name-list input").forEach(e => 
+        {
+            e.style.width = e.value.length + 2 + "ch";
+        });
+    
+        this.element.querySelectorAll(".name-list .empty").forEach(e => 
+        {
+            e.style.width = "3rem";
+            e.addEventListener("keydown", e => 
+            {
+                if (e.key === "Tab")
+                {
+                    let parent = this._getParent(e.target, ".form-group");
+                    this.nameInputFocus = parent.dataset.group;
+                }
+                else 
+                {
+                    this.nameInputFocus = null;
+                }
+            });
+        });
+        
+        if (this.nameInputFocus)
+        {
+            this.element.querySelector(`.${this.nameInputFocus} .empty`)?.focus();
+        }
     }
 
     _getContextMenuOptions() 

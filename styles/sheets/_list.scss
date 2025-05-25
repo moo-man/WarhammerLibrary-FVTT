@@ -209,10 +209,14 @@
             padding: 0.5rem 0.5rem;
 
             .list-element {
-                border: 1px solid var(--name-bg);
-                border-radius: 10px;
-                padding: 0.5rem;
-                background:  var(--name-bg);
+                &:not(.input)
+                {
+
+                    border: 1px solid var(--name-bg);
+                    border-radius: 10px;
+                    padding: 0.5rem;
+                    background:  var(--name-bg);
+                }
                 position: relative;
                 .floating {
                     position: absolute;
@@ -224,7 +228,71 @@
                     align-items: center;
                     background: var(--name-bg)
                 }
+
+                select,
+                input {
+                    text-align: center;
+                    border-radius: 5px;
+                    margin: 5px;
+                    height: 1.5rem;
+                    padding: 0px;
+                    margin: 0px;
+                }
             }
         }
+    }
+}
+
+.career-list {
+    label {
+        width: 100%;
+        height: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        background-color: var(--career-header);
+    }
+
+    display: flex;
+    flex-direction: column;
+
+    .list-container {
+        padding: 5px 0px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .characteristic {
+        margin: 5px;
+        border: 1px solid var(--color-warm-2);
+        width: 3rem;
+        border-radius: 5px;
+        flex: 0 0 3rem;
+        text-align: center;
+        font-weight: bold;
+        height: 1.3rem;
+        line-height: 1.3rem;
+
+        &.active {
+            background-color: var(--color-warm-2);
+        }
+    }
+
+    select,
+    input {
+        // width: fit-content;
+        border-radius: 5px;
+        margin: 5px;
+        height: 1.5rem;
+        text-align: center;
+        background: var(--career-input)
+    }
+
+    a[data-action='listDelete'] {
+        border-radius: 50%;
+        width: 1rem;
+        height: 1rem;
+        text-align: center;
+        margin-left: -1rem;
     }
 }

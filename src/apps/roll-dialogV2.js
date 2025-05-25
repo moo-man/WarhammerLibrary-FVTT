@@ -69,7 +69,7 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
      * @param {object} options Additional options for the application
      * @param {*} resolve Resolve where submission data is provided
      */
-    constructor(data, fields, context, options, resolve)
+    constructor(data, fields, context, options={}, resolve)
     {
         super(options);
         this.data = data;
@@ -263,7 +263,7 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
      */
     async bypass()
     {
-        await this.getData();
+        await this._prepareContext({});
         let submitData = this._getSubmissionData();
 
         for(let script of this.data.scripts)

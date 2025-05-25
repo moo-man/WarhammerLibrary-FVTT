@@ -32,12 +32,6 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
         }
     };
 
-    static shouldRender()
-    {
-        return Object.keys(systemConfig().premiumModules).map(game.modules.get).filter(m => m).some(m => game.settings.get(game.system.id, m.key));
-    }
-
-
     async _prepareContext(options)
     {
         let context = await super._prepareContext(options);
@@ -84,6 +78,7 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
         if (await foundry.applications.api.DialogV2.confirm({window: {title : `Initialize ${module.title}`}, content : dialogContent, classes : ["initialization"]}))
         {
             new WarhammerModuleContentHandler(module).initialize();
+            game.settings.set(key, "initialized", true);
         }
     }
 

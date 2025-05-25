@@ -1,0 +1,14 @@
+<div class="name-list droppable {{classes}}" data-path="{{path}}">
+    <label>{{localize label}}</label>
+    <div class="list-content">
+        {{#each list}}
+            <div class="list-element input" data-index="{{@key}}">
+                <input type="text" data-action="editList" value="{{this}}" onkeypress="this.style.width = (this.value.length) + 4 + 'ch';">
+                <a class="floating" data-document="this" data-action="listDelete" ><i class="fa-solid fa-xmark"></i></a>
+            </div>
+        {{/each}}
+        <div class="list-element input" data-index="{{@key}}">
+            <input type="text" class="empty" data-action="listCreateValue"  onkeypress="this.style.width = (this.value.length) + 4 + 'ch';" placeholder="+">
+        </div>
+    </div>
+</div>

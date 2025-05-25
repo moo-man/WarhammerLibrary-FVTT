@@ -40,7 +40,8 @@ import { error,
     getPackage,
     getCompendiumName,
     targetsWithFallback,
-    registerPremiumModuleInitialization
+    registerPremiumModuleInitialization,
+    selectedWithFallback
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
@@ -94,6 +95,7 @@ warhammer.utility = {
     sleep,
     targetedOrAssignedActors,
     targetsWithFallback,
+    selectedWithFallback,
     sortObjectEntries,
     getPackage,
     getCompendiumName,
