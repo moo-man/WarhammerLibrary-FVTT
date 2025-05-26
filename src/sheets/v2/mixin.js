@@ -171,6 +171,24 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this._addEventListeners();
     }
 
+
+    _configureRenderParts(options) 
+    {
+        if (this.document.limited)
+        {
+            return this._configureLimitedParts(options);
+        }
+        else 
+        {
+            return super._configureRenderParts(options);
+        }
+    }
+
+    _configureLimitedParts(options)
+    {
+        return super._configureRenderParts(options);
+    }
+
     async _onFirstRender(context, options)
     {
         await super._onFirstRender(context, options);
