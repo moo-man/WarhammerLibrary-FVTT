@@ -252,6 +252,7 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
             submitData.targets = Array.from(submitData.targets).map(t => t.actor.speakerData(t.document));
         }
         submitData.context.breakdown = this.createBreakdown();
+        game.canvas?.tokens.setTargets([]);
         return submitData;
     }
 
