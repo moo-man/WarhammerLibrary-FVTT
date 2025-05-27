@@ -55,6 +55,17 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
         new ChoiceDecision(foundry.utils.getProperty(this.item.system, target.dataset.path)).render(true);
     }
 
+
+    async _onDropActiveEffect(data, event)
+    {
+        let document = await ActiveEffect.fromDropData(data);
+        if (document?.parent?.uuid != this.document.uuid)
+        {
+            this.document.createEmbeddedDocuments("ActiveEffect", [document]);
+        }
+    }
+
+
     //#region Effects
 
     
