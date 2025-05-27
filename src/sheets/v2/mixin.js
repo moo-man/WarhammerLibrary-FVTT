@@ -174,7 +174,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _configureRenderParts(options) 
     {
-        if (this.document.limited)
+        if (this.document?.limited)
         {
             return this._configureLimitedParts(options);
         }
