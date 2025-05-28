@@ -4,7 +4,7 @@ import { getActiveDocumentOwner } from "./utility";
  * Shamelessly copied from dnd5e's spell template implementation
  * @augments {MeasuredTemplate}
  */
-export default class AreaTemplate extends MeasuredTemplate 
+export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemplate
 {
 
     /**
@@ -93,14 +93,6 @@ export default class AreaTemplate extends MeasuredTemplate
                 }
             }
         };
-
-        const sourceTemplateData = effect.system.transferData?.area?.templateData;
-        if (sourceTemplateData) 
-        {
-            templateData.fillColor = sourceTemplateData.fillColor || templateData.fillColor;
-            templateData.borderColor = sourceTemplateData.borderColor;
-            templateData.texture = sourceTemplateData.texture;
-        }
 
         const cls = CONFIG.MeasuredTemplate.documentClass;
         const template = new cls(templateData, {target: true, parent: canvas.scene });
@@ -228,15 +220,8 @@ export default class AreaTemplate extends MeasuredTemplate
         let now = Date.now(); // Apply a 20ms throttle
         if ( now - this.#moveTime <= 20 ) {return;}
         const center = event.data.getLocalPosition(this.layer);
-        if (!canvas.grid.isGridless)
-        {
-            const snapped = canvas.grid.getSnappedPosition(center.x, center.y, 2);
-            this.document.updateSource({x: snapped.x, y: snapped.y});
-        }
-        else 
-        {
-            this.document.updateSource({x: center.x, y: center.y});
-        }
+        const snapped = canvas.grid.getSnappedPosition(center.x, center.y, 2);
+        this.document.updateSource({x: snapped.x, y: snapped.y});
         this.refresh();
         this.#moveTime = now;
         if (this.document.getFlag(game.system.id, "target"))
@@ -313,8 +298,9 @@ export default class AreaTemplate extends MeasuredTemplate
             if ((t.x + (t.width / 2)) < maxx && (t.x + (t.width / 2)) > minx && (t.y + (t.height / 2)) < maxy && (t.y + (t.height / 2)) > miny)
             {newTokenTargets.push(t.id);};
         });
-        game.user.updateTokenTargets(newTokenTargets);
-        game.user.broadcastActivity({targets: newTokenTargets});
+
+        game.canvas.tokens.setTargets(newTokenTargets);
+
     }
 
 }

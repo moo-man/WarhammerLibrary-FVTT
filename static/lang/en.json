@@ -1,12 +1,51 @@
 {
+    "WORLD.GameSystem" : "Game System",
     "WH" : {
+
+        "Badge" : {
+            "Notes" : "NOTES",
+            "Issues" : "ISSUES",
+            "Wiki" : "WIKI",
+            "Discord" : "DISCORD"
+        },
+        "Initializer" : {
+            "SettingName" : "Warhammer Premium Content",
+            "SettingLabel" : "Manage Content",
+            "SettingHint" : "Manage your imported content from premium Warhammer Modules",
+            "Title" : "Warhammer Module Initialization",
+            "Text" : "<h3>Initialize, update, or deleted imported content from official Warhammer premium modules</h3>",
+            "HelpText" : "<p>Need Help? Check <a href=https://moo-man.github.io/WFRP4e-FoundryVTT/pages/premium.html#initializiation>the Wiki</a></p>",
+            "Tooltips" : {
+                "NotInstalled" : "Module not installed! If you've purchased this module, make sure to install it in Foundry's <strong>Setup Menu</strong>",
+                "NotActive" : "Module not active! Go to <strong>Manage Modules</strong> in the Settings sidebar to activate this module in the world."
+            },
+            "Action" : {
+                "Initialize" : "Initialize Content",
+                "Update" : "Update Content",
+                "Delete" : "Delete Content"
+            },
+
+            "UpdaterTitle": "Update {module} Content",
+            "UpdaterText" : "<p>This process will import new documents and overwrite previously imported documents with their content from the Compendium.</p><p>THIS MEANS ANY CHANGES YOU'VE MADE WILL BE OVERWRITTEN. This does not apply to any Document owned by a Player.</p><p>Only use this if you've initialized this module previously.</p>",
+            "UpdaterExclude" : "Exclude Name Change",
+            "UpdaterExcludeHint" : "Checking this will not update documents if their names have been changed",
+
+            "OverwriteActors": "Overwrite Actors",
+            "OverwriteMacros": "Overwrite Macros",
+            "OverwriteJournals": "Overwrite Journals",
+            "OverwriteTables": "Overwrite Tables",
+            "OverwriteScenes": "Overwrite Scenes"
+        },
+        "AdvancedConfig": "Advanced Effect Config",
         "Scripts": "Scripts",
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "ItemDialog": "Item Dialog",
+        "ValueDialog": "Value Dialog",
         "Initialize": "Initialize",
         "ScriptConfig": "Script Config",
         "DiffEditor": "Diff Editor",
         "ScriptEditor": "Script Editor",
+        "RichEditor": "Rich Text Editor",
         "AddScript": "Add Script",
         "EffectFiltered": "Effect Filtered",
         "EffectPrevented": "Effect Prevented",
@@ -61,16 +100,21 @@
                 "Vehicle": "Vehicle"
             }
         },
-        "ScriptLock": "Script Lock",
+        "ScriptLock": "Scripts Locked",
+        "ScriptLockTT": "Scripts are not editable when they are references. If you want to make changes: copy a script, unlock, paste, then make your desired changes.",
         "Script": "Script",
         "ScriptTrigger" : "Trigger",
         "Targeter" : "Targeter",
+        "TargeterTT" : "Run this script in the dialog of any Actor that is targeting this Actor.",
+        "DefendingAgainst" : "Defending Against",
+        "DefendingAgainstTT" : "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
+        "DialogScript" : "Dialog Script",
         "HideScript" : "Hide Script",
         "ActivateScript" : "Activate Script",
         "SubmissionScript" : "Submission Script",
         "ManualEffectKeys": "Manual Effect Keys",
         "DeleteEffect" : "Delete Effect",
-        "DeleteEffectHint" : "Delete the Active Effect after running this script.",
+        "DeleteEffectHint" : "Delete the Active Effect after running this script",
         "NewScript": "New Script",
         "NewEffect": "New Effect",
         "NewItem": "New Item",
@@ -155,7 +199,8 @@
             "SkipImmediatePlacement" : "Skip Immediate on Placement",
             "SkipImmediatePlacementHint" : "Prevents Immediate scripts from running when the effect is placed.",
             "ZoneType" : "Zone Type",
-            "ZoneTypeHint" : "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in"
+            "ZoneTypeHint" : "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in",
+            "AdvancedConfig" : "Open Advanced Configuration"
         },
         "TransferType" : {
             "Document" : "Owning Document",
@@ -247,5 +292,6 @@
                 "Label": "Types"
             }
         }
-    }
+    },
+    "EFFECT.TABS.scripts" : "Scripts"
 }

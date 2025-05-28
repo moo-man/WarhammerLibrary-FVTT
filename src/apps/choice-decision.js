@@ -5,7 +5,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
 
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes: ["choice-decision", "warhammer"],
+        classes: ["choice-decision", "warhammer", "standard-form"],
         form : {
             handler : this.submit,
             submitOnChange : false,
@@ -23,6 +23,9 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
     static PARTS = {
         form: {
             template: "modules/warhammer-lib/templates/apps/choice-decision.hbs"
+        },
+        footer : {
+            template : "templates/generic/form-footer.hbs"
         }
     };
 
@@ -46,6 +49,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
     {
         let context = await super._prepareContext(options);
         context.tree = this.tree.structure;
+        context.buttons = [{ type: "submit", label: "Submit Choices" }];
         return context;
     }
 

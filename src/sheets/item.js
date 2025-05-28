@@ -2,7 +2,7 @@ import ChoiceConfigV2 from "../apps/choice-config";
 import ChoiceDecision from "../apps/choice-decision";
 import WarhammerSheetMixin from "./mixin";
 
-export class WarhammerItemSheet extends WarhammerSheetMixin(ItemSheet) 
+export class WarhammerItemSheet extends WarhammerSheetMixin(foundry.appv1.sheets.ItemSheet)
 {
     async _render(force, options)
     {

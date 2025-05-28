@@ -122,7 +122,7 @@ export default class ZoneHelpers
     static async _handleFollowedEffects(token)
     {
         // Effects following theprovided token
-        let followedEffects = token?.actor?.followedZoneEffects || [];
+        let followedEffects = token?.actor.followedZoneEffects || [];
 
         // For each region, add and delete followed effects
         for(let region of token.parent.regions)

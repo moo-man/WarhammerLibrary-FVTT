@@ -6,3 +6,38 @@
         }
     }
 }
+
+
+.warhammer.roll-dialog-v2 
+{
+
+    --modifier-bg : var(--color-cool-3);
+
+
+    gap: 0px;
+    .dialog-base {
+        display: flex;
+        gap: 10px;
+    }
+
+    .dialog-modifiers {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        flex: 1;
+        ul {
+            text-align: left;
+            list-style: none;
+            padding: 0px;
+            flex: 1;
+            margin: 0px;
+        }
+        .modifier {
+            margin: 0px;
+            padding: 0.3rem 0.3rem;
+            &.active {
+                background: var(--modifier-bg);
+            }
+        }
+    }
+}

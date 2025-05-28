@@ -13,7 +13,6 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         actions: {
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
-            editImage : this._onEditImage,
             sortItems : this._onSortItemTypes
         }
     };
@@ -24,21 +23,21 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
 
     async _onDropItem(data, ev)
     {
-        let document = data.uuid ? await fromUuid(data.uuid) : data.data;
+        let document = await Item.fromDropData(data);
         if (document.actor?.uuid == this.actor.uuid)
         {
             this._onSortItem(document, ev);
         }
         else 
         {
-            return await this.document.createEmbeddedDocuments(data.type, [document]);
+            return await this.document.createEmbeddedDocuments(data.type, [document], data.options || {});
         }
     }
 
     async _onDropActiveEffect(data)
     {
         let document = await fromUuid(data.uuid);
-        return await this.document.createEmbeddedDocuments(data.type, [document]);
+        return await this.document.createEmbeddedDocuments(data.type, [document], data.options || {});
     }
 
     async _onSortItem(document, event)
@@ -47,7 +46,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         if (target)
         {
             let siblings = Array.from(this._getParent(event.target, ".list-content").querySelectorAll(".list-row")).map(i => fromUuidSync(i.dataset.uuid)).filter(i => i).filter(i => document.uuid != i.uuid);
-            let sorted = SortingHelpers.performIntegerSort(document, {target, siblings});
+            let sorted = foundry.utils.SortingHelpers.performIntegerSort(document, {target, siblings});
             this.actor.updateEmbeddedDocuments(document.documentName, sorted.map(s => 
             {
                 return foundry.utils.mergeObject({
@@ -225,8 +224,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         {
             return;
         }
-        game.user.updateTokenTargets([]);
-        game.user.broadcastActivity({ targets: [] });
+        game.canvas.tokens.setTargets([]);
     
         for (let target of targets) 
         {

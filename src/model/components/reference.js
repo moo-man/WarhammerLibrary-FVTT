@@ -51,7 +51,7 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
 
     unset() 
     {
-        return {[`${this.schema.fieldPath}`] : {uuid : null, id : null, name : ""}};
+        return {[`${this.schema.fieldPath}`] : {uuid : "", id : "", name : ""}};
     }
 }
 
@@ -94,7 +94,7 @@ export class DeferredReferenceModel extends DocumentReferenceModel
 
     unset() 
     {
-        return {[`${this.schema.fieldPath}`] : {uuid : null, id : null, name : ""}};
+        return {[`${this.schema.fieldPath}`] : {uuid : "", id : "", name : ""}};
     }
 }
 

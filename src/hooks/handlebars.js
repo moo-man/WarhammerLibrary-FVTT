@@ -7,7 +7,7 @@ export default function ()
 {
     Hooks.on("ready", () => 
     {
-        loadTemplates({            
+        foundry.applications.handlebars.loadTemplates({
             avoidTestDetails: systemConfig().avoidTestTemplate,
             dialogModifiers: "modules/warhammer-lib/templates/partials/dialog-modifiers.hbs",
             effectButtons: "modules/warhammer-lib/templates/partials/effect-buttons.hbs",
@@ -17,7 +17,10 @@ export default function ()
             sheetButtons: "modules/warhammer-lib/templates/partials/sheet-effect-buttons.hbs",
             sheetButtonsV1: "modules/warhammer-lib/templates/partials/sheet-effect-buttonsV1.hbs",
             choiceDisplay : "modules/warhammer-lib/templates/partials/choice-display.hbs",
-            choiceDecision : "modules/warhammer-lib/templates/partials/choice-decision.hbs"
+            choiceDecision : "modules/warhammer-lib/templates/partials/choice-decision.hbs",
+            documentReference : "modules/warhammer-lib/templates/partials/document-reference.hbs",
+            nameList : "modules/warhammer-lib/templates/partials/name-list.hbs",
+            nameListInput : "modules/warhammer-lib/templates/partials/name-list-input.hbs"
         });
     });
 }

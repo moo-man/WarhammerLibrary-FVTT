@@ -1,0 +1,26 @@
+<div class="initializer">
+    <div class="instructions">
+        {{{localize "WH.Initializer.Text"}}}
+        {{{localize "WH.Initializer.HelpText"}}}
+    </div>
+    <div class="module-list">
+        {{#each modules}}
+            <div data-module="{{this.data.id}}" class="module {{#unless this.installed}}uninstalled{{/unless}} {{#unless this.active}}not-active{{/unless}} {{#if this.initialized}}initialized{{/if}}" style="background-image: url({{this.data.media.0.url}})" data-tooltip="{{this.tooltip}}">
+                <h3>{{this.title}}</h3>
+                <div class="buttons">
+                    {{#if this.active}}
+                        {{#unless this.initialized}}
+                            <button type="buttom" data-action="initialize" data-tooltip="WH.Initializer.Action.Initialize"><i class="fa-solid fa-download"></i></button>
+                        {{else}}
+                            <button type="buttom" data-action="initialize" data-tooltip="WH.Initializer.Action.Initialize"><i class="fa-solid fa-download"></i></button>
+                            <button type="buttom" data-action="update" data-tooltip="WH.Initializer.Action.Update"><i class="fa-regular fa-file-check"></i></button>
+                            <button type="buttom" data-action="delete" data-tooltip="WH.Initializer.Action.Delete"><i class="fa-solid fa-file-slash"></i></button>
+                        {{/unless}}
+
+                    {{/if}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+
+</div>

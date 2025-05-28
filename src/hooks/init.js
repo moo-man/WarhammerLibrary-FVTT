@@ -1,5 +1,6 @@
 import { systemConfig } from "../util/utility";
 import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
+import { WarhammerModuleInitializationV2 } from "../modules/module-initializationV2";
 const {hasProperty, getProperty} = foundry.utils;
 
 /**
@@ -10,6 +11,7 @@ export default function ()
 
     Hooks.on("init", () => 
     {
+        CONFIG.ux.ContextMenu = warhammer.apps.WarhammerContextMenu;
 
         CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
         {
@@ -80,7 +82,7 @@ export default function ()
         {
             if (typeof cls == "string")
             {
-                let htmlProperties = Object.keys(args.hash).reduce((html, key) => html + " " + `data-${key}=${args.hash[key]}`, "");
+                let htmlProperties = Object.keys(args.hash).reduce((html, key) => html + " " + `data-${key}="${args.hash[key]}"`, "");
                 return array.map((value, index) => `<a data-index=${index} class="${cls}" ${htmlProperties}>${value}</a>`).join(`<span class="separator ${cls}">, </span>`);
             }
             else
@@ -129,7 +131,32 @@ export default function ()
 
         Handlebars.registerHelper("settings", function (key) 
         {
-            return game.settings.get(game.system.id, key);
+            let path = key.split(".");
+
+            let setting = game.settings.get(game.system.id, path[0]);
+
+            if (path.length > 1)
+            {
+                return foundry.utils.getProperty(setting, path.slice(1).join("."));
+            }
+            else 
+            {
+                return setting;
+            }
+        });
+
+        Handlebars.registerHelper("fallback", function (value, fallback) 
+        {
+            return value ? value : fallback;
+        });
+
+        game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
+            name: "WH.Initializer.SettingName",
+            label: "WH.Initializer.SettingLabel",
+            hint: "WH.Initializer.SettingHint",
+            icon : "fa-solid fa-download",
+            type: WarhammerModuleInitializationV2,
+            restricted: true
         });
 
         // Compendium Browser source exclusion

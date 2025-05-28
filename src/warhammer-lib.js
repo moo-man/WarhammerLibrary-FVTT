@@ -19,8 +19,8 @@ import { SocketHandlers } from "./util/socket-handlers";
 import TokenHelpers from "./util/token-helpers";
 import { WarhammerTestBase } from "./system/test";
 import AreaTemplate from "./util/area-template";
-import WarhammerChatListeners from "./util/chat-listeners";
-import { WarhammerTestMessageModel } from "./model/message";
+import { WarhammerMessageModel} from "./model/message";
+import { WarhammerTestMessageModel} from "./model/test";
 import WarhammerModuleInitializer from "./modules/module-initialization";
 import { WarhammerActorSheet } from "./sheets/actor";
 import { WarhammerItemSheet } from "./sheets/item";
@@ -38,11 +38,13 @@ import { error,
     targetedOrAssignedActors,
     sortObjectEntries,
     getPackage,
-    getCompendiumName
+    getCompendiumName,
+    targetsWithFallback,
+    registerPremiumModuleInitialization,
+    selectedWithFallback
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
 import WarhammerActorSheetV2 from "./sheets/v2/actor";
-import WarhammerContextMenu from "./apps/context-menu";
 import { SingletonItemModel } from "./model/components/singleton-item";
 import WarhammerItemSheetV2 from "./sheets/v2/item";
 import addSheetHelpers from "./util/sheet-helpers";
@@ -55,9 +57,14 @@ import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } fr
 import WarhammerScriptEditor from "./apps/script-editor";
 import { WarhammerRollTable } from "./document/table";
 import ChatCommands from "./system/commands";
+import { WarhammerContextMenu } from "./util/context-menu";
+import WarhammerChatMessage from "./document/message";
 import CompendiumBrowser from "./apps/browser/compendium-browser.mjs";
 import FilterStateElement from "./elements/filter-state.mjs";
 import CheckboxElement from "./elements/checkbox.mjs";
+import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
+import DraggableApp from "./apps/draggable";
+import ContainerizedApp from "./apps/containerized";
 hooks();
 overrides();
 
@@ -87,9 +94,12 @@ warhammer.utility = {
     addSheetHelpers,
     sleep,
     targetedOrAssignedActors,
+    targetsWithFallback,
+    selectedWithFallback,
     sortObjectEntries,
     getPackage,
     getCompendiumName,
+    registerPremiumModuleInitialization
 };
 
 warhammer.apps = {
@@ -100,14 +110,13 @@ warhammer.apps = {
     WarhammerDiffEditor,
     WarhammerBugReport,
     WarhammerRollDialog,
+    WarhammerRollDialogV2,
     WarhammerActiveEffectConfig,
-    WarhammerContextMenu,
     SocketHandlers,
     defaultWarhammerConfig,
     TokenHelpers,
     WarhammerTestBase,
     AreaTemplate,
-    WarhammerChatListeners,
     WarhammerModuleInitializer,
     WarhammerActorSheet,
     WarhammerItemSheet,
@@ -117,7 +126,10 @@ warhammer.apps = {
     ChoiceConfigV2,
     ChoiceDecision,
     ChatCommands,
+    WarhammerContextMenu,
     CompendiumBrowser,
+    DraggableApp,
+    ContainerizedApp
 };
 
 warhammer.models = {
@@ -134,6 +146,7 @@ warhammer.models = {
     DiffReferenceListModel,
     WarhammerActiveEffectModel,
     WarhammerTestMessageModel,
+    WarhammerMessageModel,
     WarhammerActiveEffect,
     ChoiceModel
 
@@ -142,7 +155,8 @@ warhammer.models = {
 warhammer.documents = {
     WarhammerActor,
     WarhammerItem,
-    WarhammerRollTable
+    WarhammerRollTable,
+    WarhammerChatMessage
 };
 
 globalThis.warhammer = warhammer;

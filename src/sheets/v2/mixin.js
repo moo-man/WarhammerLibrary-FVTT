@@ -1,5 +1,4 @@
-import WarhammerContextMenu from "../../apps/context-menu";
-import { ListPropertyForm } from "../../apps/list-form";
+import WarhammerRichEditor from "../../apps/rich-editor";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
 
@@ -28,8 +27,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             unset : this._unsetReference,
             stepProperty : {buttons: [0, 2], handler : this._onStepProperty},
             togglePip : this._onTogglePip,
+            editRichText : this._onEditRichText,
             clickEffectButton : this._onClickEffectButton,
-            editImage : this._onEditImage
         },
         window: {
             resizable: true
@@ -73,7 +72,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 dragover: this._onDragOver.bind(this),
                 drop: this._onDrop.bind(this),
             };
-            return new DragDrop(d);
+            return new foundry.applications.ux.DragDrop.implementation(d);
         });
     }
 
@@ -145,7 +144,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
      */
     async _onDrop(event) 
     {
-        const data = TextEditor.getDragEventData(event);
+        const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
 
         if (data.type && typeof this["_onDrop" + data.type] == "function")
         {
@@ -164,9 +163,45 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     _onRender(_context, _options) 
     {
+        super._onRender(_context, _options);
         this.#dragDrop.forEach((d) => d.bind(this.element));
 
+        addLinkSources(this.element);
+        
         this._addEventListeners();
+    }
+
+
+    _configureRenderParts(options) 
+    {
+        if (this.document?.limited)
+        {
+            return this._configureLimitedParts(options);
+        }
+        else 
+        {
+            return super._configureRenderParts(options);
+        }
+    }
+
+    _configureLimitedParts(options)
+    {
+        return super._configureRenderParts(options);
+    }
+
+    async _onFirstRender(context, options)
+    {
+        await super._onFirstRender(context, options);
+        this._handleContainers();
+
+        // Anything in a list row should be right clickable (usually items) unless otherwise specified (nocontext)
+        this._createContextMenu(this._getContextMenuOptions, ".list-row:not(.nocontext)", {jQuery: false, fixed: true});
+
+        // Left clickable context menus (3 vertical pips)
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu", {eventName : "click", jQuery: false, fixed: true});
+
+        // Anything else that should be right clickable for context menus
+        this._createContextMenu(this._getContextMenuOptions, ".context-menu-alt", {jQuery: false, fixed: true});
     }
 
     _addEventListeners()
@@ -178,19 +213,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 ev.target.select();
             });
         });
-    
-        if (!this._contextMenu)
-        {
-            this._contextMenu = this._setupContextMenus();
-        }
-        else 
-        {
-            this._contextMenu.forEach(menu => 
-            {
-                menu.element = this.element;
-                menu.bind();
-            });
-        }
     
         this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
         {
@@ -206,21 +228,38 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         {
             element.addEventListener("change", this.constructor._onListEdit.bind(this));
         });
-    }
 
-    _setupContextMenus()
-    {
-        // return  
-        return [
-            WarhammerContextMenu.create(this, this.element, ".list-row:not(.nocontext)", this._getContextMenuOptions()), 
-            WarhammerContextMenu.create(this, this.element, ".context-menu", this._getContextMenuOptions(), {eventName : "click"}),
-            WarhammerContextMenu.create(this, this.element, ".context-menu-alt", this._getContextMenuOptions())
-        ];
+        this.element.querySelectorAll(".name-list input").forEach(e => 
+        {
+            e.style.width = e.value.length + 2 + "ch";
+        });
+    
+        this.element.querySelectorAll(".name-list .empty").forEach(e => 
+        {
+            e.style.width = "3rem";
+            e.addEventListener("keydown", e => 
+            {
+                if (e.key === "Tab")
+                {
+                    let parent = this._getParent(e.target, ".form-group");
+                    this.nameInputFocus = parent.dataset.group;
+                }
+                else 
+                {
+                    this.nameInputFocus = null;
+                }
+            });
+        });
+        
+        if (this.nameInputFocus)
+        {
+            this.element.querySelector(`.${this.nameInputFocus} .empty`)?.focus();
+        }
     }
 
     _getContextMenuOptions() 
     {
-
+        return [];
     }
 
     
@@ -306,34 +345,34 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
 
-    static async _onEditEmbeddedDoc(ev)
+    static async _onEditEmbeddedDoc(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc?.sheet.render(true);
     }
 
-    static async _onDeleteEmbeddedDoc(ev)
+    static async _onDeleteEmbeddedDoc(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc?.delete();
     }
 
-    static async _onEffectToggle(ev)
+    static async _onEffectToggle(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev);
+        let doc = await this._getDocumentAsync(ev, target);
         doc.update({"disabled" : !doc.disabled});
     }
 
-    static async _onEditProperty(ev)
+    static async _onEditProperty(ev, target)
     {
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = ev.target.dataset.path;
         document.update({[path] : ev.type == "number" ? Number(ev.target.value) : ev.target.value});
     }
   
     static async _onToggleProperty(ev, target)
     {
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = target.dataset.path;
         document.update({[path] : !foundry.utils.getProperty(document, path)});
     }
@@ -342,7 +381,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         ev.stopPropagation();
         ev.preventDefault();
-        let document = (await this._getDocumentAsync(ev)) || this.document;
+        let document = (await this._getDocumentAsync(ev, target)) || this.document;
         let path = target.dataset.path;
         let step = ev.button == 0 ? 1 : -1;
         step = ev.target.dataset.reversed ? -1 * step : step;
@@ -353,10 +392,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         document.update({[path] : foundry.utils.getProperty(document, path) + step});
     }
 
-    static async _onListCreate(ev)
+    static async _onListCreate(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
 
         if (list)
         {
@@ -364,10 +403,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListCreateWithValue(ev)
+    static async _onListCreateWithValue(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
 
         if (list)
         {
@@ -379,10 +418,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListDelete(ev)
+    static async _onListDelete(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
 
         if (list)
@@ -395,10 +434,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    static async _onListEdit(ev)
+    static async _onListEdit(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
         let internalPath = this._getDataAttribute(ev, "ipath");
         let value = ev.target.value;
@@ -417,10 +456,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     }
 
-    static async _onListForm(ev)
+    static async _onListForm(ev, target)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
-        let list = this._getList(ev);
+        let doc = await this._getDocumentAsync(ev, target) || this.document;
+        let list = this._getList(ev, target);
         let index = this._getIndex(ev);
         list.toForm(index, doc);
     }
@@ -442,37 +481,12 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.document.update({[path] : newValue});
     }
 
-    async _unsetReference(ev)
+    static async _unsetReference(ev)
     {
-        let doc = await this._getDocumentAsync(ev) || this.document;
+        let doc = this.document;
         let path = this._getPath(ev);
         let property = foundry.utils.getProperty(doc, path);
-        doc.update({[path] : property.unset()});
-    }
-
-    
-    // TODO: Remove in V13
-    static async _onEditImage(event) 
-    {
-        const attr = event.target.dataset.edit;
-        const current = foundry.utils.getProperty(this.document, attr);
-        const fp = new FilePicker({
-            current,
-            type: "image",
-            callback: path => 
-            {
-                this.document.update({img : path});
-            },
-            top: this.position.top + 40,
-            left: this.position.left + 10
-        });
-        await fp.browse();
-    }
-
-    modifyHTML()
-    {
-        // replacePopoutTokens(this.element);
-        addLinkSources(this.element);
+        doc.update(property.unset());
     }
 
     
@@ -501,6 +515,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             doc.update({[list] : arr.filter((_, i) => i != index)});
         }
     }
+
     _handleArrayEdit(doc, ev)
     {
         let list = this._getPath(ev);
@@ -526,14 +541,48 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         }
     }
 
-    _onFirstRender(context, options) {
-        super._onFirstRender(context, options);
+    static async _onEditRichText(ev, target)
+    {
+        new WarhammerRichEditor(this.document, {path : target.dataset.path, index : target.dataset.index, ipath : target.dataset.ipath}).render(true);
+    }
+
+    async _toggleDropdown(ev, content, parentSelector=".list-row")
+    {
+        let dropdownElement = this._getParent(ev.target, parentSelector).querySelector(".dropdown-content");
+        this._toggleDropdownAt(dropdownElement, content);
+    }
+
+    async _toggleDropdownAt(element, content)
+    {
+        let dropdownElement = element.querySelector(".dropdown-content") || element;
+
+        if (dropdownElement.classList.contains("collapsed"))
+        {
+            dropdownElement.innerHTML = content;
+            dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.classList.replace("collapsed", "expanded");
+            // Fit content can't be animated, but we would like it be flexible height, so wait until animation finishes then add fit-content
+            // sleep(500).then(() => dropdownElement.style.height = `fit-content`);
+        
+        }
+        else if (dropdownElement.classList.contains("expanded"))
+        {
+        // dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.style.height = `0px`;
+            dropdownElement.classList.replace("expanded", "collapsed");
+        }
+    }
+
+    _handleContainers(context, options)
+    {
         const containers = {};
-        for (const [part, config] of Object.entries(this.constructor.PARTS)) {
-            if (!config.container?.id) continue;
+        for (const [part, config] of Object.entries(this.constructor.PARTS)) 
+        {
+            if (!config.container?.id) {continue;}
             const element = this.element.querySelector(`[data-application-part="${part}"]`);
-            if (!element) continue;
-            if (!containers[config.container.id]) {
+            if (!element) {continue;}
+            if (!containers[config.container.id]) 
+            {
                 const div = document.createElement("div");
                 div.dataset.containerId = config.container.id;
                 div.classList.add(...config.container.classes ?? []);
@@ -543,6 +592,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             containers[config.container.id].append(element);
         }
     }
+
+    
 };
 
 export default WarhammerSheetMixinV2;

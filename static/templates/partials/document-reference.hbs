@@ -1,0 +1,11 @@
+<div class="form-group {{classes}}">
+    <label>{{localize label}}</label>
+    <div class="form-fields">
+        <div class="like-input document-reference">
+            {{#if document.uuid}}
+                <a data-action="editEmbedded" data-uuid="{{document.uuid}}">{{document.name}}</a>
+                <a data-action="unset" class="floating" data-path="{{path}}"><i class="fa-solid fa-xmark"></i></a>
+            {{/if}}
+        </div>
+    </div>
+</div>

@@ -410,6 +410,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return effect;
     }
 
+    get show()
+    {
+        return true;
+    }
+
     get scripts()
     {
         return this.system.scripts;
@@ -472,7 +477,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get key () 
     {
-        return Array.from(this.statuses)[0];
+        return Array.from(this.statuses)[0] || this.getFlag("core", "statusId");
     }
 
     get specifier() 
@@ -517,6 +522,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get testDisplay() 
     {
         return "";
+    }
+
+    /**
+     * Some effects are created in memory, not in the database.
+     * Most notably item traits/properties
+     */
+    get path()
+    {
+        return this.getFlag(game.system.id, "path");
     }
 
     get manualScripts()

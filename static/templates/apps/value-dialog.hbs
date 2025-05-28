@@ -1,0 +1,18 @@
+<div>
+  <div class="form-group stacked">
+    <label class="centered">{{label}}</label>
+    <div class="form-fields">
+      {{#if values}}
+        <select name="value">
+          <option value=""></option>
+          {{selectOptions values nameAttr="key" labelAttr="display" selected=defaultValue}}
+        </select>
+      {{else}}
+        <input name="value" type="text" value="{{defaultValue}}">
+      {{/if}}
+    </div>
+  </div>
+  <div class="form-footer" style="margin-top: 0.5rem">
+    <button>Submit</button>
+  </div>
+</div>

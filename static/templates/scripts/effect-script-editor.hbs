@@ -1,20 +1,19 @@
 <div>
-        {{#if hasScriptReferences}}
-        <div class="form-group">
-            <label>{{localize "WH.ScriptLock"}}</label>
-            <input data-action="toggleLock" type="checkbox" {{checked scriptLock}}>
-        </div>
-    {{/if}}
+
     <div class="form-group">
         <label>{{localize "Label"}}</label>
-        <input name="label" type="text" value="{{scriptData.label}}"></input>
+        <div class="form-fields">
+            <input name="label" type="text" value="{{scriptData.label}}"></input>
+        </div>
     </div>
 
     <div class="form-group">
         <label>{{localize "WH.ScriptTrigger"}}</label>
-        <select name="trigger">
-            {{selectOptions (config "scriptTriggers") selected=scriptData.trigger}}
-        </select>
+        <div class="form-fields">
+            <select name="trigger">
+                {{selectOptions (config "scriptTriggers") selected=scriptData.trigger localize=true}}
+            </select>
+        </div>
     </div>
 
     {{#if (eq scriptData.trigger "dialog")}}
@@ -39,59 +38,67 @@
         <div class="form-group">
             <label>{{localize "WH.DeleteEffect"}}</label>
             <div class="form-fields">
-                <input name="deleteEffect" type="checkbox" {{checked scriptData.options.deleteEffect}}>
                 <p class="hint">{{localize "WH.DeleteEffectHint"}}</p>
+                <input name="deleteEffect" type="checkbox" {{checked scriptData.options.deleteEffect}}>
             </div>
         </div>
     {{/if}}
 
 
+        {{#if hasScriptReferences}}
+        <div class="form-group">
+            <label data-tooltip="WH.ScriptLockTT" data-tooltip-direction="LEFT">{{localize "WH.ScriptLock"}} <i class="fa-regular fa-circle-info"></i></label>
+            <div class="form-fields">
+                <input data-action="toggleLock" type="checkbox" {{checked scriptLock}}>
+            </div>
+        </div>
+    {{/if}}
 
+<hr>
 
     <div class="script-fields">
-        {{#if (eq scriptData.trigger "dialog")}}
-            <div class="form-group stacked script">
-                <label>{{localize "WH.HideScript"}}</label>
-                    {{#if lockedScripts.hideScript}}
-                        <textarea disabled class="inactive"
-                            name="hideScript">{{dereferencedScripts.options.hideScript}}</textarea>
-                    {{else}}
-                        <textarea {{#unless (isGM)}}disabled{{/unless}}
-                            name="hideScript">{{scriptData.options.hideScript}}</textarea>
-                    {{/if}}
-            </div>
 
-            <div class="form-group stacked script">
-                <label>{{localize "WH.ActivateScript"}}</label>
-                    {{#if lockedScripts.activateScript}}
-                        <textarea disabled class="inactive"
-                            name="activateScript">{{dereferencedScripts.options.activateScript}}</textarea>
-                    {{else}}
-                        <textarea {{#unless (isGM)}}disabled{{/unless}}
-                            name="activateScript">{{scriptData.options.activateScript}}</textarea>
-                    {{/if}}
-            </div>
-            <div class="form-group stacked script">
-                <label>{{localize "WH.SubmissionScript"}}</label>
-                    {{#if lockedScripts.submissionScript}}
-                        <textarea disabled class="inactive"
-                            name="submissionScript">{{dereferencedScripts.options.submissionScript}}</textarea>
-                    {{else}}
-                        <textarea {{#unless (isGM)}}disabled{{/unless}}
-                            name="submissionScript">{{scriptData.options.submissionScript}}</textarea>
-                    {{/if}}
-            </div>
+            
+        {{#if (eq scriptData.trigger "dialog")}}
+            <label>{{localize "WH.DialogScript"}} <a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a></label>
+        {{else}}
+            <a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a>
+        {{/if}}
+
+        {{#if lockedScripts.script}}
+            {{formInput fields.script value=dereferencedScripts.script language="javascript" elementType="code-mirror" disabled="true" readOnly="true" readonly="true"}}
+        {{else}}
+            {{formInput fields.script value=script language="javascript" elementType="code-mirror" name="script" disabled=(not (isGM))}}
         {{/if}}
 
 
-    <div class="form-group stacked script">
-        <label>{{localize "WH.Script"}}</label>
-            {{#if lockedScripts.script}}
-            <textarea disabled class="inactive" name="activateScript">{{dereferencedScripts.script}}</textarea>
-            {{else}}
-            <textarea {{#unless (isGM)}}disabled{{/unless}} name="script">{{script}}</textarea>
-            {{/if}}
-    </div>
-    </div>
+
+    {{#if (eq scriptData.trigger "dialog")}}
+        <div class="form-group stacked script">
+            <label>{{localize "WH.HideScript"}} <a data-action="copyScript" data-script="hideScript"><i class="fa-solid fa-copy"></i></a></label>
+                {{#if lockedScripts.hideScript}}
+                    {{formInput fields.options.fields.hideScript value=dereferencedScripts.options.hideScript language="javascript" elementType="code-mirror" disabled="true"}}
+                {{else}}
+                    {{formInput fields.options.fields.hideScript value=scriptData.options.hideScript language="javascript" elementType="code-mirror" name="hideScript" disabled=(not (isGM))}}
+                {{/if}}
+        </div>
+
+        <div class="form-group stacked script">
+            <label>{{localize "WH.ActivateScript"}} <a data-action="copyScript" data-script="activateScript"><i class="fa-solid fa-copy"></i></a></label>
+                {{#if lockedScripts.activateScript}}
+                    {{formInput fields.options.fields.activateScript value=dereferencedScripts.options.activateScript language="javascript" elementType="code-mirror" disabled="true"}}
+                {{else}}
+                    {{formInput fields.options.fields.activateScript value=scriptData.options.activateScript language="javascript" elementType="code-mirror" name="activateScript" disabled=(not (isGM))}}
+                {{/if}}
+        </div>
+        <div class="form-group stacked script">
+            <label>{{localize "WH.SubmissionScript"}} <a data-action="copyScript" data-script="submissionScript"><i class="fa-solid fa-copy"></i></a></label>
+                {{#if lockedScripts.submissionScript}}
+                    {{formInput fields.options.fields.submissionScript value=dereferencedScripts.options.submissionScript language="javascript" elementType="code-mirror" disabled="true"}}
+                {{else}}
+                    {{formInput fields.options.fields.submissionScript value=scriptData.options.submissionScript language="javascript" elementType="code-mirror" name="submissionScript" disabled=(not (isGM))}}
+                {{/if}}
+        </div>
+    {{/if}}
 
 </div>

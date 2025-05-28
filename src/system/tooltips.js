@@ -148,7 +148,7 @@ export class BaseDialogTooltips
                 if (i.value)
                 {
                     // Add sign to positive numbers (unless the value was "set")
-                    return `&#8226; ${i.source} (${HandlebarsHelpers.numberFormat(i.value, {hash : {sign: !i.set}})}${(!hideLabel && field.label) ? " " + field.label : ""})`;
+                    return `&#8226; ${i.source} (${foundry.applications.handlebars.numberFormat(i.value, {hash : {sign: !i.set}})}${(!hideLabel && field.label) ? " " + field.label : ""})`;
                 }
                 else 
                 { 

@@ -1,235 +1,35 @@
-<div class="wh-effect-config">
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.TransferType"}}</label>
-            <select name="system.transferData.type">
-                {{#select system.transferData.type}}
-                    {{#each (config "transferTypes")}}
-                        <option value="{{@key}}">{{this}}</option>
-                    {{/each}}
-                {{/select}}
-            </select>
-            <p class="notes">{{localize "WH.TransferData.TransferTypeHint"}}</p>
-        </div>
+<div class="transfer-config">
+
+    <div class="form-group">
+        <label>{{localize "WH.TransferData.TransferType"}}</label>
+        <select name="system.transferData.type">
+            {{selectOptions (config "transferTypes") selected=system.transferData.type}}
+        </select>
+        <p class="notes">{{localize "WH.TransferData.TransferTypeHint"}}</p>
+    </div>
 
 
 
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.DocumentType"}}</label>
-            <select name="system.transferData.documentType">
-                {{#select system.transferData.documentType}}
-                    {{#each (config "transferDocumentTypes")}}
-                        <option value="{{@key}}">{{this}}</option>
-                    {{/each}}
-                {{/select}}
-            </select>
-            <p class="notes">{{localize "WH.TransferData.DocumentTypeHint"}}</p>
-        </div>
+    <div class="form-group">
+        <label>{{localize "WH.TransferData.DocumentType"}}</label>
+        <select name="system.transferData.documentType">
+            {{selectOptions (config "transferDocumentTypes") selected=system.transferData.documentType}}
+        </select>
+        <p class="notes">{{localize "WH.TransferData.DocumentTypeHint"}}</p>
+    </div>
 
-        {{#unless hidden.avoidTest}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.AvoidTest"}}
-                    {{#if (eq system.transferData.avoidTest.value "script")}}<a class="script-config"
-                            data-path="system.transferData.avoidTest.script"><i
-                                class="fa-solid fa-gear-complex-code"></i></a>{{/if}}</label>
-                <select name="system.transferData.avoidTest.value">
-                    {{#select system.transferData.avoidTest.value}}
-                        <option value="none">{{localize "WH.TransferData.AvoidTestNone"}}</option>
-                        <option value="item">{{localize "WH.TransferData.AvoidTestItem"}}</option>
-                        <option value="custom">{{localize "WH.TransferData.AvoidTestCustom"}}</option>
-                        <option value="script">{{localize "WH.TransferData.AvoidTestScript"}}</option>
-                    {{/select}}
-                </select>
-                <p class="notes">{{{localize "WH.TransferData.AvoidTestHint"}}}</p>
-            </div>
-
-            {{#unless (eq system.transferData.avoidTest.value "script")}}
-                {{#unless (eq system.transferData.avoidTest.value "none")}}
-                    <div class="form-group">
-                        <label>{{localize "WH.TransferData.Opposed"}}</label>
-                        <input type="checkbox" name="system.transferData.avoidTest.opposed" {{checked
-                            system.transferData.avoidTest.opposed}}>
-                    </div>
-                {{/unless}}
-            {{/unless}}
-
-            {{#unless (eq system.transferData.avoidTest.value "none")}}
-                {{#unless (eq system.transferData.avoidTest.value "script")}}
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.Prevention"}}</label>
-                    <input type="checkbox" name="system.transferData.avoidTest.prevention" {{checked
-                        system.transferData.avoidTest.prevention}}>
-                    <p class="notes">{{{localize "WH.TransferData.PreventionHint"}}}</p>
-                </div>
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.Reversed"}}</label>
-                    <input type="checkbox" name="system.transferData.avoidTest.reversed" {{checked
-                        system.transferData.avoidTest.reversed}}>
-                    <p class="notes">{{{localize "WH.TransferData.ReversedHint"}}}</p>
-                </div>
-                {{/unless}}
-            {{/unless}}
-
-            {{#if (eq system.transferData.avoidTest.value "custom")}}
-            {{> avoidTestDetails}}
-            {{/if}}
-        {{/unless}}
-
-        {{#if ../configuration.zone}}
-        {{else }}
-            {{#if (eq system.transferData.type "area")}}
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.AreaDuration"}}</label>
-                    <div class="form-fields">
-                        <select name="system.transferData.area.duration">
-                            {{#select system.transferData.area.duration}}
-                                <option value="instantaneous">{{localize "WH.TransferData.AreaDurationInstantaneous"}}
-                                </option>
-                                <option value="sustained">{{localize "WH.TransferData.AreaDurationSustained"}}</option>
-                            {{/select}}
-                        </select>
-                    </div>
-                </div>
-            {{/if}}
-
-            {{#if (eq system.transferData.type "aura")}}
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.TransferredAura"}}</label>
-                    <input type="checkbox" name="system.transferData.area.aura.transferred" {{checked
-                        system.transferData.area.aura.transferred}}>
-                    <p class="notes">{{localize "WH.TransferData.TransferredAuraHint"}}</p>
-                </div>
-
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.RenderAura"}}</label>
-                    <input type="checkbox" name="system.transferData.area.aura.render" {{checked
-                        system.transferData.area.aura.render}}>
-                    <p class="notes">{{localize "WH.TransferData.RenderAuraHint"}}</p>
-                </div>
-            {{/if}}
-
-            {{#if (or (eq system.transferData.type "aura") (eq system.transferData.type "area"))}}
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.Keep"}}</label>
-                    <input type="checkbox" name="system.transferData.area.keep" {{checked system.transferData.area.keep}}>
-                    <p class="notes">{{localize "WH.TransferData.KeepHint"}}</p>
-                </div>
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.Radius"}}</label>
-                    <input type="text" name="system.transferData.area.radius" value="{{system.transferData.area.radius}}"
-                        placeholder="Inherit">
-                    <p class="notes">{{localize "WH.TransferData.RadiusHint"}}</p>
-                </div>
-                <div class="form-group">
-                    <label>{{localize "WH.TransferData.TemplateData"}}
-                        <a class="configure-template" data-path="system.transferData.area.templateData"><i
-                                class="fa-solid fa-gear"></i></a>
-                    </label>
-                    <p class="notes">{{{localize "WH.TransferData.TemplateDataHint"}}}</p>
-                </div>
-            {{/if}}
-        {{/if}}
-
-        {{#unless hidden.selfOnly}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.SelfOnly"}}</label>
-                <input type="checkbox" name="system.transferData.selfOnly" {{checked system.transferData.selfOnly}}>
-                <p class="notes">{{{localize "WH.TransferData.SelfOnlyHint"}}}</p>
-            </div>
-        {{/unless}}
-
-        {{#if (eq system.transferData.type "zone")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.ZoneType"}}</label>
-                <select name="system.transferData.zone.type">
-                    {{#select system.transferData.zone.type}}
-                        <option value="zone">{{localize "WH.ZoneEffect"}}</option>
-                        <option value="tokens">{{localize "WH.TokensInZone"}}</option>
-                        <option value="follow">{{localize "WH.FollowToken"}}</option>
-                    {{/select}}
-                </select>
-                <p class="notes">{{{localize "WH.TransferData.ZoneTypeHint"}}}</p>
-            </div>
-
-            {{#unless (eq system.transferData.zone.type "tokens")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.Keep"}}</label>
-                <input type="checkbox" name="system.transferData.zone.keep" {{checked system.transferData.zone.keep}}>
-                <p class="notes">{{localize "WH.TransferData.KeepHint"}}</p>
-            </div>
-            {{/unless}}
-
-            {{#if (eq system.transferData.zone.type "follow")}}
-            <div class="form-group">
-                <label>{{localize "WH.TransferData.TransferredFollow"}}</label>
-                <input type="checkbox" name="system.transferData.zone.transferred" {{checked system.transferData.zone.transferred}}>
-                <p class="notes">{{localize "WH.TransferData.TransferredFollowHint"}}</p>
-            </div>
-            {{/if}}
-        {{/if}}
-
-        {{#if (and (eq system.transferData.type "zone") (ne system.zone.type "tokens"))}}
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.SkipImmediatePlacement"}}</label>
-            <input type="checkbox" name="system.zone.skipImmediateOnPlacement" {{checked system.zone.skipImmediateOnPlacement}}>
-            <p class="notes">{{localize "WH.TransferData.SkipImmediatePlacementHint"}}</p>
-        </div>
-        {{/if}}
-
-
-        {{#if systemTemplate}}
-        {{{systemTemplate}}}
-        {{/if}}
-
-        {{#unless hidden.testIndependent}}
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.TestIndependent"}}</label>
-            <input type="checkbox" name="system.transferData.testIndependent" {{checked
-                system.transferData.testIndependent}}>
-            <p class="notes">{{localize "WH.TransferData.TestIndependentHint"}}</p>
-        </div>
-        {{/unless}}
-
-        {{#unless hidden.preApplyScript}}
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.PreApplyScript"}}<a class="script-config"
-                    data-path="system.transferData.preApplyScript"><i
-                        class="fa-solid fa-gear-complex-code"></i></a></label>
-            <p class="notes">{{localize "WH.TransferData.PreApplyScriptHint"}}</p>
-        </div>
-        {{/unless}}
-
-        {{#unless hidden.equipTransfer}}
+    {{#unless hidden.equipTransfer}}
         <div class="form-group">
             <label>{{localize "WH.TransferData.EquipTransfer"}}</label>
-            <input type="checkbox" name="system.transferData.equipTransfer" {{checked
-                system.transferData.equipTransfer}}>
+            <div class="form-fields">
+                <input type="checkbox" name="system.transferData.equipTransfer" {{checked
+                    system.transferData.equipTransfer}}>
+            </div>
             <p class="notes">{{localize "WH.TransferData.EquipTransferHint"}}</p>
         </div>
-        {{/unless}}
+    {{/unless}}
 
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.EnableScript"}}<a class="script-config"
-                    data-path="system.transferData.enableConditionScript"><i
-                        class="fa-solid fa-gear-complex-code"></i></a></label>
-            <p class="notes">{{localize "WH.TransferData.EnableScriptHint"}}</p>
-        </div>
-
-        {{#unless hidden.filter}}
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.Filter"}}
-                <a class="script-config" data-path="system.transferData.filter">
-                    <i class="fa-solid fa-gear-complex-code"></i>
-                </a>
-            </label>
-            <p class="notes">{{{localize "WH.TransferData.FilterHint"}}}</p>
-        </div>
-        {{/unless}}
-
-        {{#unless hidden.filter}}
-        <div class="form-group">
-            <label>{{localize "WH.TransferData.Prompt"}}</label>
-            <input type="checkbox" name="system.transferData.prompt" {{checked system.transferData.prompt}}>
-            <p class="notes">{{{localize "WH.TransferData.PromptHint"}}}</p>
-        </div>
-        {{/unless}}
+    <div class="form-group">
+        <label><a data-action="advancedConfig">{{localize "WH.TransferData.AdvancedConfig"}} <i class="fa-solid fa-gears"></i></a></label>
+    </div>
 </div>

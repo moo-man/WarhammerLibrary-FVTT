@@ -83,7 +83,7 @@ export default class TokenHelpers
 
                 for(let t of auraTemplates)
                 {
-                    CanvasAnimation.animate([{parent: t.object, attribute : "x", to: options._newCenter[token.id].x}, {parent: t.object, attribute : "y", to: options._newCenter[token.id].y}], {duration : tokenAnimations[0]?.duration || 0});
+                    foundry.canvas.animation.CanvasAnimation.animate([{parent: t.object, attribute : "x", to: options._newCenter[token.id].x}, {parent: t.object, attribute : "y", to: options._newCenter[token.id].y}], {duration : tokenAnimations[0]?.duration || 0});
                 }
 
                 let auraTemplateData = auraTemplates.map(i => i.toObject());

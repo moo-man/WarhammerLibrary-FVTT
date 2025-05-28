@@ -76,13 +76,13 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      * @param {boolean} roll Whether to evaluate the test or not
      * @returns {object} test class instance
      */
-    async _setupTest(dialogClass, testClass, data, options = {}, roll = true, sendToChat=true) 
+    async _setupTest(dialogClass, testClass, data, context = {}, roll = true, sendToChat=true) 
     {
-        let dialogData = await dialogClass.setupData(data, this, options);
+        let dialogData = await dialogClass.setupData(data, this, context);
         let setupData;
-        if (options.skipDialog) 
+        if (context.skipDialog) 
         {
-            setupData = await (new dialogClass(dialogData.data, dialogData.fields, dialogData.options, null).bypass());
+            setupData = await (new dialogClass(dialogData.data, dialogData.fields, dialogData.context).bypass());
         }
         else 
         {

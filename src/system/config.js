@@ -1,4 +1,12 @@
 export default {
+    badgeInfo : {
+        img : "",
+        notes : "",
+        issues : "",
+        wiki : "",
+        discord : "https://discord.gg/GrMcdeDHh8"
+    },
+
     scriptTriggers : {
         manual : "WH.Trigger.Manual",
         immediate : "WH.Trigger.Immediate",

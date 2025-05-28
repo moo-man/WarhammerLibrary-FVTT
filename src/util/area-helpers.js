@@ -9,9 +9,10 @@ export default class AreaHelpers
     static semaphore = new foundry.utils.Semaphore();
     /**
      * Determines if a coordinate is within a Template's strokes
-     * @param {object} point object being tested
+     * @param {object} {x, y} object being tested
+     * @param point
      * @param {Template} template Template object being tested
-     * @returns {boolean} true if the point is within the template, false otherwise
+     * @returns
      */
     static isInTemplate(point, template)
     {
@@ -27,7 +28,6 @@ export default class AreaHelpers
         {
             return this._isInEllipse(point, template.object);
         }
-        return false;
     }
 
     static setTokenAreas(token, update, options, user)
@@ -58,7 +58,7 @@ export default class AreaHelpers
 
             if (changedRegion)
             {
-                await this.checkTokenAreaEffects([token], options._newCenter[token.id]);
+                await this.checkTokenAreaEffects(token, options._newCenter[token.id]);
             }
         }
     }
@@ -70,7 +70,10 @@ export default class AreaHelpers
         {
             // Tokens that are now in the template or have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
-            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
+            for(let token of tokens)
+            {
+                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
+            }
         }
     }
 
@@ -81,7 +84,10 @@ export default class AreaHelpers
         {
             // Tokens that are now in the template or have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => this.isInTemplate(token.object.center, template) || token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
-            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
+            for(let token of tokens)
+            {
+                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
+            }
             
             if (template.getFlag(game.system.id, "instantaneous"))
             {
@@ -101,64 +107,55 @@ export default class AreaHelpers
         {
             // Tokens that have effects from this template
             let tokens = template.parent?.tokens.contents.filter(token => token.actor?.effects.find(e => e.system.sourceData.area == template.uuid));
-            this.semaphore.add(this.checkTokenAreaEffects.bind(this), tokens);
+            for(let token of tokens)
+            {
+                this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
+            }
         }
+
     }
 
-    static async checkTokenAreaEffects(tokens, newCenter)
+    static async checkTokenAreaEffects(token, newCenter)
     {
-        let promises = [];
-        for(let token of tokens) 
+        if (!token.actor) {return;}
+
+        let scene = token.parent;
+        let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
+        let effects = Array.from(token.actor?.effects);
+        let areaEffects = [];
+        inAreas.forEach(area => 
         {
-            if (!token.actor) 
+            let areaEffect = area.areaEffect();
+            let auraData = area.getFlag(game.system.id, "aura");
+            // If the effect exists, only add the area effect if the area is not an aura OR this isn't the owner of the aura and it's not a transferred aura
+            // in other words, if the aura is transferred, apply to owner of the aura. If it's a constant aura, don't add the effect to the owner
+            if (areaEffect && (!auraData || auraData.owner != token.actor?.uuid || auraData.transferred))
             {
-                continue;
+                areaEffects.push(areaEffect);
             }
-            let scene = token.parent;
-            let inAreas = scene.templates.contents.filter(t => this.isInTemplate(newCenter || token.object.center, t));
-            let effects = Array.from(token.actor?.effects);
-            let areaEffects = [];
-            inAreas.forEach(area => 
-            {
-                let areaEffect = area.areaEffect();
-                let auraData = area.getFlag(game.system.id, "aura");
-                // If the effect exists, only add the area effect if the area is not an aura OR this isn't the owner of the aura and it's not a transferred aura
-                // in other words, if the aura is transferred, apply to owner of the aura. If it's a constant aura, don't add the effect to the owner
-                if (areaEffect && (!auraData || auraData.owner != token.actor?.uuid || auraData.transferred))
-                {
-                    areaEffects.push(areaEffect);
-                }
-            });
+        });
 
-            // Remove all area effects that reference an area the token is no longer in
-            let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
+        // Remove all area effects that reference an area the token is no longer in
+        let toDelete = effects.filter(e => e.system.sourceData.area && !inAreas.map(i => i.uuid).includes(e.system.sourceData.area) && !e.system.transferData.area.keep).map(e => e.id);
 
-            // filter out all area effects that are already on the actor
-            let toAdd = areaEffects.filter(ae => !token.actor?.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
-        
-            if (toDelete.length)
-            {
-                if (token.actor)
-                {
-                    promises.push(token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete));
-                }
-            }
-            if (toAdd.length)
-            {
-                if (token.actor)
-                {
-                    promises.push(token.actor.applyEffect({effects : toAdd}));
-                }
-            }
+        // filter out all area effects that are already on the actor
+        let toAdd = areaEffects.filter(ae => !token.actor?.effects.find(e => e.system.sourceData.area == ae.system.sourceData.area));
+    
+        if (toDelete.length)
+        {
+            await token.actor?.deleteEmbeddedDocuments("ActiveEffect", toDelete);
         }
-        await Promise.all(promises);
+        if (toAdd.length)
+        {
+            await token.actor?.applyEffect({effects : toAdd});
+        }
         // If an effect from this area was not found, add it. otherwise ignore
     }
 
     /**
      * Get all Tokens inside template
-     * @param {Template} template to check
-     * @returns {Array} tokens in template
+     * @param template
+     * @returns
      */
     static tokensInTemplate(template)
     {

@@ -1,43 +1,43 @@
 .warhammer.script-editor
 {
-    .window-content > div {
-        height: 100%;
-    }
-
-    &.effect-script .window-content > div{
-        overflow-y: auto;
-    }
-
-    .editor {
-        height: calc(100% - 3rem);
-        overflow: hidden
-    }
-
-    textarea { height: 100%; resize: none;}
-
+ 
     .script-fields {
         display: flex;
         flex-direction: column;
-        height: calc(100% - 8.5rem);
-        > .script {
-            flex: 1;
-            textarea {
-                height: calc(100% - 2rem);
-            }
+        gap: 1rem;
+        margin-top: 0.5rem;
+        .script label
+        {
+            margin-bottom: 0.5rem;
         }
+    }
+
+    .window-content > div {
+        overflow:auto;
     }
 
 }
 
 .warhammer.diff-editor {
 
-    .window-content > div {
-        height: calc(100% - 110px);
+    .diff {
+        height: 92%;
+    }
+    .diff-container {
+        overflow: auto;
+        max-height: 80%;
+    }
+}
+
+.warhammer.rich-editor {
+    .window-content >:first-of-type {
+        height: 100%;
+    }
+    prose-mirror {
+        height: 100%;
     }
 
-    .editor {
-        height: 100%;
-        overflow: hidden
+    .editor-container {
+        overflow-y: hidden;
     }
-    textarea { height: 100%; resize: none;}
 }

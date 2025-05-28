@@ -1,24 +1,35 @@
 .theme-light .warhammer.application {
     --list-header : rgba(0, 0, 0, 0.1);
     --list-header-border : var(--color-dark-6);
+    --list-row : none;
     --list-row-alternate : rgba(0, 0, 0, 0.05);
+    --name-bg : rgba(0, 0, 0, 0.05);
+    --name-border : var(--color-dark-6);
+    --name-label : rgba(0, 0, 0, 0.1)
 }
 
 .warhammer.application {
     --list-header : var(--color-cool-4);
     --list-header-border : var(--color-cool-3);
+    --list-row : none;
     --list-row-alternate : #3028318f; // cool-3 at half transparency
+    --name-bg : var(--color-cool-3);
+    --name-border : var(--color-cool-3);
+    --name-label : var(--color-cool-4);
     
     .sheet-list {
+        &:not(:first-child)
+        {
+            margin-top: 0.5rem;
+        }
         display: flex;
         flex-direction: column;
-        margin-top: 3px;
-
         .list-row {
             display: flex;
             flex-direction: column;
             width: 100%;
             line-height: 2rem;
+            background: var(--list-row);
             &:nth-child(even)
             {
                 background-color: var(--list-row-alternate);
@@ -141,6 +152,10 @@
             }
         }
 
+        .description {
+            line-height: 1rem;
+        }
+
         .dropdown-content {
 
             transition: height 0.3s ease-in-out;
@@ -170,5 +185,114 @@
             }
         }
     
+    }
+
+    .name-list {
+        display: flex;
+        flex-direction: column;
+        margin: 0.5rem 0px;
+        border: 1px solid var(--name-border);
+        label {
+            text-align: center;
+            height: 2rem;
+            line-height: 2rem;
+            background: var(--name-label);
+        }   
+        .list-content {
+            border-top: 1px solid var(--name-border);
+            min-height: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem 0.5rem;
+
+            .list-element {
+                &:not(.input)
+                {
+
+                    border: 1px solid var(--name-bg);
+                    border-radius: 10px;
+                    padding: 0.5rem;
+                    background:  var(--name-bg);
+                }
+                position: relative;
+                .floating {
+                    position: absolute;
+                    right: -7px;
+                    top: -5px;
+                    border-radius: 50%;
+                    padding: 2px;
+                    display: flex;
+                    align-items: center;
+                    background: var(--name-bg)
+                }
+
+                select,
+                input {
+                    text-align: center;
+                    border-radius: 5px;
+                    margin: 5px;
+                    height: 1.5rem;
+                    padding: 0px;
+                    margin: 0px;
+                }
+            }
+        }
+    }
+}
+
+.career-list {
+    label {
+        width: 100%;
+        height: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        background-color: var(--career-header);
+    }
+
+    display: flex;
+    flex-direction: column;
+
+    .list-container {
+        padding: 5px 0px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .characteristic {
+        margin: 5px;
+        border: 1px solid var(--color-warm-2);
+        width: 3rem;
+        border-radius: 5px;
+        flex: 0 0 3rem;
+        text-align: center;
+        font-weight: bold;
+        height: 1.3rem;
+        line-height: 1.3rem;
+
+        &.active {
+            background-color: var(--color-warm-2);
+        }
+    }
+
+    select,
+    input {
+        // width: fit-content;
+        border-radius: 5px;
+        margin: 5px;
+        height: 1.5rem;
+        text-align: center;
+        background: var(--career-input)
+    }
+
+    a[data-action='listDelete'] {
+        border-radius: 50%;
+        width: 1rem;
+        height: 1rem;
+        text-align: center;
+        margin-left: -1rem;
     }
 }

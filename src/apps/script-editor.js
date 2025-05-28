@@ -73,22 +73,4 @@ export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(Ap
     }
 
 
-    _onRender(options)
-    {
-        super._onRender(options);
-        this.element.querySelectorAll("textarea").forEach(e => e.addEventListener("keydown", ev => 
-        {
-            if (ev.key == "Tab")
-            {
-                ev.preventDefault();
-                let target = ev.target;
-                var start = target.selectionStart;
-                var end = target.selectionEnd;
-    
-                target.value = target.value.substring(0, start) + "\t" + target.value.substring(end);
-    
-                target.selectionStart = target.selectionEnd = start + 1;
-            }
-        }));
-    }
 }

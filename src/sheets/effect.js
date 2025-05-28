@@ -1,79 +1,101 @@
+import AdvancedEffectConfig from "../apps/advanced-effect";
 import WarhammerEffectScriptEditor from "../apps/effect-script-editor";
-import WarhammerScriptEditor from "../apps/script-editor";
 import { localize, systemConfig } from "../util/utility";
-import WarhammerSheetMixin from "./mixin";
 
-export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(ActiveEffectConfig)
+export default class WarhammerActiveEffectConfig extends foundry.applications.sheets.ActiveEffectConfig
 {
     systemTemplate = "";
     effectKeysTemplate = "";
+    _advancedConfig = null;
     
-    static get defaultOptions() 
+    static DEFAULT_OPTIONS = {
+        classes: ["warhammer"],
+        actions: {
+            addScript : this._onAddScript,
+            editScript : this._onEditScript,
+            deleteScript : this._onDeleteScript,
+            advancedConfig : this._onAdvancedConfig,
+            manualToggle : this._onManualToggle
+        }
+    };
+
+    /** @override */
+    static PARTS = {
+        header: {template: "templates/sheets/active-effect/header.hbs"},
+        tabs: {template: "templates/generic/tab-navigation.hbs"},
+        details: {template: "templates/sheets/active-effect/details.hbs"},
+        duration: {template: "templates/sheets/active-effect/duration.hbs"},
+        changes: {template: "templates/sheets/active-effect/changes.hbs"},
+        scripts: {template: "modules/warhammer-lib/templates/effect/effect-scripts.hbs"},
+        footer: {template: "templates/generic/form-footer.hbs"}
+    };
+  
+    /** @override */
+    static TABS = {
+        sheet: {
+            tabs: [
+                {id: "details", icon: "fa-solid fa-book"},
+                {id: "duration", icon: "fa-solid fa-clock"},
+                {id: "changes", icon: "fa-solid fa-cogs"},
+                {id: "scripts", icon: "fa-solid fa-code"}
+            ],
+            initial: "details",
+            labelPrefix: "EFFECT.TABS"
+        }
+    };
+
+
+    async _onRender(context)
     {
-        const options = super.defaultOptions;
-        options.classes.push("warhammer");
-        return options;
-    }
+        await super._onRender(context);
 
-    async _render(force, options)
-    {
-        await super._render(force, options);
-
-        let scriptHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-scripts.hbs", {scripts : this.object.system.scriptData});
-        let transferDataHTML = await renderTemplate("modules/warhammer-lib/templates/effect/effect-transfer-config.hbs", await this.getData());
-
-        // Add Scripts Tab and tab section
-        this.element.find("nav").append(`<a class='item' data-tab="scripts"><i class="fas fa-gavel"></i>${localize("WH.Script")}</a>`);
-        $(`<section class='tab' data-tab="scripts">${scriptHTML}</section>`).insertBefore(this.element.find("footer"));
+        let transferDataHTML = await foundry.applications.handlebars.renderTemplate("modules/warhammer-lib/templates/effect/effect-transfer-config.hbs", {system : this.document.system, document : this.document, hidden : this.hiddenProperties()});
 
         // Replace transfer field with Effect Application data (used to derive transfer value)
-        this.element.find("[name='transfer']").parents(".form-group").replaceWith(transferDataHTML);
+        this.element.querySelector("[name='transfer']")?.closest(".form-group").remove();//replaceWith(transferDataHTML);
+        this.element.querySelector("[name='statuses']")?.closest(".form-group").remove();
 
-        this.element.find("[name='statuses']").parents(".form-group").remove();
+        let details = this.element.querySelector("section[data-tab='details']");
+        details.innerHTML += transferDataHTML;
 
-        // // Replace attribute key field with a select field
-        let effectsTab = this.element.find("section[data-tab='effects']");
+        let manualToggle = document.createElement("div");
+        manualToggle.classList.add("form-group");
+        manualToggle.innerHTML = `<label>${localize("WH.ManualEffectKeys")}</label>
+        <div class="form-fields"><input type="checkbox" data-action="manualToggle" name="flags.${game.system.id}.manualEffectKeys" ${this.document.getFlag(game.system.id, "manualEffectKeys") ? "checked" : ""}></div>`;
 
+
+        // Replace attribute key field with a select field
         // Add a checkbox to toggle between <select> and <input> for effect keys
-        $(`<div class="form-group">
-        <label>${localize("WH.ManualEffectKeys")}</label>
-        <input type="checkbox" class="manual-keys" name="flags.${game.system.id}.manualEffectKeys" ${this.object.getFlag(game.system.id, "manualEffectKeys") ? "checked" : ""}>
-        </div>`).insertBefore(effectsTab.find(".effects-header"));
+        let changes = this.element.querySelector("section[data-tab='changes']");
+        changes.insertAdjacentElement("afterbegin", manualToggle);
 
         // Replace all key inputs with <select> fields (unless disabled)
-        if (!this.object.getFlag(game.system.id, "manualEffectKeys"))
+        if (!this.document.getFlag(game.system.id, "manualEffectKeys"))
         {
-            for (let element of effectsTab.find(".key input"))
+            for (let element of changes.querySelectorAll(".key input"))
             {
-                $(element).replaceWith(await renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value}));
+                element.parentElement.innerHTML = await foundry.applications.handlebars.renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value});
             }
         }
 
-        // Activate Script tab if that is the cause of the rerender. It is added after rendering so won't be automatically handled by the Tabs object
-        if (options?.renderData?.system?.scriptData)
-        {
-            this.activateTab("scripts");
-        }
-        this.element.css("height", "auto");
+        this.addSubmissionListeners();
     }
 
-    async getData()
+    async _preparePartContext(partId, context) 
     {
-        let data = await super.getData();
-        data.system = this.object.system;
-        data.configuration = this.object.constructor.CONFIGURATION;
-        if (this.systemTemplate)
+        let partContext = await super._preparePartContext(partId, context);
+
+        if (partId == "scripts")
         {
-            data.systemTemplate = await renderTemplate(this.systemTemplate, data);
+            partContext.scripts = this.document.system.scriptData;
         }
-        data.hidden = this.hiddenProperties();
-        return data;
+        return partContext;
     }
 
     hiddenProperties()
     {
         let hidden = {};
-        let effect = this.object;
+        let effect = this.document;
         let transferData = effect.system.transferData;
         hidden.selfOnly = transferData.type != "target" && (transferData.type != "aura" || !transferData.area.aura.transferred);
         if (transferData.type == "document")
@@ -96,100 +118,68 @@ export default class WarhammerActiveEffectConfig extends WarhammerSheetMixin(Act
         return hidden;
     }
 
-    activateListeners(html)
+    static _onAddScript(ev, target)
     {
-        super.activateListeners(html);
-
-        html.on("click", ".add-script", () => 
-        {
-            let scripts = this.object.system.scriptData.concat({label : localize("WH.NewScript"), script : ""});
-            return this.submit({preventClose: true, updateData: {
-                [`system.scriptData`]: scripts
-            }});
-        });
-
-        html.on("click", ".script-delete", ev => 
-        {
-            let index = this._getDataAttribute(ev, "index");
-            let scripts = this.object.system.scriptData.filter((value, i) => i != index);
-            return this.submit({preventClose: true, updateData: {
-                [`system.scriptData`]: scripts
-            }});
-        });
-
-        html.on("click", ".script-edit", ev => 
-        {
-            let index = this._getDataAttribute(ev, "index");
-            new WarhammerEffectScriptEditor(this.object, {index : Number(index)}).render(true);
-        });
-
-        html.on("click", ".script-config", ev => 
-        {
-            new WarhammerScriptEditor(this.object, {path : this._getDataAttribute(ev, "path")}).render(true);
-        });
-
-        html.on("change", ".wh-effect-config input,.wh-effect-config select", () => 
-        {
-            this.submit({preventClose: true});
-        });
-
-        html.on("change", ".manual-keys", () => 
-        {
-            this.submit({preventClose: true});
-        });
-
-        html.on("click", ".configure-template", () => 
-        {
-            new EmbeddedMeasuredTemplateConfig(this.object).render(true);
-        });
+        let scripts = this.document.system.scriptData.concat({label : localize("WH.NewScript"), script : ""});
+        return this.submit({updateData: {
+            [`system.scriptData`]: scripts
+        }});
     }
-}
 
-const { ApplicationV2 } = foundry.applications.api;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+    static _onDeleteScript(ev, target)
+    {
+        let index = target.closest("[data-index]").dataset.index;
+        let scripts = this.document.system.scriptData.filter((value, i) => i != index);
+        return this.submit({updateData: {
+            [`system.scriptData`]: scripts
+        }});
+    }
 
-export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(ApplicationV2)
-{
-    static DEFAULT_OPTIONS = {
-        tag : "form",
-        window: {
-            contentClasses: ["standard-form"],
-            title : "Template Customization"
-        },
-        form: {
-            handler: this.submit,
-            submitOnChange: false,
-            closeOnSubmit: true
+    static _onEditScript(ev, target)
+    {
+        let index = target.closest("[data-index]").dataset.index;
+        new WarhammerEffectScriptEditor(this.document, {index : Number(index)}).render({force: true});
+    }
+
+    static _onManualToggle(ev, target)
+    {
+        // Rerender to toggle between input/select
+        this.submit();
+    }
+
+    static async _onAdvancedConfig(ev, target)
+    {
+        if (!this.document.apps.advanced?.rendered)
+        {
+            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this)}).render(true);
         }
-    };
+    }
 
-    static PARTS = {
-        form: {
-            template: "modules/warhammer-lib/templates/apps/template-config.hbs"
+    /**
+     * 
+     * @param {Boolean} force Render new advanced config if no current one exists
+     */
+    async _renderAdvancedConfig(force=true)
+    {
+        if (this._advancedConfig)
+        {
+            this._advancedConfig.render({force : true});
         }
-    };
-
-    constructor(document, options)
-    {
-        super(options);
-        this.document = document;
+        else if (force)
+        {
+            this._advancedConfig;
+        }
     }
 
-    async _prepareContext(options)
+    addSubmissionListeners()
     {
-        let context = await super._prepareContext(options);
-        context.values = this.document._source.system.transferData.area.templateData;
-        context.fields = this.document.system.schema.fields.transferData.fields.area.fields.templateData.fields;
-        return context;
-    }
-
-    static async submit(event, form, formData)
-    {
-        this.document.update(formData.object);
-    }
-
-    get list() 
-    {
-        return foundry.utils.getProperty(this.document, this.path);
+        this.element.querySelectorAll(".transfer-config input, .transfer-config select").forEach(element => 
+        {
+            element.addEventListener("change", async () => 
+            {
+                await this.submit(); 
+                this._renderAdvancedConfig(false);
+            });
+        });
     }
 }

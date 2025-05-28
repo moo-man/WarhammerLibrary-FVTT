@@ -3,7 +3,7 @@ import { localize } from "../util/utility";
 import ZoneHelpers from "../util/zone-helpers";
 import WarhammerSheetMixin from "./mixin";
 
-export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet) 
+export class WarhammerActorSheet extends WarhammerSheetMixin(foundry.appv1.sheets.ActorSheet)
 {
     async _render(force, options)
     {
@@ -56,8 +56,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(ActorSheet)
         {
             return;
         }
-        game.user.updateTokenTargets([]);
-        game.user.broadcastActivity({ targets: [] });
+        game.canvas.tokens.setTargets([]);
     
         for (let target of targets) 
         {

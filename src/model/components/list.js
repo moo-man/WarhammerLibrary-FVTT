@@ -9,22 +9,35 @@ export class ListModel extends foundry.abstract.DataModel
     {
         return new foundry.data.fields.EmbeddedDataField(class cls extends ListModel 
         {
-            static listSchema = schema;
+            static _listSchema = schema;
         }, options, context);
     }
     
-    static listSchema = new foundry.data.fields.ObjectField();
+    static get listSchema() 
+    {
+        // There seems to be an issue with the parent model persisting from previous calls
+        // This *cannot* be the right fix, but it works for now.
+        if (this._listSchema)
+        {
+            delete this._listSchema.parent;
+            return this._listSchema;
+        }
+        else 
+        {
+            return new foundry.data.fields.ObjectField();
+        }
+    };
     
     static defineSchema() 
     {
         let schema = {};
-        schema.list = new foundry.data.fields.ArrayField(this.listSchema instanceof foundry.data.fields.DataField ? this.listSchema : new foundry.data.fields.EmbeddedDataField(this.listSchema) );
+        schema.list = new foundry.data.fields.ArrayField(foundry.utils.deepClone(this.listSchema instanceof foundry.data.fields.DataField ? this.listSchema : new foundry.data.fields.EmbeddedDataField(this.listSchema)));
         return schema;
     }
 
     add(value)
     {
-        return {[this.schema.fields.list.fieldPath] : this.list.concat(value || this.constructor.listSchema.initial())};
+        return {[this.schema.fields.list.fieldPath] : this.list.concat(value || this.constructor.listSchema.toObject())};
     }
 
     edit(index, value, path)
