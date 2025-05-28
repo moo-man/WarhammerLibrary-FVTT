@@ -22,7 +22,7 @@
     "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "^4.0.0",
-    "sass": "^1.80.3",
+    "sass": "^1.85.1",
     "scss": "^0.2.4"
   }
 }
