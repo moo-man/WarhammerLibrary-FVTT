@@ -143,11 +143,17 @@ export default class AreaHelpers
     
         if (toDelete.length)
         {
-            await token.actor?.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+            if (token.actor) 
+            {
+                promises.push(token.actor.deleteEmbeddedDocuments("ActiveEffect", toDelete));
+            }
         }
         if (toAdd.length)
         {
-            await token.actor?.applyEffect({effects : toAdd});
+            if (token.actor)
+            {
+                promises.push(token.actor.applyEffect({effects : toAdd}));
+            }
         }
         // If an effect from this area was not found, add it. otherwise ignore
     }
