@@ -4,6 +4,8 @@ export class WarhammerRollTable extends RollTable
     async toEmbed(config, options={})
     {
         let noCenter = config.noCenter;
+        let inline = config.inline;
+        let separator = config.separator || "";
         console.log(config, options);
 
         return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<table class="${game.system.id} embedded">
@@ -18,9 +20,10 @@ export class WarhammerRollTable extends RollTable
     ${this.results.map(r => 
     {
         let uuid;
+        let description = inline ? r.description.replace(/^<[p>]+>|<[^>]+p>$/g, '') : r.description; // Remove opening and closing <p> tags if inline
         let text = (r.description && r.name) 
-            ? [`<strong>${r.name}</strong>`, r.description].join("<br>").trim()
-            : r.name || r.description;  
+            ? `<p><strong>${r.name}</strong>${separator} ${description}</p>`.trim()
+            : r.name || description;
 
         if (r.type == "document")
         {
