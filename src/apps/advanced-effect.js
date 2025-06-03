@@ -6,10 +6,11 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
 
     static DEFAULT_OPTIONS = {
         tag: "form",
-        classes: ["standard-form", "advanced-effect", "warhammer"],
+        classes: ["advanced-effect", "warhammer"],
         window: {
             resizable : true,
             title : "WH.AdvancedConfig",
+            contentClasses: ["standard-form"],
         },
         position : {
             height: 700,
@@ -61,7 +62,7 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
         context.fields = this.document.system.schema.fields.transferData.fields;
         return context;
     }  
-    
+
     static async _onSubmit(event, form, formData) 
     {
         let update = foundry.utils.expandObject(formData.object);

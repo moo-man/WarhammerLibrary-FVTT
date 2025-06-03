@@ -1,9 +1,10 @@
 import addSheetHelpers from "../util/sheet-helpers";
+import { WHFormApplication } from "./form-application";
 
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
-export class WarhammerZoneConfig extends HandlebarsApplicationMixin(ApplicationV2)
+export class WarhammerZoneConfig extends WHFormApplication
 {
 
     static configTemplate = ""; // Defined by system subclass
@@ -14,19 +15,10 @@ export class WarhammerZoneConfig extends HandlebarsApplicationMixin(ApplicationV
             classes : ["warhammer", "zone-config"],
             window : {
                 title : "WH.ZoneConfig",
+                contentClasses : ["standard-form"]
             },
             position : {
                 width : 300
-            },
-            form: {
-                handler: this.submit,
-                submitOnChange: false,
-                closeOnSubmit: true
-            },
-            actions : {
-                createEffect : this._onCreateEffect,
-                deleteEffect : this._onDeleteEffect,
-                openEffect : this._onOpenEffect
             },
             defaultTab : "config"
         };
@@ -34,7 +26,10 @@ export class WarhammerZoneConfig extends HandlebarsApplicationMixin(ApplicationV
     static PARTS = {
         tabs : {template : "modules/warhammer-lib/templates/partials/sheet-tabs.hbs"},
         config: { template: this.configTemplate },
-        effects : { template : "modules/warhammer-lib/templates/apps/zone-effects.hbs" }
+        effects : { template : "modules/warhammer-lib/templates/apps/zone-effects.hbs" },
+        footer : {
+            template : "templates/generic/form-footer.hbs"
+        }
     };
 
     static TABS = {
@@ -105,11 +100,6 @@ export class WarhammerZoneConfig extends HandlebarsApplicationMixin(ApplicationV
         return context;
     }
     
-    static submit(event, form, formData)
-    {
-        this.document.update(formData.object);
-    }
-
     static _onCreateEffect(ev)
     {
         ui.notifications.error("WH.Error.CreateZoneEffect", {localize: true});

@@ -65,6 +65,7 @@ import CheckboxElement from "./elements/checkbox.mjs";
 import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
 import DraggableApp from "./apps/draggable";
 import ContainerizedApp from "./apps/containerized";
+import { WHFormApplication } from "./apps/form-application";
 hooks();
 overrides();
 
@@ -128,6 +129,7 @@ warhammer.apps = {
     ChatCommands,
     WarhammerContextMenu,
     CompendiumBrowser,
+    WHFormApplication,
     DraggableApp,
     ContainerizedApp
 };

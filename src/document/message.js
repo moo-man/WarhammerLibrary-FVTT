@@ -3,6 +3,19 @@ import { addLinkSources } from "../util/utility";
 export default class WarhammerChatMessage extends ChatMessage 
 {
 
+    async _onCreate(data, options, user)
+    {
+        await super._onCreate(data, options, user);
+        await this.system?._onCreate?.(data, options, user);
+    }
+
+    async _onUpdate(data, options, user)
+    {
+        await super._onUpdate(data, options, user);
+        await this.system?._onUpdate?.(data, options, user);
+    }
+
+
     static get actions() 
     { 
         return {};

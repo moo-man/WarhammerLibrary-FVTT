@@ -5,7 +5,7 @@ import ContainerizedApp from "./containerized";
 const {mergeObject, diffObject} = foundry.utils;
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsApplicationMixin(ApplicationV2))
+export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(ApplicationV2)
 {
     selectedScripts = [];   // List of scripts that have been manually selected by the user
     unselectedScripts = []; // List of scripts that have been manually UNselected by the user
@@ -19,18 +19,16 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
     }
 
     static DEFAULT_OPTIONS = {
-        classes: ["roll-dialog-v2", "warhammer", "standard-form"],
+        classes: ["roll-dialog-v2", "warhammer"],
         tag : "form",
         form : {
             handler : this.submit,
             submitOnChange : false,
-            closeOnSubmit : true
+            closeOnSubmit : true,
         },
         window: {
+            contentClasses: ["standard-form"],
             resizable : true,
-        },
-        position : {
-            width: 500
         },
         actions : {
             clickModifier :this._onModifierClicked
@@ -197,6 +195,54 @@ export default class WarhammerRollDialogV2 extends ContainerizedApp(HandlebarsAp
             document.addEventListener("keypress", this.#onKeyPress);
         }
 
+    }
+
+    async _onFirstRender(context, options)
+    {
+        await super._onFirstRender(context, options);
+        this._handleFields();
+    }
+
+    // The goal is to allow subclasses to add whatever fields they want in their PARTS
+    // So, to ensure the fields are on the right and the modifiers are on the left, we have to 
+    // rearrange them manually.
+    // field parts are designated with a `fields` property being true
+    // modifiers are designated with `modifiers`
+    _handleFields(context, options)
+    {
+        const containers = {};
+        // Main dialog element contains 2 children, fields and modifiers
+        const mainDialog = document.createElement("div");
+        mainDialog.classList.add("dialog-base");
+
+        // These are to be added to main dialog element
+        const fields = document.createElement("div");
+        fields.classList.add("dialog-fields");
+        let modifiers;
+
+        for (const [part, config] of Object.entries(this.constructor.PARTS)) 
+        {
+            // Store modifiers part
+            if (config.modifiers)
+            {
+                modifiers = this.element.querySelector(`[data-application-part="${part}"]`);
+                continue;
+            }
+
+            // If not field, ignore
+            if (!config.fields) {continue;}
+
+            const element = this.element.querySelector(`[data-application-part="${part}"]`);
+
+            if (!element) {continue;}
+            
+            element.remove();
+
+            fields.append(element);
+        }
+        mainDialog.append(fields);
+        mainDialog.append(modifiers);
+        this.element.querySelector(".window-content").insertAdjacentElement("afterbegin", mainDialog);
     }
 
     /**
