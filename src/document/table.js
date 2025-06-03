@@ -18,6 +18,9 @@ export class WarhammerRollTable extends RollTable
     ${this.results.map(r => 
     {
         let uuid;
+        let text = (r.description && r.name) 
+            ? [`<strong>${r.name}</strong>`, r.description].join("<br>").trim()
+            : r.name || r.description;  
 
         if (r.type == "document")
         {
@@ -30,7 +33,7 @@ export class WarhammerRollTable extends RollTable
 
         return `<tr>
             <td>${r.range[0] == r.range[1] ? r.range[0] : `${r.range[0]} – ${r.range[1]}`}</td>
-            <td>${["pack","document"].includes(r.type) ? `@UUID[${uuid}]` : r.text}</td>
+            <td>${["pack","document"].includes(r.type) ? `@UUID[${uuid}]` : text}</td>
             </tr>`;
     }).join("")}
 
