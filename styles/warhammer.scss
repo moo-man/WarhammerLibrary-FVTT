@@ -13,6 +13,7 @@
 @use "./apps/elements";
 @use "./apps/browser";
 @use "./apps/module-initializer";
+@use "./apps/chat";
 
 .warhammer {
   --tab-color : var(--color-cool-3);
