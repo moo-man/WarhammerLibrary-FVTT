@@ -15,7 +15,10 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
             sortItems : this._onSortItemTypes
-        }
+        },
+        window : {
+            contentClasses: ["standard-form"]
+        },
     };
 
     static TABS = {

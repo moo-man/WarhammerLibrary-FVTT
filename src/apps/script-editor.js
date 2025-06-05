@@ -11,6 +11,7 @@ export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(Ap
         window: {
             resizable : true,
             title : "WH.ScriptEditor",
+            contentClasses: ["standard-form"]
         },
         position : {
             height: 600,
