@@ -1,6 +1,5 @@
 <div>
 {{#each fields}}
-{{formGroup this value=(lookup ../values @key) localize=true}}
+{{formGroup this value=(lookup ../values @key) localize=true rootId=../rootId}}
 {{/each}}
-<button>{{localize "Submit"}}</button>
 </div>

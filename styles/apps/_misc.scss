@@ -26,6 +26,12 @@
         background: var(--color-cool-3);
         border-radius: 5px;
 
+        label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;   
+        }
+
         >* {
             flex: 1;
         }

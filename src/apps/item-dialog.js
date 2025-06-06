@@ -7,7 +7,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 {
 
     static DEFAULT_OPTIONS = {
-        classes: ["item-dialog", "warhammer", "standard-form"],
+        classes: ["item-dialog", "warhammer"],
         tag : "form",
         form : {
             handler : this.submit,
@@ -17,10 +17,8 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         window: {
             resizable : true,
             title : "WH.ItemDialog",
-        },
-        position : {
-            height: 500,
-            width: 400
+            contentClasses: ["standard-form"],
+
         },
         actions : {
             clickItem : {buttons : [0, 2], handler: this._onClickItem}
@@ -29,7 +27,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 
     static PARTS = {
         form: {
-            template: "modules/warhammer-lib/templates/apps/item-dialog.hbs",
+            template: "modules/warhammer-lib/templates/apps/dialog/item-dialog.hbs",
             scrollable : [".dialog-list"]
         }
     };

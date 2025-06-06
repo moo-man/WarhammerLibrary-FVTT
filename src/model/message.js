@@ -6,6 +6,14 @@ import ZoneHelpers from "../util/zone-helpers";
 export class WarhammerMessageModel extends foundry.abstract.DataModel 
 {
 
+
+    async _onCreate(data, options, user)
+    { }
+
+    async _onUpdate(data, options, user)
+    { }
+
+
     static get actions() 
     { 
         return {

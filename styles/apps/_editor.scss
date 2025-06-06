@@ -2,6 +2,12 @@
 {
  
     .script-fields {
+        // flex: 1;
+        // display: grid;
+        // grid-template-rows: 3fr 1fr 1fr 1fr;
+        // grid-template-columns: 100%;
+        // grid-row-gap: 2rem;
+
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -14,6 +20,9 @@
 
     .window-content > div {
         overflow:auto;
+        // display: flex;
+        // flex-direction: column;
+        // height: 100%;
     }
 
 }

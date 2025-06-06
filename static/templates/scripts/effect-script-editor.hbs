@@ -59,17 +59,19 @@
     <div class="script-fields">
 
             
-        {{#if (eq scriptData.trigger "dialog")}}
-            <label>{{localize "WH.DialogScript"}} <a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a></label>
-        {{else}}
-            <a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a>
-        {{/if}}
+        <div class="form-group stacked script">
+            {{#if (eq scriptData.trigger "dialog")}}
+                <label>{{localize "WH.DialogScript"}} <a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a></label>
+            {{else}}
+                <label><a data-action="copyScript" data-script="script"><i class="fa-solid fa-copy"></i></a></label>
+            {{/if}}
 
-        {{#if lockedScripts.script}}
-            {{formInput fields.script value=dereferencedScripts.script language="javascript" elementType="code-mirror" disabled="true" readOnly="true" readonly="true"}}
-        {{else}}
-            {{formInput fields.script value=script language="javascript" elementType="code-mirror" name="script" disabled=(not (isGM))}}
-        {{/if}}
+            {{#if lockedScripts.script}}
+                {{formInput fields.script value=dereferencedScripts.script language="javascript" elementType="code-mirror" disabled="true" readOnly="true" readonly="true"}}
+            {{else}}
+                {{formInput fields.script value=script language="javascript" elementType="code-mirror" name="script" disabled=(not (isGM))}}
+            {{/if}}
+        </div>
 
 
 

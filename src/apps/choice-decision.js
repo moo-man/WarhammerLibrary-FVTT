@@ -5,7 +5,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
 
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes: ["choice-decision", "warhammer", "standard-form"],
+        classes: ["choice-decision", "warhammer"],
         form : {
             handler : this.submit,
             submitOnChange : false,
@@ -13,7 +13,9 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         },
         window: {
             resizable : true,
-            title : "Choices"
+            title : "Choices",
+            contentClasses: ["standard-form"],
+
         },
         actions : {
             chooseOption : this._onChooseOption

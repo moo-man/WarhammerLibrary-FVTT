@@ -63,6 +63,11 @@
         }
     }
 
+    section.tab {
+        gap: 0.5rem;
+
+    }
+
     
     .like-input  {
         width: 100%;
@@ -85,6 +90,7 @@
     }
 
     .form-group {
+        gap: 0px;
         select,
         input:not([type='checkbox']) {
             border-radius: 0px;
@@ -126,7 +132,6 @@
             background: var(--editor-header);
             border: 1px solid var(--editor-header-border);
         }
-        min-height: 100px;
     }
 
     
@@ -146,12 +151,9 @@
         flex-wrap: nowrap;
         border-color: var(--fieldset-border);
         border-radius: 8px;
-        margin-top: 0.5rem;
     }
 
     .attribute-box {
-        margin: 5px 5px;
-        
 
         &.top-label {
             .label {
