@@ -151,7 +151,7 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
     {
         if (!this.document.apps.advanced?.rendered)
         {
-            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this)}).render(true);
+            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this), actions : this.options.advancedActions || {}}).render(true);
         }
     }
 

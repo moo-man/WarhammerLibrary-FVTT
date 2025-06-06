@@ -5,8 +5,10 @@ export class ListPropertyForm extends HandlebarsApplicationMixin(ApplicationV2)
 {
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes : ["standard-form"],
-        window : {},
+        classes : [],
+        window : {
+            contentClasses: ["standard-form"],
+        },
         form: {
             handler: ListPropertyForm.submit,
             submitOnChange: false,

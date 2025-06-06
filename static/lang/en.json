@@ -228,6 +228,7 @@
         "SendingSocketRequest" : "Sending Socket Request",
         "ZoneConfig" : "Zone Configuration",
         "ZoneEffects" : "Applied Zone Effects",
+        "RollMode" :  "Roll Mode",
         "Warning" : {
             "RenderAuraChange" : "To reflect the change to Render Aura, disable and re-enable the source Effect, or replace the Token on the Scene."
         },
@@ -291,7 +292,31 @@
             "Types": {
                 "Label": "Types"
             }
+        },
+
+        "Theme" : {
+            "Config" : "Theme Configuration",
+            "ConfigButton" : "Configure Theme",
+            "ConfigHint" : "Enable or disable the styling provided by the system.",
+            "FIELDS" : {
+                "actor.enabled.label" : "Enable Theme",
+                "item.enabled.label" : "Enable Theme",
+                "journal.enabled.label" : "Enable Theme",
+                "sidebar.enabled.label" : "Enable Theme",
+                "apps.enabled.label" : "Enable Theme",
+
+                "actor.font.label" : "Font",
+                "item.font.label" : "Font",
+                "journal.font.label" : "Font",
+                "sidebar.font.label" : "Font",
+                "apps.font.label" : "Font"
+            },
+            "Font" : {
+                "Classic" : "Classic",
+                "Readable" : "Readable"
+            }
         }
+
     },
     "EFFECT.TABS.scripts" : "Scripts"
 }

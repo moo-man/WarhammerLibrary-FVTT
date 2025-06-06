@@ -12,6 +12,9 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
 
     static DEFAULT_OPTIONS = {
         classes: ["item"],
+        window : {
+            contentClasses: ["standard-form"]
+        },
         actions: {
             configureChoice : this._onConfigureChoice,
             showDecision : this._onShowDecision

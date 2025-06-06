@@ -13,6 +13,7 @@
 @use "./apps/elements";
 @use "./apps/browser";
 @use "./apps/module-initializer";
+@use "./apps/chat";
 
 .warhammer {
   --tab-color : var(--color-cool-3);
@@ -55,7 +56,6 @@
         border-top: 1px solid var(--tab-color);
         border-bottom: 1px solid var(--tab-color);
         gap: 0px;
-        margin: 0.5rem 0px;
         a {
             flex: 1
         }
@@ -112,7 +112,7 @@
   }
 
   code-mirror {
-    min-height: unset;
+    // min-height: unset;
   }
 
   // TEMP: V13 put all the form-field rules in the .standard-form class which I don't want to use so I'm adding these here for now
@@ -121,7 +121,6 @@
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      margin: 3px 0;
       align-items: center;
 
       >* {

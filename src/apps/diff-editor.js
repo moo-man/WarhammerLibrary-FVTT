@@ -7,10 +7,11 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
 {    
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes: ["diff-editor", "warhammer", "standard-form"],
+        classes: ["diff-editor", "warhammer"],
         window: {
             resizable : true,
             title : "WH.DiffEditor",
+            contentClasses: ["standard-form"],
         },
         position : {
             height: 600,

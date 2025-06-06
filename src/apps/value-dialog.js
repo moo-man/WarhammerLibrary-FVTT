@@ -8,7 +8,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV2)  
 {
     static DEFAULT_OPTIONS = {
-        classes: ["value-dialog", "warhammer", "standard-form"],
+        classes: ["value-dialog", "warhammer"],
         tag : "form",
         form : {
             handler : this.submit,
@@ -18,6 +18,7 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         window: {
             resizable : true,
             title : "WH.ValueDialog",
+            contentClasses: ["standard-form"]
         },
         position : {
         },
@@ -27,7 +28,7 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
 
     static PARTS = {
         form: {
-            template: "modules/warhammer-lib/templates/apps/value-dialog.hbs",
+            template: "modules/warhammer-lib/templates/apps/dialog/value-dialog.hbs",
         }
     };
 

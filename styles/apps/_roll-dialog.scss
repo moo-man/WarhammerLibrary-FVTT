@@ -17,7 +17,21 @@
     gap: 0px;
     .dialog-base {
         display: flex;
-        gap: 10px;
+        flex: 1;
+        gap:  1rem;
+        // 100% - button size - gap size
+        height:  calc(100% - 1.25 * 2rem - 1rem);
+        .dialog-fields {
+            overflow:hidden;
+            gap: .5rem;
+            display: flex;
+            flex-direction: column;
+            > * {
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+            }
+        }
     }
 
     .dialog-modifiers {
@@ -25,6 +39,11 @@
         flex-direction: column;
         text-align: center;
         flex: 1;
+
+        .modifier-list {
+            height: 100%;
+        overflow: auto;
+    }
         ul {
             text-align: left;
             list-style: none;

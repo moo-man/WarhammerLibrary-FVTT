@@ -1,3 +1,4 @@
+import ItemDialog from "../../apps/item-dialog";
 import AreaTemplate from "../../util/area-template";
 import ZoneHelpers from "../../util/zone-helpers";
 import WarhammerSheetMixinV2 from "./mixin";
@@ -14,7 +15,10 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
             sortItems : this._onSortItemTypes
-        }
+        },
+        window : {
+            contentClasses: ["standard-form"]
+        },
     };
 
     static TABS = {
@@ -182,6 +186,15 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
     static async _onCreateItem(ev) 
     {
         let type = this._getType(ev);
+        if (type.includes(","))
+        {
+            let keys = type.split(",").map(i => i.trim());
+            let choice = await ItemDialog.create(keys.map(key => {return {id : key, name:  game.i18n.localize(CONFIG.Item.typeLabels[key])}; }), 1, {text : "Select Item Type", title : "New Item"});
+            if (choice[0])
+            {
+                type = choice[0].id;
+            }
+        }
         this.document.createEmbeddedDocuments("Item", [{type, name : `New ${game.i18n.localize(CONFIG.Item.typeLabels[type])}`}]).then(item => item[0].sheet.render(true));
     }
 
