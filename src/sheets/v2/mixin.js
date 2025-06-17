@@ -558,8 +558,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (dropdownElement.classList.contains("collapsed"))
         {
-            dropdownElement.innerHTML = content;
-            dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.innerHTML = `<div class="dropdown-container">${content}<div>`;
             dropdownElement.classList.replace("collapsed", "expanded");
             // Fit content can't be animated, but we would like it be flexible height, so wait until animation finishes then add fit-content
             // sleep(500).then(() => dropdownElement.style.height = `fit-content`);
@@ -568,7 +567,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         else if (dropdownElement.classList.contains("expanded"))
         {
         // dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
-            dropdownElement.style.height = `0px`;
             dropdownElement.classList.replace("expanded", "collapsed");
         }
     }

@@ -480,6 +480,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return Array.from(this.statuses)[0] || this.getFlag("core", "statusId");
     }
 
+    get conditionId()
+    {
+        return this.key;
+    }
+
     get specifier() 
     {
         return (/^(?<base>.+?)[[|(<](?<specifier>.*?)[\]|)>]$/gm).exec(this.name)?.groups.specifier.trim();
