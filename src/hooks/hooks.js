@@ -11,6 +11,7 @@ import zones from "./zones";
 import debug from "./debug";
 import sidebar from "./sidebar";
 import directories from "./directories.js";
+import i18n from "./i18n.js";
 
 /**
  *
@@ -28,6 +29,7 @@ export default function()
     template();
     token();
     sidebar();
+    i18n();
 
     // #if _ENV == "development"
     debug();

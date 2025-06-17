@@ -34,6 +34,7 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
     {
         let context = await super._prepareContext(options);
         context.item = this.item;
+        context.editable = options.editable ?? context.editable;
         context.actor = this.item.actor;
         return context;
     }
