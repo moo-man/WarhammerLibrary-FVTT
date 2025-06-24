@@ -78,10 +78,10 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
         }
     }
 
-    static async onPlaceAreaEffect(ev) 
+    static async onPlaceAreaEffect(ev, target) 
     {
-        let messageId = $(ev.currentTarget).parents('.message').attr("data-message-id");
-        let effectUuid = ev.currentTarget.dataset.uuid;
+        let messageId = ev.currentTarget.dataset.messageId;
+        let effectUuid = target.dataset.uuid;
         let effect = await fromUuid(effectUuid);
         if (!(await effect.runPreApplyScript()))
         {
@@ -91,12 +91,12 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
         await template.drawPreview(ev);
     }
     
-    static async onApplyZoneEffect(ev) 
+    static async onApplyZoneEffect(ev, target) 
     {
-        let el = $(ev.currentTarget);
-        let message = game.messages.get(el.parents(".message").attr("data-message-id"));
+        let messageId = ev.currentTarget.dataset.messageId;
+        let message = game.messages.get(messageId);
         let test = message.system.test;
-        let effect = await fromUuid(ev.currentTarget.dataset.uuid);
+        let effect = await fromUuid(target.dataset.uuid);
         if (!(await effect.runPreApplyScript({test})))
         {
             return;
