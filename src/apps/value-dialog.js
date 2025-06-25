@@ -57,67 +57,36 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
             });
             this.values = valuesObject;
         }
-        else 
-        {
-            this.values = values;
-        }
-    }
 
-    /**
-     * Submits the dialog, returning the input value
-     * 
-     * @param {Event} event event triggering submission
-     * @param {HTMLElement} form HTML Element for the form
-     * @param {Object} formData form data from the dialog
-     * @returns 
-     */
-    static async submit(event, form, formData)
-    {
-        if (this.options.resolve)
-        {
-            this.options.resolve(formData.object.value);
-        }
-        return formData.object.value;
-    }
+        // If values object provided, show a select box, otherwise, just a text input
+        let content = foundry.utils.isEmpty(values) ? 
+            `<div class="value-dialog"><p>${text || localize("WH.Dialog.EnterValue")}</p><input class="value" type="text" value="${defaultValue}"></div>` 
+            : 
+            `<div class="value-dialog"><p>${text || localize("WH.Dialog.SelectValue")}</p><select class="value" value="${defaultValue}"><option value=""></option>${Object.keys(values).map(
+                v => `<option value=${v}>
+                        ${typeof values[v] == "string" ? values[v] : v }
+                  </option>`)}
+                </select></div>`; 
+        
 
-    /** @inheritdoc */
-    async _prepareContext(options)
-    {
-        let context = await super._prepareContext(options);
-        if (foundry.utils.isEmpty(this.values))
-        {
-            context.label = this.text || "Enter Value";
-        }
-        else 
-        {
-            context.label = this.text || "Select Value";
 
-            context.values = Object.keys(this.values).map(v => 
+        return Dialog.wait({
+            title : title || localize("WH.Dialog.ValueDialog"),
+            content : content,
+            buttons : {
+                submit : {
+                    label : localize("Submit"),
+                    callback: (html) => 
+                    {
+                        return html.find(".value")[0]?.value;
+                    }
+                }                
+            },
+            default: "submit",
+            close : () => 
             {
-                return {key : v, display : this.values[v] == "string" ? this.values[v] : v};
-            });
-        }
-
-        context.defaultValue = this.defaultValue;
-        return context;
-    }
-
-
-    /**
-     * Typical entry point for using the dialog, returns a promise that is resolved when the 
-     * dialog is submitted
-     * 
-     * @param {Object} obj 
-     * @param {string} obj.text Text display in the dialog
-     * @param {string} obj.title Window title for the dialog
-     * @param {string} defaultValue Define a default value if desired
-     * @param {Object|Array} values Define some preset options
-     */
-    static async create({text, title}, defaultValue = "", values={})
-    {
-        return new Promise(resolve => 
-        {
-            new this({text, title}, defaultValue, values, {resolve}).render({force : true, window : {title : title || game.i18n.localize("WH.ValueDialog")}});
+                return null;
+            }
         });
     }
 }
