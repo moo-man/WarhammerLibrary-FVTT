@@ -141,49 +141,33 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
         new WarhammerEffectScriptEditor(this.document, {index : Number(index)}).render({force: true});
     }
 
-        html.on("click", ".script-config", ev => 
-        {
-            new WarhammerScriptConfig(this.object, {path : this._getDataAttribute(ev, "path")}).render(true);
-        });
-
-        html.on("change", ".wh-effect-config input,.wh-effect-config select", () => 
-        {
-            this.submit({preventClose: true});
-        });
-
-        html.on("change", ".manual-keys", () => 
-        {
-            this.submit({preventClose: true});
-        });
-
-        html.on("click", ".configure-template", () => 
-        {
-            new EmbeddedMeasuredTemplateConfig(this.object).render(true);
-        });
+    static _onManualToggle(ev, target)
+    {
+        // Rerender to toggle between input/select
+        this.submit();
     }
-}
 
-const { ApplicationV2 } = foundry.applications.api;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
-
-export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(ApplicationV2)
-{
-    static DEFAULT_OPTIONS = {
-        tag : "form",
-        window: {
-            contentClasses: ["standard-form"],
-            title : "WH.TemplateCustomization",
-        },
-        form: {
-            handler: this.submit,
-            submitOnChange: false,
-            closeOnSubmit: true
+    static async _onAdvancedConfig(ev, target)
+    {
+        if (!this.document.apps.advanced?.rendered)
+        {
+            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this), actions : this.options.advancedActions || {}}).render(true);
         }
-    };
+    }
 
-    static PARTS = {
-        form: {
-            template: "modules/warhammer-lib/templates/apps/template-config.hbs"
+    /**
+     * 
+     * @param {Boolean} force Render new advanced config if no current one exists
+     */
+    async _renderAdvancedConfig(force=true)
+    {
+        if (this._advancedConfig)
+        {
+            this._advancedConfig.render({force : true});
+        }
+        else if (force)
+        {
+            this._advancedConfig;
         }
     }
 
