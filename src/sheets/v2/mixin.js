@@ -213,6 +213,15 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 ev.target.select();
             });
         });
+
+        this.element.querySelectorAll(".droppable").forEach(e => e.addEventListener("dragenter", ev => 
+        {
+            ev.target.classList.add("hover");
+        }));
+        this.element.querySelectorAll(".droppable").forEach(e => e.addEventListener("dragleave", ev => 
+        {
+            ev.target.classList.remove("hover");
+        }));
     
         this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
         {
@@ -399,7 +408,15 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (list)
         {
-            doc.update(list.add());
+            if (list instanceof Array)
+            {
+                return this._handleArrayCreate(doc, ev);
+            }
+            else 
+            {
+                return doc.update(list.add());
+            }
+
         }
     }
 
@@ -444,6 +461,10 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         if (ev.target.type == "number" && value == "")
         {
             value = null;
+        }
+        if (ev.target.type == "checkbox")
+        {
+            value = ev.target.checked;
         }
         if (list)
         {
@@ -520,6 +541,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     {
         let list = this._getPath(ev);
         let index = this._getIndex(ev);
+        let internalPath = this._getDataAttribute(ev, "ipath");
         let arr = foundry.utils.getProperty(doc, list);
 
         // Not very good probably but it will do for now
@@ -531,7 +553,16 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             {
                 if (i == index)
                 {
-                    return value;
+                    if (internalPath)
+                    {
+                        let newVal = foundry.utils.duplicate(val);
+                        foundry.utils.setProperty(newVal, internalPath, value);
+                        return newVal;
+                    }
+                    else 
+                    {
+                        return value;
+                    }
                 }
                 else 
                 {
@@ -558,8 +589,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         if (dropdownElement.classList.contains("collapsed"))
         {
-            dropdownElement.innerHTML = content;
-            dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
+            dropdownElement.innerHTML = `<div class="dropdown-container">${content}<div>`;
             dropdownElement.classList.replace("collapsed", "expanded");
             // Fit content can't be animated, but we would like it be flexible height, so wait until animation finishes then add fit-content
             // sleep(500).then(() => dropdownElement.style.height = `fit-content`);
@@ -568,7 +598,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         else if (dropdownElement.classList.contains("expanded"))
         {
         // dropdownElement.style.height = `${dropdownElement.scrollHeight}px`;
-            dropdownElement.style.height = `0px`;
             dropdownElement.classList.replace("expanded", "collapsed");
         }
     }

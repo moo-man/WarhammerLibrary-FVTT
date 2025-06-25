@@ -140,12 +140,12 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
                     .map(t => t.actor)
                     .filter(actor => actor)
                     .reduce((prev, current) => prev.concat(current.getScripts("dialog", (s) => s.options?.targeter)), []) // Retrieve targets' targeter dialog effects
-                    .concat(actor?.getScripts("dialog", (s) => !s.context?.targeter && !s.context?.defending) // Don't use our own targeter dialog effects
+                    .concat(actor?.getScripts("dialog", (s) => !s.options?.targeter && !s.options?.defending) // Don't use our own targeter dialog effects
                     ))) || [];
         }
         else 
         {
-            dialogData.data.scripts = actor?.getScripts("dialog", (s) => !s.context?.targeter); // Don't use our own targeter dialog effects
+            dialogData.data.scripts = actor?.getScripts("dialog", (s) => !s.options?.targeter); // Don't use our own targeter dialog effects
         }
 
         return dialogData;

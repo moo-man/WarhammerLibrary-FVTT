@@ -18,7 +18,10 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
             resizable : true,
             title : "WH.ItemDialog",
             contentClasses: ["standard-form"],
-
+        },
+        position: {
+            height: 650,
+            width: 300
         },
         actions : {
             clickItem : {buttons : [0, 2], handler: this._onClickItem}
