@@ -13,9 +13,8 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         },
         window: {
             resizable : true,
-            title : "Choices",
-            contentClasses: ["standard-form"],
-
+            title : "WH.Choice.Choices",
+            contentClasses: ["standard-form"]
         },
         actions : {
             chooseOption : this._onChooseOption

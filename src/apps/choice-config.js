@@ -54,13 +54,13 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
         options: {
             id: "options",
             group: "primary",
-            label: "Options",
+            label: "WH.Choice.Options",
             icon : "fa-solid fa-ballot",
         },
         structure: {
             id: "structure",
             group: "primary",
-            label: "Structure",
+            label: "WH.Choice.Structure",
             icon: "fa-solid fa-share-nodes"
         }
     };

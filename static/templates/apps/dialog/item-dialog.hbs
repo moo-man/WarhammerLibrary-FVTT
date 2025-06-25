@@ -1,21 +1,19 @@
 <div>
-    {{#if text}}
-      <div class="dialog-text">{{{text}}}</div>
-    {{/if}}
+  {{#if text}}
+  <div class="dialog-text">{{{text}}}</div>
+  {{/if}}
 
-
-      <ol class="dialog-list">
-        {{#each items}}
-        <li class="dialog-item" data-action="clickItem" data-index="{{@key}}" data-uuid="{{this.uuid}}">
-          {{#if this.img}}
-          <img class="thumbnail" data-tooltip="{{this.name}}" src="{{this.img}}">
-          {{/if}}
-          <label><a>{{this.name}}</a></label>
-        </li>
-        {{/each}}
-      </ol>
-
+  <ol class="dialog-list">
+    {{#each items}}
+    <li class="dialog-item" data-action="clickItem" data-index="{{@key}}" data-uuid="{{this.uuid}}">
+      {{#if this.img}}
+      <img class="thumbnail" data-tooltip="{{this.name}}" src="{{this.img}}">
+      {{/if}}
+      <label><a>{{this.name}}</a></label>
+    </li>
+    {{/each}}
+  </ol>
   <footer class="form-footer">
-    <button type="submit">Submit</button>
+    <button>{{localize "Submit"}}</button>
   </footer>
-</div>    
+</div>
