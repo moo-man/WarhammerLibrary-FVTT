@@ -150,6 +150,12 @@ export default function ()
             return value ? value : fallback;
         });
 
+        Handlebars.registerHelper("createObject", function (args) 
+        {
+            return args.hash;
+        });
+
+
         game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
             name: "WH.Initializer.SettingName",
             label: "WH.Initializer.SettingLabel",
