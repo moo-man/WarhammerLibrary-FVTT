@@ -1,7 +1,7 @@
 import ItemDialog from "../apps/item-dialog";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty, getProperty} = foundry.utils;
+const {getProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
 

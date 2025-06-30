@@ -20,11 +20,11 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
         {
             if (this.uuid?.includes("Compendium"))
             {
-                this._document = fromUuid(this.uuid);
+                this._document = foundry.utils.fromUuid(this.uuid);
             }
             else 
             {
-                this._document = fromUuidSync(this.uuid);
+                this._document = foundry.utils.fromUuidSync(this.uuid);
             }
 
         }

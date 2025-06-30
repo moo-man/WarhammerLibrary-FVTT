@@ -1,4 +1,3 @@
-import { DocumentReferenceModel } from "../model/components/reference";
 import { WarhammerDocumentMixin } from "./mixin";
 import SelectChoices from "../apps/browser/select-choices.mjs";
 import {getSortedTypes, sortObjectEntries} from "../util/utility.js";
@@ -333,23 +332,36 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     /**
      * Types that can be selected within the compendium browser.
-     * @param {object} [options={}]
+     * @param {object} [options] Options for filtering and selecting types.
      * @param {Set<string>} [options.chosen]  Types that have been selected.
-     * @returns {SelectChoices}
+     * @returns {SelectChoices} An instance of SelectChoices representing the available item types for the compendium browser.
      */
-    static compendiumBrowserTypes({chosen = new Set()} = {}) {
+    static compendiumBrowserTypes({chosen = new Set()} = {}) 
+    {
         // @todo let systems define categories in data models and change this to generate categories more dynamically
-        const [generalTypes, physicalTypes, vehicleTypes] = getSortedTypes(Item).reduce(([g, p, v], t) => {
-            if (t !== CONST.BASE_DOCUMENT_TYPE) {
-                if (CONFIG.Item.dataModels[t]?.metadata?.isVehicle) v.push(t);
-                else if (CONFIG.Item.dataModels[t]?.metadata?.isPhysical) p.push(t);
-                else g.push(t);
+        const [generalTypes, physicalTypes, vehicleTypes] = getSortedTypes(Item).reduce(([g, p, v], t) => 
+        {
+            if (t !== CONST.BASE_DOCUMENT_TYPE) 
+            {
+                if (CONFIG.Item.dataModels[t]?.metadata?.isVehicle) 
+                {
+                    v.push(t);
+                }
+                else if (CONFIG.Item.dataModels[t]?.metadata?.isPhysical)
+                {
+                    p.push(t);
+                }
+                else
+                {
+                    g.push(t);
+                }
             }
 
             return [g, p, v];
         }, [[], [], []]);
 
-        const makeChoices = (types, categoryChosen) => types.reduce((obj, type) => {
+        const makeChoices = (types, categoryChosen) => types.reduce((obj, type) => 
+        {
             obj[type] = {
                 label: CONFIG.Item.typeLabels[type],
                 chosen: chosen.has(type) || categoryChosen
@@ -359,14 +371,16 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
         const choices = makeChoices(generalTypes);
 
-        if (physicalTypes.length) {
+        if (physicalTypes.length) 
+        {
             choices.physical = {
                 label: game.i18n.localize("WH.Item.Category.Physical"),
                 children: makeChoices(physicalTypes, chosen.has("physical"))
             };
         }
 
-        if (vehicleTypes.length) {
+        if (vehicleTypes.length) 
+        {
             choices.vehicle = {
                 label: game.i18n.localize("WH.Item.Category.Vehicle"),
                 children: makeChoices(vehicleTypes, chosen.has("vehicle"))

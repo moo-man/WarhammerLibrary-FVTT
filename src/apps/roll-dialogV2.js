@@ -1,8 +1,7 @@
 import WarhammerScript from "../system/script";
 import { BaseDialogTooltips } from "../system/tooltips";
 import { localize } from "../util/utility";
-import ContainerizedApp from "./containerized";
-const {mergeObject, diffObject} = foundry.utils;
+const {mergeObject} = foundry.utils;
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(ApplicationV2)

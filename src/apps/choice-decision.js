@@ -50,7 +50,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
     {
         let context = await super._prepareContext(options);
         context.tree = this.tree.structure;
-        context.buttons = [{ type: "submit", label: "Submit Choices" }];
+        context.buttons = [{ type: "submit", label: "WH.Choice.SubmitChoices" }];
         return context;
     }
 

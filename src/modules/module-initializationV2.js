@@ -1,6 +1,6 @@
-import { systemConfig } from "../util/utility";
+import { format, systemConfig } from "../util/utility";
 import { WarhammerModuleContentHandler } from "./content-handler";
-import { localize, log } from "../util/utility";
+import { localize } from "../util/utility";
 
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -10,7 +10,7 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
 
     static DEFAULT_OPTIONS = {
         window : {
-            title : "Warhammer Module Initialization",
+            title : "WH.Initializer.Title",
             resizable: true
         },
         position : {
@@ -62,7 +62,7 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
     {
         let key = target.closest("[data-module]").dataset.module;
         let module = game.modules.get(key);
-        let dialogContent = `<p>Are you sure you want to initialize <strong>${module.title}</strong>? This will import the following Documents from the Compendium into your world.</p>`;
+        let dialogContent = format("WH.Updater.DialogContent", {title : module.title, description : module.description});
         dialogContent += `
         <ul>
         ${module.flags.initializationPacks.map(p => 
@@ -75,7 +75,7 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
         <hr>
         ${systemConfig().copyrightText.replace("@AUTHORS@", Array.from(module.authors).slice(0, module.authors.size - 1).map(i => i.name).join(", "))}
         `;
-        if (await foundry.applications.api.DialogV2.confirm({window: {title : `Initialize ${module.title}`}, content : dialogContent, classes : ["initialization"]}))
+        if (await foundry.applications.api.DialogV2.confirm({window: {title : `${localize("WH.Initialize")} ${module.title}`}, content : dialogContent, classes : ["initialization"]}))
         {
             new WarhammerModuleContentHandler(module).initialize();
             game.settings.set(key, "initialized", true);
@@ -124,15 +124,8 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
     {
         let key = target.closest("[data-module]").dataset.module;
         let module = game.modules.get(key);
-        if (await foundry.applications.api.DialogV2.confirm({window: {title : `Delete ${module.title} Content`}, 
-            content : `
-            <p>This process deletes all Documents from <strong>${module.title}</strong> that have were imported from Initialization.</p>
-            <p>Please note the following:</p>
-            <ul>
-            <li>Documents manually imported from the Compendium will not be deleted.</li>
-            <li>Any Document that is Owned by a Player will not be deleted.</li>
-            </ul>
-            <p>Remember that this process only deletes imported Documents. You can reimport anything deleted from the Compendium.</p>`,
+        if (await foundry.applications.api.DialogV2.confirm({window: {title : format("WH.Initializer.DeleteModuleContent", {title : module.title})}, 
+            content : format("DeleteModuleContentDesc", {module : module.title}),
             classes : ["initialization"]
         }))
         {

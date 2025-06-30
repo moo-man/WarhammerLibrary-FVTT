@@ -1,4 +1,4 @@
-import { localize, log } from "../util/utility";
+import { localize, log, format } from "../util/utility";
 import WarhammerModuleUpdater from "./module-updater";
 
 
@@ -18,7 +18,7 @@ export default class WarhammerModuleInitializer extends Dialog
                     {
                         game.settings.set(module, "initialized", true);
                         await this.initialize();
-                        ui.notifications.notify(game.modules.get(module).title + ": Initialization Complete");
+                        ui.notifications.notify(game.modules.get(module).title + ": " + localize("WH.Initialization.Complete"));
                     }
                 },
                 update: {
@@ -43,7 +43,7 @@ export default class WarhammerModuleInitializer extends Dialog
                     callback: () => 
                     {
                         game.settings.set(module, "initialized", true);
-                        ui.notifications.notify("Skipped Initialization.");
+                        ui.notifications.notify(localize("WH.Initialization.Skipped"));
                     }
                 }
             }
@@ -65,23 +65,23 @@ export default class WarhammerModuleInitializer extends Dialog
                 switch (documents[0].documentName) 
                 {
                 case "Actor":
-                    ui.notifications.notify(this.data.module.title + ": Initializing Actors");
+                    ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.Actors"));
                     await this.createOrUpdateDocuments(documents, game.actors);
                     break;
                 case "Item":
-                    ui.notifications.notify(this.data.module.title + ": Initializing Items");
+                    ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.Items"));
                     await this.createOrUpdateDocuments(documents, game.items);
                     break;
                 case "JournalEntry":
-                    ui.notifications.notify(this.data.module.title + ": Initializing Journals");
+                    ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.Journals"));
                     await this.createOrUpdateDocuments(documents, game.journal);
                     break;
                 case "RollTable":
-                    ui.notifications.notify(this.data.module.title + ": Initializing Tables");
+                    ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.Tables"));
                     await this.createOrUpdateDocuments(documents, game.tables);
                     break;
                 case "Scene":
-                    ui.notifications.notify(this.data.module.title + ": Initializing Scenes");
+                    ui.notifications.notify(this.data.module.title + ": I" + localize("WH.Initialization.Scenes"));
                     await this.createOrUpdateDocuments(documents, game.scenes);
                     break;
                 }
@@ -129,7 +129,7 @@ export default class WarhammerModuleInitializer extends Dialog
         {
             let existing = collection.get(doc.id);
             await existing.update(doc.toObject());
-            ui.notifications.notify(`Updated existing document ${doc.name}`);
+            ui.notifications.notify(format("WH.Initialization.UpdatedExistingDocument", {name: doc.name}));
         }
     }
 
@@ -156,27 +156,27 @@ export default class WarhammerModuleInitializer extends Dialog
         });
         if (proceed)
         {
-            ui.notifications.notify(this.data.module.title + ": Deleting Scenes");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingScenes"));
             let moduleScenes = game.scenes.filter(doc => doc.flags?.source == id);
             CONFIG.Scene.documentClass.deleteDocuments(moduleScenes.map(doc => doc.id));
 
-            ui.notifications.notify(this.data.module.title + ": Deleting Actors");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingActors"));
             let moduleActors = game.actors.filter(doc => doc.flags?.source == id && !doc.hasPlayerOwner);
             CONFIG.Actor.documentClass.deleteDocuments(moduleActors.map(doc => doc.id));
 
-            ui.notifications.notify(this.data.module.title + ": Deleting Items");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingItems"));
             let moduleItems = game.items.filter(doc => doc.flags?.source == id);
             CONFIG.Item.documentClass.deleteDocuments(moduleItems.map(doc => doc.id));
 
-            ui.notifications.notify(this.data.module.title + ": Deleting Journals");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingJournals"));
             let moduleJournals = game.journal.filter(doc => doc.flags?.source == id);
             CONFIG.JournalEntry.documentClass.deleteDocuments(moduleJournals.map(doc => doc.id));
 
-            ui.notifications.notify(this.data.module.title + ": Deleting Tables");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingTables"));
             let moduleTables = game.tables.filter(doc => doc.flags?.source == id);
             CONFIG.RollTable.documentClass.deleteDocuments(moduleTables.map(doc => doc.id));
 
-            ui.notifications.notify(this.data.module.title + ": Deleting Folders");
+            ui.notifications.notify(this.data.module.title + ": " + localize("WH.Initialization.DeletingFolders"));
             let moduleFolders = game.folders.filter(doc => doc.flags?.source == id);
             CONFIG.Folder.documentClass.deleteDocuments(moduleFolders.map(doc => doc.id));
         }

@@ -29,7 +29,7 @@ export default class WarhammerBugReport extends Application
         options.resizable = true;
         options.width = 600;
         options.minimizable = true;
-        options.title = "Bug Report";
+        options.title = localize("WH.BugReporter.Title");
         options.tabs = [{ navSelector: ".tabs", contentSelector: ".content", initial: "submit" }];
         return options;
     }

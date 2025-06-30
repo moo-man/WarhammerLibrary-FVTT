@@ -1,9 +1,6 @@
 import addSheetHelpers from "../util/sheet-helpers";
 import { localize } from "../util/utility";
 
-const { ApplicationV2 } = foundry.applications.api;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
-
 export class WarhammerZoneConfig extends WHFormApplication
 {
 
@@ -131,7 +128,7 @@ export class WarhammerZoneConfig extends WHFormApplication
         {
             html.querySelectorAll(".region").forEach(region => 
             {
-                $(`<button class="icon" data-tooltip="Configure Zone"><i class="fa-solid fa-game-board-simple"></i></button>`).insertBefore(region.querySelector("button")).on("click", (ev) => 
+                $(`<button class="icon" data-tooltip="${localize("WH.ConfigureZone")}"><i class="fa-solid fa-game-board-simple"></i></button>`).insertBefore(region.querySelector("button")).on("click", (ev) => 
                 {
                     let region = canvas.scene.regions.get(ev.currentTarget.parentElement.dataset.regionId);
                     new this(region).render(true);

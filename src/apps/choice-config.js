@@ -17,7 +17,7 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
                 {
                     action: "openChoiceDialog",
                     icon: "fa-solid fa-share-nodes",
-                    label: "Choice Dialog"
+                    label: "WH.Choice.ChoiceDialog",
                 }
             ]
         },

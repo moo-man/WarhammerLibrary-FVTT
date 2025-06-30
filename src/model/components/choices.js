@@ -86,7 +86,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
         }
         else if (data.type == "and" || data.type == "or")
         {
-            return {structure : this.insert(foundry.utils.mergeObject(data, {id : randomID(), options : []}), location)};
+            return {structure : this.insert(foundry.utils.mergeObject(data, {id : foundry.utils.randomID(), options : []}), location)};
         }
         else 
         {
@@ -215,10 +215,10 @@ export class ChoiceModel extends foundry.abstract.DataModel
     }
  
     /**
-     * 
      * @param {object} data data being inserted
      * @param {string} id structure ID of where to insert
      * @param {object} structure Used for recursion
+     * @returns {object} The updated structure after insertion
      */
     insert(data, id="root", structure)
     {
@@ -267,7 +267,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
     {
         let structureCopy = foundry.utils.deepClone(this.structure);
         let target = this.find(id, structureCopy);
-        mergeObject(target, obj);
+        foundry.utils.mergeObject(target, obj);
         return structureCopy;
     }
  
@@ -347,7 +347,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
         let option = {
             type : document.documentName == "Item" ? "item" : (document.documentName == "ActiveEffect" ? "effect" : ""),
             name : document.name || document.label,
-            id : randomID(),
+            id : foundry.utils.randomID(),
             idType : ""
         };
         if (document.parent && document.parent == this.parent.parent) // Currently only used by effect choices
@@ -368,7 +368,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
         let option = {
             type : "filter",
             name : data.name,
-            id : randomID(),
+            id : foundry.utils.randomID(),
             filters : data.filters || []
         };
         return option;
@@ -379,7 +379,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
         let option = {
             type : "placeholder",
             name : data.name,
-            id : randomID()
+            id : foundry.utils.randomID()
         };
         return option;
     }

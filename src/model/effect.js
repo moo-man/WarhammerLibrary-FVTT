@@ -11,7 +11,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
     // This is built in with `TypeDataModels` but those aren't being used
     static get schema() 
     {
-        if ( this.hasOwnProperty("_schema") ) 
+        if ( Object.prototype.hasOwnProperty.call(this, "_schema") ) 
         {
             return this._schema;
         }

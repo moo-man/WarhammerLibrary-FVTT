@@ -1,3 +1,5 @@
+import { format, localize } from "../util/utility";
+
 export default class ChatCommands
 {
     commands = {
@@ -12,7 +14,7 @@ export default class ChatCommands
 
                 args : [],
                 callback : this.printHelp.bind(this),
-                description : "Print instructions for how to use commands"
+                description : localize("WH.Chat.Commands.HelpDescription")
             }
         });
         this._addCommands(commands);
@@ -99,12 +101,7 @@ export default class ChatCommands
 
     printHelp()
     {
-        let content = `
-        <p>Below is the list of chat commands and available parameters. You can assign some value to a parmeter by using <span style='font-family:monospaced'>=</span>. If a command has a default argument, it does not need to be assigned, but must be the first value provided.</p>
-
-        <p>e.g. <span style='font-family:monospaced'>${this.prefix}command 100 someArg=value1 anotherArg=value2</span></p>
-        `;
-
+        let content = format("WH.Chat.Commands.PrintCommand", {prefix: this.prefix}); 
         for(let command in this.commands)
         {
             if (command != "help")
@@ -113,15 +110,15 @@ export default class ChatCommands
                 content += `<p><strong>${commandData.description}</strong></p>
                 <p><span style='font-family:monospaced'>${this.prefix}${command}</span></p>
                 <p><strong>Arguments</strong>: ${commandData.args?.length == 0 ? "None" : "<span style='font-family:monospaced'>" + commandData.args.join("</span>, <span style='font-family:monospaced'>")}</span></p>
-                ${commandData.defaultArg ? "<p><strong>Default Argument</strong>: " + commandData.defaultArg +  "</p>" : ""}
-                ${commandData.notes ? "<p><strong>Notes</strong>: " + commandData.notes +  "</p>" : ""}
-                ${commandData.examples ? "<p><strong>Examples</strong>: " + commandData.examples +  "</p>" : ""}
+                ${commandData.defaultArg ? "<p><strong>" + localize("WH.Chat.Commands.DefaultArgument") + "</strong>: " + commandData.defaultArg +  "</p>" : ""}
+                ${commandData.notes ? "<p><strong>" + localize("WH.Chat.Commands.Notes") + "</strong>: " + commandData.notes +  "</p>" : ""}
+                ${commandData.examples ? "<p><strong>" + localize("WH.Chat.Commands.Examples") + "</strong>: " + commandData.examples +  "</p>" : ""}
                 <hr>
             `;
             }
         }
 
-        ChatMessage.implementation.create(ChatMessage.applyRollMode({content, speaker : {alias : "Command Help"}}, "selfroll"));
+        ChatMessage.implementation.create(ChatMessage.applyRollMode({content, speaker : {alias : localize("WH.Chat.Commands.HelpAlias")}}, "selfroll"));
     }
 
     _callHook()
@@ -136,5 +133,4 @@ export default class ChatCommands
             }
         });
     }
-    
 }

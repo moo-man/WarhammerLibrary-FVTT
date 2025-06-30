@@ -1,5 +1,4 @@
 import { BaseWarhammerModel } from "./base";
-import SelectChoices from "../apps/browser/select-choices.mjs";
 
 export class BaseWarhammerItemModel extends BaseWarhammerModel 
 {

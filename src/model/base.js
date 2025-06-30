@@ -4,7 +4,8 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
 {
     static metadata = {};
 
-    get metadata() {
+    get metadata() 
+    {
         return this.constructor.metadata;
     }
 
@@ -22,7 +23,7 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
     // This is built in with `TypeDataModels` but those aren't being used
     static get schema() 
     {
-        if ( this.hasOwnProperty("_schema") ) 
+        if ( Object.prototype.hasOwnProperty.call(this, "_schema") ) 
         {
             return this._schema;
         }
@@ -35,26 +36,30 @@ export class BaseWarhammerModel extends foundry.abstract.DataModel
      * Filters available for this item type when using the compendium browser.
      * @returns {CompendiumBrowserFilterDefinition}
      */
-    static get compendiumBrowserFilters() {
+    static get compendiumBrowserFilters() 
+    {
         return new Map();
     }
 
-    static _deriveSource(uuid) {
+    static _deriveSource(uuid) 
+    {
         const pckg = getPackage(uuid);
 
         return {
             slug: pckg?.id ?? 'world',
             value: pckg?.title ?? '',
-            label: getCompendiumName(uuid) ?? game.i18n.localize('PACKAGE.Type.world'),
-        }
+            label: getCompendiumName(uuid) ?? game.i18n.localize('PACKAGE.Type.world')
+        };
     }
 
-    static addSourceData(data) {
+    static addSourceData(data) 
+    {
         foundry.utils.setProperty(data, "system.source", this._deriveSource(data.uuid));
     }
 
 
-    get source() {
+    get source() 
+    {
         return this.constructor._deriveSource(this.parent.uuid);
     }
 
