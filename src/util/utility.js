@@ -153,7 +153,7 @@ export function keepID(document)
  * @param id
  * @param type
  */
-export function findItemId(id, type) 
+export function findItemId(id="", type) 
 {
     if (id.includes("."))
     {return fromUuid(id);}

@@ -113,11 +113,12 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
      * Creates the basic data that generally all dialogs use, such as formatting the speaker data and handling dialog scirpts
      * @param {Actor} actor Actor performing the test
      * @param {object} context Additional contextual flags for dialog, usually used by scripts
+     * @param {object} options Foundry Application options
      * @returns {object} Basic dialog data shared by all types of dialogs
      */
-    static _baseDialogData(actor, context)
+    static _baseDialogData(actor, context, options={})
     {
-        let dialogData = {data : {}, fields : {}, context};
+        let dialogData = {data : {}, fields : {}, context, options};
 
         dialogData.data.actor = actor;
         dialogData.data.speaker = CONFIG.ChatMessage.documentClass.getSpeaker({actor});

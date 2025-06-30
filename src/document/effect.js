@@ -20,7 +20,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // Take a copy of the test result that this effect comes from, if any
         // We can't use simply take a reference to the message id and retrieve the test as
         // creating a Test object before actors are ready (scripts can execute before that) throws errors
-        this.updateSource({[`system.sourceData.test`] : game.messages.get(options.message)?.system?.test || this.system.sourceData.test});
+        let test = game.messages.get(options.message)?.system?.test;
+        if (test)
+        {
+            this.updateSource({[`system.sourceData.test`] : {...test}});
+        }
 
         let preventCreation = false;
         preventCreation = await this._handleFilter(data, options, user);
@@ -570,14 +574,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get sourceTest() 
     {
         let test = this.system.sourceData.test;
-        if (test instanceof WarhammerTestBase)
-        {
-            return test;
-        }
-        else 
-        {
-            return test.data;
-        }
+        return test;
+        // if (test instanceof WarhammerTestBase)
+        // {
+        //     return test;
+        // }
+        // else 
+        // {
+        //     return test.data;
+        // }
     }
 
     get sourceActor() 

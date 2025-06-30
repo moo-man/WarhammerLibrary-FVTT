@@ -79,7 +79,7 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
 
     static async onPlaceAreaEffect(ev, target) 
     {
-        let messageId = ev.currentTarget.dataset.messageId;
+        let messageId = target.dataset.messageId;
         let effectUuid = target.dataset.uuid;
         let effect = await fromUuid(effectUuid);
         if (!(await effect.runPreApplyScript()))
@@ -92,14 +92,12 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
     
     static async onApplyZoneEffect(ev, target) 
     {
-        let messageId = ev.currentTarget.dataset.messageId;
-        let message = game.messages.get(messageId);
-        let test = message.system.test;
+        let test = this.test;
         let effect = await fromUuid(target.dataset.uuid);
         if (!(await effect.runPreApplyScript({test})))
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect({effectUuids: ev.currentTarget.dataset.uuid}, message.id);
+        ZoneHelpers.promptZoneEffect({effectUuids: target.dataset.uuid}, this.parent.id);
     };
 }
