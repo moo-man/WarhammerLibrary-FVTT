@@ -128,7 +128,7 @@
             "WorldItems": "Show World Items in Browser"
         },
         "Configuration": "Configuration",
-        "ConfigureZone": "Configure Zone",
+        "ConfigureZoneTT": "Configure Zone",
         "DefendingAgainst": "Defending Against",
         "DefendingAgainstTT": "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
         "DeleteEffect": "Delete Effect",

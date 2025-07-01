@@ -224,7 +224,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
     
         // let effect = actor.populateEffect(effectId, item, test)
@@ -255,7 +255,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {
@@ -274,7 +274,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {

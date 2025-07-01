@@ -52,7 +52,7 @@ export default class WarhammerBugReport extends Application
         data.troubleshootingURL = this.troubleshootingURL;
         if (this.constructor.apiLimitReached)
         {
-            ui.notifications.error(localize("WH.BugReporter.APIReached"), {permanent : true});
+            ui.notifications.error("WH.BugReporter.APIReached", {permanent : true, localize: true});
         }
         return data;
     }
@@ -125,14 +125,14 @@ export default class WarhammerBugReport extends Application
                 }
                 else 
                 {
-                    ui.notifications.error(localize("WH.Error.PostError"));
+                    ui.notifications.error("WH.Error.PostError", {localize: true});
                     console.error(res);
                 }
 
             })
             .catch(err => 
             {
-                ui.notifications.error(localize("WH.Error.GeneralBugReport"));
+                ui.notifications.error("WH.Error.GeneralBugReport", {localize: true});
                 console.error(err);
             });
     }
@@ -357,9 +357,9 @@ export default class WarhammerBugReport extends Application
 
 
             if (!data.domain || !data.title || !data.description)
-            {return ui.notifications.error(localize("WH.BugReporter.BugReportFormError"));}
+            {return ui.notifications.error("WH.BugReporter.BugReportFormError", {localize: true});}
             if (!data.issuer)
-            {return ui.notifications.error(localize("WH.BugReporter.BugReportNameError"));}
+            {return ui.notifications.error("WH.BugReporter.BugReportNameError", {localize: true});}
 
 
             data.title = `[${systemConfig().premiumModules[data.domain]}] ${data.title}`;

@@ -74,7 +74,7 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
         }
         else if (item.type)
         {
-            ui.notifications.error(localize("WH.Error.MismatchedItemType"));
+            ui.notifications.error("WH.Error.MismatchedItemType", {localize: true});
         }
     }
 
