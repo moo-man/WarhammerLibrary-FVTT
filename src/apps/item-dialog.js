@@ -1,5 +1,5 @@
 import addSheetHelpers from "../util/sheet-helpers";
-import { localize, systemConfig } from "../util/utility";
+import { systemConfig } from "../util/utility";
 const {getProperty} = foundry.utils;
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 

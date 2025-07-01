@@ -1,5 +1,3 @@
-import { DocumentReferenceModel } from "../model/components/reference";
-import AreaHelpers from "../util/area-helpers";
 import { SocketHandlers } from "../util/socket-handlers";
 import TokenHelpers from "../util/token-helpers";
 import { getActiveDocumentOwner } from "../util/utility";
@@ -72,8 +70,9 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      * @param {class} dialogClass Class used for the test dialog
      * @param {class} testClass Class used to compute the test result
      * @param {object} data data relevant to the specific test (such as what characteristic/item to use)
-     * @param {object} options Optional properties to customize the test
+     * @param {object} context Optional properties to customize the test
      * @param {boolean} roll Whether to evaluate the test or not
+     * @param {boolean} sendToChat Whether to send the test result to chat or not
      * @returns {object} test class instance
      */
     async _setupTest(dialogClass, testClass, data, context = {}, options={}, roll = true, sendToChat=true) 
@@ -226,6 +225,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 
     /**
      * Overriden from foundry to pass true to allApplicableEffects
+     * @returns {Array<WarhammerActiveEffect>} List of applicable, temporary effects
      */
     get temporaryEffects() 
     {
@@ -311,12 +311,14 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
 
     /**
      * Types that can be selected within the compendium browser.
-     * @param {object} [options={}]
+     * @param {object} [options] options for the compendium browser types.
      * @param {Set<string>} [options.chosen]  Types that have been selected.
-     * @returns {SelectChoices}
+     * @returns {SelectChoices} SelectChoices object containing the types.
      */
-    static compendiumBrowserTypes({chosen = new Set()} = {}) {
-        return new SelectChoices(Actor.TYPES.filter(t => t !== CONST.BASE_DOCUMENT_TYPE).reduce((obj, type) => {
+    static compendiumBrowserTypes({chosen = new Set()} = {}) 
+    {
+        return new SelectChoices(Actor.TYPES.filter(t => t !== CONST.BASE_DOCUMENT_TYPE).reduce((obj, type) => 
+        {
             obj[type] = {
                 label: CONFIG.Actor.typeLabels[type],
                 chosen: chosen.has(type)

@@ -1,4 +1,4 @@
-import { localize, log } from "../util/utility";
+import { localize, log, format } from "../util/utility";
 
 
 export default class WarhammerModuleUpdater extends Dialog 
@@ -8,7 +8,7 @@ export default class WarhammerModuleUpdater extends Dialog
     {
 
         super({
-            title: `${game.i18n.format("UpdaterTitle", {title : module.title})}`,
+            title: format("UpdaterTitle", {title : module.title}),
             content: html,
             module,
             buttons:
@@ -57,8 +57,7 @@ export default class WarhammerModuleUpdater extends Dialog
             if (type != "excludeNameChange" && settings[type])
             {await this.updateDocuments(documents[type], settings);}
         }
-        ui.notifications.notify(`${game.i18n.format("UPDATER.Notification", { created: this.count.created,  updated: this.count.updated,  name: this.data.module.id, version: this.data.module.version })}`);
-
+        ui.notifications.notify(format("WH.Initializer.UpdaterNotification", { created: this.count.created,  updated: this.count.updated,  name: this.data.module.id, version: this.data.module.version }));
     }
 
     async updateDocuments(documents, settings)

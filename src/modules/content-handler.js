@@ -18,7 +18,7 @@ export class WarhammerModuleContentHandler
 
         if (this.hasExistingInitialization(packList))
         {
-            if (!(await foundry.applications.api.DialogV2.confirm({content : "Existing Documents have been found from a previous initialization. Initializing again may prompt you to choose between keeping the current imported versions or replacing them from this initialization. Do you wish to continue?"})))
+            if (!(await foundry.applications.api.DialogV2.confirm({content : localize("WH.Initialization.ExistingContentMessage")})))
             {
                 return;
             }
@@ -33,23 +33,23 @@ export class WarhammerModuleContentHandler
                 switch (documents[0].documentName) 
                 {
                 case "Actor":
-                    ui.notifications.notify(this.module.title + ": Initializing Actors");
+                    ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.Actors"));
                     await this.createOrUpdateDocuments(documents, game.actors);
                     break;
                 case "Item":
-                    ui.notifications.notify(this.module.title + ": Initializing Items");
+                    ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.Items"));
                     await this.createOrUpdateDocuments(documents, game.items);
                     break;
                 case "JournalEntry":
-                    ui.notifications.notify(this.module.title + ": Initializing Journals");
+                    ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.Journals"));
                     await this.createOrUpdateDocuments(documents, game.journal);
                     break;
                 case "RollTable":
-                    ui.notifications.notify(this.module.title + ": Initializing Tables");
+                    ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.Tables"));
                     await this.createOrUpdateDocuments(documents, game.tables);
                     break;
                 case "Scene":
-                    ui.notifications.notify(this.module.title + ": Initializing Scenes");
+                    ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.Scenes"));
                     await this.createOrUpdateDocuments(documents, game.scenes);
                     break;
                 }
@@ -131,27 +131,27 @@ export class WarhammerModuleContentHandler
     //#region deleting
     async delete()
     {
-        ui.notifications.notify(this.module.title + ": Deleting Scenes");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingScenes"));
         let moduleScenes = game.scenes.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id);
         CONFIG.Scene.documentClass.deleteDocuments(moduleScenes.map(doc => doc.id));
 
-        ui.notifications.notify(this.module.title + ": Deleting Actors");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingActors"));
         let moduleActors = game.actors.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id && !doc.hasPlayerOwner);
         CONFIG.Actor.documentClass.deleteDocuments(moduleActors.map(doc => doc.id));
 
-        ui.notifications.notify(this.module.title + ": Deleting Items");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingItems"));
         let moduleItems = game.items.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id);
         CONFIG.Item.documentClass.deleteDocuments(moduleItems.map(doc => doc.id));
 
-        ui.notifications.notify(this.module.title + ": Deleting Journals");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingJournals"));
         let moduleJournals = game.journal.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id);
         CONFIG.JournalEntry.documentClass.deleteDocuments(moduleJournals.map(doc => doc.id));
 
-        ui.notifications.notify(this.module.title + ": Deleting Tables");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingTables"));
         let moduleTables = game.tables.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id);
         CONFIG.RollTable.documentClass.deleteDocuments(moduleTables.map(doc => doc.id));
 
-        ui.notifications.notify(this.module.title + ": Deleting Folders");
+        ui.notifications.notify(this.module.title + ": " + localize("WH.Initialization.DeletingFolders"));
         let moduleFolders = game.folders.filter(doc => doc.flags?.["warhammer-lib"]?.source == this.module.id);
         CONFIG.Folder.documentClass.deleteDocuments(moduleFolders.map(doc => doc.id));
     }

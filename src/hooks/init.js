@@ -1,7 +1,7 @@
 import { systemConfig } from "../util/utility";
 import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
 import { WarhammerModuleInitializationV2 } from "../modules/module-initializationV2";
-const {hasProperty, getProperty} = foundry.utils;
+const {hasProperty} = foundry.utils;
 
 /**
  *

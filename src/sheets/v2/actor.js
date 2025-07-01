@@ -2,6 +2,7 @@ import ItemDialog from "../../apps/item-dialog";
 import AreaTemplate from "../../util/area-template";
 import ZoneHelpers from "../../util/zone-helpers";
 import WarhammerSheetMixinV2 from "./mixin";
+import { localize } from "../../util/utility";
 
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -223,7 +224,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
     
         // let effect = actor.populateEffect(effectId, item, test)
@@ -254,7 +255,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {
@@ -273,7 +274,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            return ui.notifications.error("Unable to find effect to apply");
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {

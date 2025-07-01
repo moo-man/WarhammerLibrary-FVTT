@@ -42,7 +42,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(foundry.appv1.sheet
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
     
         // let effect = actor.populateEffect(effectId, item, test)
@@ -75,7 +75,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(foundry.appv1.sheet
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {
@@ -95,7 +95,7 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(foundry.appv1.sheet
         }
         else 
         {
-            return ui.notifications.error(localize("WH.ErrorUnableToFindEffect"));
+            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
         }
         if (!(await effect.runPreApplyScript({effectData})))
         {

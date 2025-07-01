@@ -1,7 +1,7 @@
 import ItemDialog from "../apps/item-dialog";
 import { SocketHandlers } from "./socket-handlers";
 import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
-const {hasProperty, getProperty} = foundry.utils;
+const {getProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
 
@@ -122,7 +122,7 @@ export default class ZoneHelpers
     static async _handleFollowedEffects(token)
     {
         // Effects following theprovided token
-        let followedEffects = token?.actor.followedZoneEffects || [];
+        let followedEffects = token?.actor?.followedZoneEffects || [];
 
         // For each region, add and delete followed effects
         for(let region of token.parent.regions)

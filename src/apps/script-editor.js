@@ -1,5 +1,3 @@
-import WarhammerSheetMixinV2 from "../sheets/v2/mixin";
-
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 

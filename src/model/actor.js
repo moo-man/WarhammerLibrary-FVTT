@@ -11,7 +11,7 @@ export class BaseWarhammerActorModel extends BaseWarhammerModel
     {
         if (this.constructor.preventItemTypes.includes(item.type))
         {
-            ui.notifications.error(localize("WH.ItemsNotAllowed"), {type : item.type});
+            ui.notifications.error("WH.ItemsNotAllowed", {format: {type : item.type}, localize: true});
             return false;
         }
         else 

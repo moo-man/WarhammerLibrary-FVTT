@@ -13,9 +13,8 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         },
         window: {
             resizable : true,
-            title : "Choices",
-            contentClasses: ["standard-form"],
-
+            title : "WH.Choice.Choices",
+            contentClasses: ["standard-form"]
         },
         actions : {
             chooseOption : this._onChooseOption
@@ -51,7 +50,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
     {
         let context = await super._prepareContext(options);
         context.tree = this.tree.structure;
-        context.buttons = [{ type: "submit", label: "Submit Choices" }];
+        context.buttons = [{ type: "submit", label: "WH.Choice.SubmitChoices" }];
         return context;
     }
 
