@@ -19,6 +19,30 @@
     "verified": "13",
     "maximum": "13"
   },
+  "relationships": {
+    "systems": [
+      {
+        "id": "wfrp4e",
+        "type": "system"
+      },
+      {
+        "id": "whtow",
+        "type": "system"
+      },
+      {
+        "id": "impmal",
+        "type": "system"
+      },
+      {
+        "id": "wrath-and-glory",
+        "type": "system"
+      },
+      {
+        "id": "age-of-sigmar-soulbound",
+        "type": "system"
+      }
+    ]
+  },
   "flags" : {
     "hotReload": { 
       "extensions": ["css", "hbs", "json"]
