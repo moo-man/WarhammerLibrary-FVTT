@@ -1,3 +1,4 @@
+import WarhammerDiffEditor from "../../apps/diff-editor";
 import WarhammerRichEditor from "../../apps/rich-editor";
 import addSheetHelpers from "../../util/sheet-helpers";
 import { addLinkSources, localize} from "../../util/utility";
@@ -29,6 +30,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             togglePip : this._onTogglePip,
             editRichText : this._onEditRichText,
             clickEffectButton : this._onClickEffectButton,
+            editDiff : this._onEditDiff
+
         },
         window: {
             resizable: true
@@ -508,6 +511,26 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let path = this._getPath(ev);
         let property = foundry.utils.getProperty(doc, path);
         doc.update(property.unset());
+    }
+
+    static async _onEditDiff(event)
+    {
+        let index = this._getIndex(event);
+        let list = this._getList(event);
+        let listObject = list[index];
+        let originalDocument = await listObject.document?.originalDocument;
+
+        let newDiff = await WarhammerDiffEditor.wait(listObject.document?.diff, {document : originalDocument});
+
+        if (newDiff.name)
+        {
+            listObject.name = newDiff.name;
+        }
+        else 
+        {
+            listObject.name = originalDocument.name;
+        }
+        this.document.update(list.edit(index, listObject));
     }
 
     

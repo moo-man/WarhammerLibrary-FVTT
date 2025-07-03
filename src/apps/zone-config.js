@@ -1,5 +1,6 @@
 import addSheetHelpers from "../util/sheet-helpers";
 import { localize } from "../util/utility";
+import { WHFormApplication } from "./form-application";
 
 export class WarhammerZoneConfig extends WHFormApplication
 {
@@ -33,12 +34,12 @@ export class WarhammerZoneConfig extends WHFormApplication
         config: {
             id: "config",
             group: "primary",
-            label: localize("WH.Configuration"),
+            label: "WH.Configuration",
         },
         effects: {
             id: "effects",
             group: "primary",
-            label: localize("WH.Effects"),
+            label: "WH.Effects",
         }
     };
 

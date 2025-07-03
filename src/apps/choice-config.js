@@ -31,7 +31,6 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
             listDelete : this._onListDelete,
             toggleConnector : this._onToggleConnector,
             openChoiceDialog : this._onOpenChoiceDialog,
-            editDiff : this._onEditDiff,
         },
         dragDrop: [{ dragSelector: '.option', dropSelector: ".option" }],
 

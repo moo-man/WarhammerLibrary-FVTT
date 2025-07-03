@@ -1,12 +1,11 @@
-const { ApplicationV2 } = foundry.applications.api;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+import { WHFormApplication } from "./form-application";
 
-export class ChoiceOptionFormV2 extends HandlebarsApplicationMixin(ApplicationV2)
+export class ChoiceOptionFormV2 extends WHFormApplication
 {
     static DEFAULT_OPTIONS = {
         tag : "form",
         form: {
-            handler: this._updateObject,
+            handler: this.submit,
             submitOnChange: false,
             closeOnSubmit: true
         },
@@ -23,13 +22,16 @@ export class ChoiceOptionFormV2 extends HandlebarsApplicationMixin(ApplicationV2
     };
 
     static PARTS = {
-        details : {template : "modules/warhammer-lib/templates/apps/choice-option.hbs"}
+        details : {template : "modules/warhammer-lib/templates/apps/choice-option.hbs"},
+        footer : {
+            template : "templates/generic/form-footer.hbs"
+        }
     };
     
 
     constructor(data, options)
     {
-        super(options);
+        super({}, options);
         this.data = data;
         this.data.option = foundry.utils.deepClone(this.data.choices.options[this.data.index]);
     }
@@ -41,9 +43,9 @@ export class ChoiceOptionFormV2 extends HandlebarsApplicationMixin(ApplicationV2
         return data;
     }
 
-    static _updateObject(ev, formData)
+    static submit(ev, formData)
     {
-        let choices = foundry.utils.deepClone(this.data.choices);
+        let choices = this.data.choices.toJSON();
         if (this.data.option.type == "filter")
         {
             this.data.option.filters = this.data.option.filters.filter(i => i.operation || i.path || i.value);
