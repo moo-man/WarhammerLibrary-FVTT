@@ -63,6 +63,12 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         }
     }
 
+    close()
+    {
+        super.close();
+        this.options.resolve();
+    }
+
     /**
      * Submits the dialog, returning the input value
      * 
@@ -113,11 +119,12 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
      * @param {string} defaultValue Define a default value if desired
      * @param {Object|Array} values Define some preset options
      */
-    static async create({text, title}, defaultValue = "", values={})
+    static async create({text, title}, defaultValue = "", values={}, options={})
     {
         return new Promise(resolve => 
         {
-            new this({text, title}, defaultValue, values, {resolve}).render({force : true, window : {title : title || game.i18n.localize("WH.ValueDialog")}});
+            options.resolve = resolve;
+            new this({text, title}, defaultValue, values, options).render({force : true, window : {title : title || game.i18n.localize("WH.ValueDialog")}});
         });
     }
 }

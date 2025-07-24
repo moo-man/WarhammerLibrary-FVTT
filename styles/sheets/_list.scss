@@ -86,6 +86,11 @@
                     margin: 0px 5px;
                 }
 
+                input.label {
+                    margin: 0px;
+                    padding: 0px 5px;
+                }
+
 
                 flex: 2;
             }
@@ -192,18 +197,6 @@
             // &.collapsed {
             //     height: 0px;
             // }
-        }
-
-        .progress-bar {
-            margin: 4px 0px;
-            display: flex;
-            width: 100%;
-            border: 1px solid var(--color-warm-3);
-            height: 50%;
-            height: 1rem;
-            .fill {
-                background-color: var(--color-warm-3);
-            }
         }
     
     }

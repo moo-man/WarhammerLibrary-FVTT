@@ -27,6 +27,7 @@
     --attribute-input : var(--color-cool-4);
     --attribute-input-border : transparent;
     --attribute-border : var(--color-cool-3);
+    --attribute-title : var(--color-cool-3);
     --fieldset-border : var(--color-cool-3);
     --attribute-locked-input : transparent;
     --attribute-locked-border : transparent;
@@ -156,17 +157,47 @@
 
     .attribute-box {
 
-        box-sizing: content-box;
+        --rows: 2;
+        --columns: 12;
 
-        &.top-label {
+        --row-height: 1.5rem;
+        --title-height: 1.5rem;
+
+        &.single {
+            --rows: 1;
             .label {
-                border-bottom: 1px solid var(--attribute-border);
+                border-bottom: 0px;
             }
         }
+
+        &.titled {
+            --rows: 3;
+            grid-template-rows: repeat(--title-height repeat(var(--rows), 1fr));
+        }
+
+
+        
+        flex: 1;
+        border: 1px solid var(--attribute-border);
+        border-right: none;
+        height: calc(var(--rows) * var(--row-height));
+
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);
+
+        box-sizing: content-box;
+
+        .title {
+            background: var(--attribute-title);
+            height: var(--title-height);
+        }
+
 
         &.bottom-label {
             .label {
                 border-top: 1px solid var(--attribute-border);
+                border-bottom: none;
             }
         }
 
@@ -177,24 +208,32 @@
             margin-right: 0px;
         }
 
-        flex: 1;
-        border: 1px solid var(--attribute-border);
-        border-right: none;
-        height: 3rem;
-
-        display: grid;
-        grid-template-columns: repeat(12, 8.333%);
-        grid-template-rows: repeat(2, 50%);
-
-        &.single {
-            grid-template-rows: 100%;
-            height: 1.5rem;
-        }
-
         > div {
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .field {
+            border-right: 1px solid var(--attribute-border);
+            width: 100%;
+            background: var(--attribute-field);
+            
+            height: var(--row-height);
+            line-height: var(--row-height);
+        }
+
+        .label {
+            border-bottom: 1px solid var(--attribute-border);
+            border-right: 1px solid var(--attribute-border);
+            width: 100%;
+            background: var(--attribute-label);
+            white-space: nowrap;
+            height: var(--row-height);
+            line-height: var(--row-height);
+            i {
+                margin: 0px 3px;
+            }
         }
 
         select,
@@ -206,9 +245,12 @@
             background-color: var(--attribute-input);
             border : 1px solid var(--attribute-input-border);
             padding: 0px;
-            // Prevents input from hiding border
-            height: 1.5rem;
-            line-height: 1.5rem;
+            line-height: var(--row-height);
+        }
+
+        .progress-bar {
+            height: var(--row-height);
+            border: 0px;
         }
 
         input:disabled,
@@ -216,15 +258,6 @@
         {
             background-color: var(--attribute-locked-input);
             border : 1px solid var(--attribute-locked-border);
-        }
-
-        .field {
-            border-right: 1px solid var(--attribute-border);
-            width: 100%;
-            background: var(--attribute-field);
-            
-            height: 1.5rem;
-            line-height: 1.5rem;
         }
 
         .interact {
@@ -235,18 +268,33 @@
             display: flex;
             justify-content: space-evenly;
         }
+    }
 
-        .label {
-            border-right: 1px solid var(--attribute-border);
-            width: 100%;
-            background: var(--attribute-label);
-            white-space: nowrap;
-            height: 1.5rem;
-            line-height: 1.5rem;
-            i {
-                margin: 0px 3px;
-            }
+    .progress-bar {
+        --color: var(--color-warm-3);
+        --height: 1rem;
+        --radius: 0px
+        margin: 4px 0px;
+        display: flex;
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--color);
+        height: 50%;
+        height: --var(--height);
+        .fill {
+            background-color: var(--color);
         }
+    }
+
+    h2.sheet-divider {
+        text-align: center;
+        font-size: var(--font-size-18);
+        font-weight: bold;
+        margin: 0px 30%;
+        --color: var(--color-cool-3);
+        border-bottom: 2px solid transparent;
+        border-image: linear-gradient(36deg, rgba(255,255,255,0) 0%, var(--color) 50%, rgba(255,255,255,0) 100%);
+        border-image-slice: 1;
     }
 
     .choice-group {

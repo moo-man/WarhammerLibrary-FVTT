@@ -195,6 +195,11 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
             document.addEventListener("keypress", this.#onKeyPress);
         }
 
+        if (this.abort)
+        {
+            this.close();
+        }
+
     }
 
     async _onFirstRender(context, options)

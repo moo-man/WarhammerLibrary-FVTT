@@ -66,6 +66,7 @@ import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
 import DraggableApp from "./apps/draggable";
 import ContainerizedApp from "./apps/containerized";
 import { WHFormApplication } from "./apps/form-application";
+import DragDialog from "./apps/drag-dialog.js";
 hooks();
 overrides();
 
@@ -107,6 +108,7 @@ warhammer.apps = {
     WarhammerScript,
     ItemDialog,
     ValueDialog,
+    DragDialog,
     WarhammerScriptEditor,
     WarhammerDiffEditor,
     WarhammerBugReport,

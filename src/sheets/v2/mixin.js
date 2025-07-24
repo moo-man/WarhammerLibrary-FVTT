@@ -225,6 +225,24 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         {
             ev.target.classList.remove("hover");
         }));
+
+        this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach(e => e.addEventListener("dragenter", async ev => 
+        {
+            this.dragTab = true;
+            console.log("enter");
+            let {tab, group} = ev.currentTarget.dataset;
+            await warhammer.utility.sleep(500);
+            if (this.dragTab)
+            {
+                this.changeTab(tab, group);
+            }
+        }));
+
+        this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach(e => e.addEventListener("dragleave", ev => 
+        {
+            console.log("leave");
+            this.dragTab = false;
+        }));
     
         this.element.querySelectorAll("[data-action='listCreateValue']").forEach(element => 
         {

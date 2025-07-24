@@ -1,6 +1,7 @@
 <div>
     <label>{{localize "WH.DiffDescription"}}</label>
-    <p><strong>Original Document: </strong><a class="content-link" data-action="contentLink" data-uuid="{{document.uuid}}"><i class="fa-solid fa-suitcase"></i> {{document.name}}</a></p>
+
+    <p><strong>Original Document: </strong><a class="content-link {{#unless document}} broken{{/unless}}" data-action="contentLink" data-uuid="{{document.uuid}}"><i class="fa-solid fa-suitcase"></i> {{fallback document.name "Not Found"}}</a> <a data-action="dereference" data-tooltip="Fully defines the Item inside the diff, allowing for the deletion of the original Item."><i class="fa-solid fa-file-import"></i></a></p>
     <div class="diff-container">
         <code-mirror {{#if (not (isGM))}}disabled{{/if}} name="diff">{{content}}</code-mirror>
     </div>

@@ -110,6 +110,12 @@ export class DiffReferenceModel extends DeferredReferenceModel
     get document() 
     {
         this._document = null;
+
+        // If diff includes "dereferenced" at the top level, just assume all the data is there to construct the item as is
+        if (this.diff.dereferenced)
+        {
+            return new Item.implementation(this.diff);
+        }
         let document = super.document;
         if (document instanceof Promise)
         {
@@ -117,9 +123,16 @@ export class DiffReferenceModel extends DeferredReferenceModel
             {
                 document.then(doc => 
                 {
-                    let diffed = new doc.constructor(foundry.utils.mergeObject(doc.toObject(), this.diff));
-                    diffed.originalDocument = doc;
-                    resolve(diffed);
+                    if (doc)
+                    {
+                        let diffed = new doc.constructor(foundry.utils.mergeObject(doc.toObject(), this.diff));
+                        diffed.originalDocument = doc;
+                        resolve(diffed);
+                    }
+                    else 
+                    {
+                        resolve(this.diff);
+                    }
                 });
             });
         }
