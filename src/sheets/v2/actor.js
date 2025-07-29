@@ -156,7 +156,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         // Non-database effect
         if (!effect && ev.target.dataset.path)
         {
-            let item = fromUuidSync(ev.target.dataset.uuid.replace(".ActiveEffect.", ""));
+            let item = fromUuidSync(ev.target.dataset.uuid.slice(0, ev.target.dataset.uuid.indexOf(".ActiveEffect.")));
             if (item)
             {
                 effect = foundry.utils.getProperty(item, ev.target.dataset.path);

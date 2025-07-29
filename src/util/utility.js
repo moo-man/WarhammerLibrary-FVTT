@@ -314,7 +314,7 @@ export function addLinkSources(html)
     html.querySelectorAll(".content-link").forEach(element => 
     {
         let uuid = element.dataset.uuid;
-        let tooltip = element.dataset.tooltip || "";
+        let tooltip = element.dataset.tooltipText || "";
         if (uuid)
         {
             let moduleKey = uuid.split(".")[1];
@@ -322,7 +322,7 @@ export function addLinkSources(html)
             {
                 if (!tooltip)
                 {
-                    tooltip = `${systemConfig().premiumModules[moduleKey]}`;
+                    tooltip = `${foundry.utils.parseUuid(uuid).type} (${systemConfig().premiumModules[moduleKey]})`;
                 }
                 else 
                 {
@@ -331,7 +331,7 @@ export function addLinkSources(html)
             }
         }
 
-        element.dataset.tooltip = tooltip;
+        element.dataset.tooltipText = tooltip;
 
     });
 }
