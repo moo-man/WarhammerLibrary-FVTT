@@ -58,7 +58,6 @@ export default class ZoneHelpers
      * This function handles a token's zone effects, it is meant to be called when the token or any zone is updated.
      * When a token or zone is updated, it re-evaluates what zone effects the provided token should have given what
      * zone(s) it is in. 
-     * 
      * @param {TokenDocument} token 
      */
     static async checkTokenZoneEffects(token)
@@ -112,11 +111,9 @@ export default class ZoneHelpers
     /**
      * Given a token, update all regions on a scene to have the correct zone effects
      * i.e. removing or adding any followed effects based on token positions. 
-     * 
+     *
      * Note: This function might be doing too much, it goes through each region, regardless
      * of whether it was part of the token movement.
-     * 
-     * 
      * @param {TokenDocument} token 
      */
     static async _handleFollowedEffects(token)
@@ -400,6 +397,120 @@ export default class ZoneHelpers
         else 
         {
             SocketHandlers.executeOnOwner(region, "applyZoneEffect", {effectUuids, effectData, regionUuid : region.uuid, messageId});
+        }
+    }
+
+
+    static addZoneConversionButtons(app, data)
+    {
+        if (["drawings", "regions"].includes(data.controlChange) && game.user.isGM)
+        {
+            let button = document.createElement("li");
+            button.innerHTML = `<button class='control ui-control layer icon ${data.controlChange == "drawings" ? "fa-regular fa-game-board" : "fa-solid fa-pencil"}' data-tooltip="WH.ConvertDrawings"></button>`;
+            button.addEventListener("click", ev => 
+            {
+                let drawings = canvas.drawings.controlled.length ? canvas.drawings.controlled.map(i => i.document) : canvas.scene.drawings.contents;
+
+                if (drawings.length == 0)
+                {
+                    return ui.notifications.error("WH.Error.NoDrawingsToConvert", {localize: true});
+                }
+
+                foundry.applications.api.DialogV2.confirm({
+                    window: {title : "WH.ConvertDrawings"},
+                    content : `
+                    <p>Convert ${drawings.length} Drawings into Zones?
+                    <hr>
+                    <div class="form-group">
+                        <label>Keep Drawings?</label>
+                        <div class="form-fields">
+                            <input type="checkbox" checked name="keep">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Make Zones Visible?</label>
+                        <div class="form-fields">
+                            <input type="checkbox" name="show">
+                        </div>
+                    </div>
+                    `,
+                    yes : {
+                        callback: (event, button, dialog) => 
+                        {
+                            let keep = button.form.elements.keep.checked;
+                            let show = button.form.elements.show.checked;
+                            ZoneHelpers.drawingsToZones(drawings, {keepDrawings : keep, showZones : show});
+                        }
+                    }
+                });
+            });
+            document.querySelector(`#scene-controls [data-tool="snap"]`).parentElement.insertAdjacentElement("beforebegin", button);
+        }
+    }
+
+
+    static drawingsToZones(drawings, {keepDrawings, showZones}={})
+    {
+        let zones = [];
+        for(let drawing of drawings)
+        {
+            let converted = {
+                name : drawing.text || "Zone",
+                visibility : showZones ? 2 : 0
+            };
+
+            if (drawing.shape.type == "r")
+            {
+                converted.shapes = [{
+                    type : "rectangle",
+                    height : drawing.shape.height,
+                    width : drawing.shape.width,
+                    x : drawing.x,
+                    y : drawing.y
+                }];
+                zones.push(converted);
+            }
+
+            if (drawing.shape.type == "e")
+            {
+                converted.shapes = [{
+                    type : "ellipse",
+                    radiusX : drawing.shape.width / 2,
+                    radiusY : drawing.shape.height / 2,
+                    x : drawing.x + drawing.shape.width / 2,
+                    y : drawing.y + drawing.shape.height / 2
+                }];
+                zones.push(converted);
+            }
+
+            if (drawing.shape.type == "p")
+            {
+                converted.shapes = [{
+                    type : "polygon",
+                    points : drawing.shape.points.map((crd, index) => 
+                    {
+                        if (index % 2 == 0)
+                        {
+                            return crd + drawing.x;
+                        }
+                        else 
+                        {
+                            return crd + drawing.y;
+                        }
+                    }),
+                }];
+                zones.push(converted);
+            }
+            
+        }
+
+        canvas.scene.createEmbeddedDocuments("Region", zones).then(zones => 
+        {
+            ui.notifications.notify(`Created ${zones.length} Regions`);
+        });
+        if (!keepDrawings)
+        {
+            drawings.forEach(d => d.delete());
         }
     }
 }

@@ -129,6 +129,7 @@
         },
         "Configuration": "Configuration",
         "ConfigureZoneTT": "Configure Zone",
+        "ConvertDrawings" : "Convert Drawings to Zones",
         "DefendingAgainst": "Defending Against",
         "DefendingAgainstTT": "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
         "DeleteEffect": "Delete Effect",
@@ -160,7 +161,8 @@
             "NoActorAssigned": "No assigned Actor, you can assign Actors via Player Configuration at the bottom left of the screen.",
             "NoTargetedActors": "No targeted Actors!",
             "NoTargets": "No targeted Actors!",
-            "NotValidChoiceType": "Not a valid choice"
+            "NotValidChoiceType": "Not a valid choice",
+            "NoDrawingsToConvert" : "No Drawings to Convert!"
         },
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",

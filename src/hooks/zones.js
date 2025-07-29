@@ -11,4 +11,5 @@ export default function ()
     Hooks.on("createToken", ZoneHelpers.updateFollowedEffects.bind(ZoneHelpers));
     Hooks.on("deleteToken", ZoneHelpers.updateFollowedEffects.bind(ZoneHelpers));
 
+    Hooks.on("activateSceneControls", ZoneHelpers.addZoneConversionButtons.bind(ZoneHelpers));
 }
