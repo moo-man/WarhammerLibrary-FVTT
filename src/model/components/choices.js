@@ -392,6 +392,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
 
     _displayOptions(structure)
     {
+
+        if (!structure || structure.options.length == 1)
+        {
+            return this.options[0].name;
+        }
+
         if (structure.type == "option")
         {
             return this.options.find(i => i.id == structure.id).name;

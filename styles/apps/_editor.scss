@@ -33,8 +33,7 @@
         height: 92%;
     }
     .diff-container {
-        overflow: auto;
-        max-height: 80%;
+        height: calc(100% - 5rem);
     }
 }
 

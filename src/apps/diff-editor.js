@@ -23,7 +23,8 @@ export default class WarhammerDiffEditor extends HandlebarsApplicationMixin(Appl
             closeOnSubmit: true
         },
         actions : {
-            contentLink : this._onClickContentLink
+            contentLink : this._onClickContentLink,
+            dereference : this._onDereference
         }
     };
 
@@ -95,5 +96,12 @@ export default class WarhammerDiffEditor extends HandlebarsApplicationMixin(Appl
     {
         let document = await foundry.utils.fromUuid(target.dataset.uuid);
         document?.sheet.render(true, {editable : false});
+    }
+
+    static async _onDereference(ev, target)
+    {
+        let document = this.options.document;
+        this.generatedDiff = {name : document.name, flags : document.flags, effects : document.effects.contents.map(i => i.toObject()), img : document.img, type : document.type, dereferenced : true, system : document.system.toJSON()};
+        this.render(true);
     }
 }
