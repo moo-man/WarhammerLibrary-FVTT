@@ -393,7 +393,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
     _displayOptions(structure)
     {
 
-        if (!structure || structure.options.length == 1)
+        if (!structure)
         {
             return this.options[0].name;
         }
