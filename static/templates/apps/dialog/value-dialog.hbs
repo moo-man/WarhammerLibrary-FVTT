@@ -5,7 +5,7 @@
       {{#if values}}
         <select name="value">
           <option value=""></option>
-          {{selectOptions values nameAttr="key" labelAttr="display" selected=defaultValue}}
+          {{selectOptions values valueAttr="key" labelAttr="display" selected=defaultValue}}
         </select>
       {{else}}
         <input name="value" type="text" value="{{defaultValue}}" autofocus=true>

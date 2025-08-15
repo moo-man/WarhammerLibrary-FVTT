@@ -100,7 +100,7 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
 
             context.values = Object.keys(this.values).map(v => 
             {
-                return {key : v, display : this.values[v] == "string" ? this.values[v] : v};
+                return {key : v, display : typeof this.values[v] == "string" ? this.values[v] : v};
             });
         }
 
