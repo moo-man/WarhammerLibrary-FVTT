@@ -1,5 +1,5 @@
 import TokenHelpers from "./token-helpers";
-import { sleep } from "./utility";
+import { log, sleep } from "./utility";
 
 export default class AreaHelpers 
 {
@@ -88,14 +88,22 @@ export default class AreaHelpers
             {
                 this.semaphore.add(this.checkTokenAreaEffects.bind(this), token);
             }
-            
-            if (template.getFlag(game.system.id, "instantaneous"))
+
+
+            // Wait for semaphore to finish before removing effect data from the template
+            // Not really ideal but I don't know of a way to await the semaphore
+            let poll = setInterval(((semaphore) => 
             {
-                sleep(500).then(() => 
+                log("Checking semaphore...");    
+                if (!semaphore.remaining)
                 {
+                    log("Semaphore finished");    
                     template.setFlag(game.system.id, "effectData", null);
-                });
-            }
+                    clearInterval(poll);
+                }
+            }), 500, this.semaphore);
+
+            
         }
 
     }
