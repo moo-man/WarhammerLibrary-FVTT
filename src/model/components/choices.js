@@ -70,6 +70,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
         let option;
         if (data.documentName == "Item")        
         {
+            let restrictions = this.schema.options.restrictType;
+            if (restrictions?.length > 0 && !restrictions.includes(data.type))
+            {
+                ui.notifications.error("WH.Error.WrongChoiceOptionType", {localize : true, format : {types : restrictions.join(", ")}});
+                throw new Error(game.i18n.format("WH.Error.WrongChoiceOptionType", {types : restrictions.join(", ")}));
+            }
             option = this._createDocumentOption(data);
         }
         else if (data.documentName == "ActiveEffect")
@@ -188,7 +194,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
         }
         else if (option.type == "placeholder")
         {
-            return foundry.utils.mergeObject({name : option.name}, systemConfig().placeholderItemData);
+            let data = foundry.utils.mergeObject({name : option.name}, systemConfig().placeholderItemData);
+            if (this.schema.options.restrictType?.length)
+            {
+                data.type = this.schema.options.restrictType[0];
+            }
+            return data;
         }
         else if (["id", "uuid"].includes(option.idType))
         {
@@ -390,7 +401,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
         return this._displayOptions(this.structure);
     }
 
-    _displayOptions(structure)
+    get textDisplayWithLinks() 
+    {
+        return this._displayOptions(this.structure, {links : true});
+    }
+
+    _displayOptions(structure, displayOptions={})
     {
 
         if (!structure)
@@ -400,7 +416,15 @@ export class ChoiceModel extends foundry.abstract.DataModel
 
         if (structure.type == "option")
         {
-            return this.options.find(i => i.id == structure.id).name;
+            let option = this.options.find(i => i.id == structure.id);
+            if (displayOptions.links && option.idType == "uuid")
+            {
+                return `@UUID[${option.documentId}]{${option.name}}`;
+            }
+            else 
+            {
+                return option.name;
+            }
         }
         else if (structure.type == "and" || structure.type == "or")
         {

@@ -162,7 +162,8 @@
             "NoTargetedActors": "No targeted Actors!",
             "NoTargets": "No targeted Actors!",
             "NotValidChoiceType": "Not a valid choice",
-            "NoDrawingsToConvert" : "No Drawings to Convert!"
+            "NoDrawingsToConvert" : "No Drawings to Convert!",
+            "WrongChoiceOptionType" : "This type of Item isn't allowed. Allowed Types: {types}"
         },
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",

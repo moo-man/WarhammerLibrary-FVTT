@@ -8,9 +8,10 @@ export class WarhammerRollTable extends RollTable
         let separator = config.separator || "";
         console.log(config, options);
 
-        return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<table class="${game.system.id} embedded">
+        return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<div class="table-container">${config.description == "top" ? this.description : ""}<table class="${game.system.id} embedded">
         <thead>
         <tr class="title"><td colspan="2">@UUID[${this.uuid}]{${this.name}}</td></tr>
+        <tr class="description"><td colspan="2">
         <tr class="subheader">
             <td class="formula">${this.formula}</td>
             <td class="label">${config.label}</td>
@@ -41,6 +42,6 @@ export class WarhammerRollTable extends RollTable
     }).join("")}
 
         </tbody>
-    </table>`, options))[0];
+    </table>${config.description == "bottom" ? this.description : ""}</div>`, options))[0];
     }
 }

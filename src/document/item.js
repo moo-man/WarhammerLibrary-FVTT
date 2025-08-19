@@ -389,4 +389,24 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
         return new SelectChoices(choices);
     }
+
+    /**
+     * 
+     * @inheritdoc
+     * @param {object} config Configuration for embedding behavior, changes for each system/type
+     */
+    async toEmbed(config, options={})
+    {
+        if (this.system.toEmbed)
+        {
+            let embed = await this.system.toEmbed(config, options);
+            embed.classList.add(`${game.system.id}-embed`, this.type);
+            return embed;
+        }
+        else 
+        {
+            return super.toEmbed(config, options);
+        }
+    }
+
 }

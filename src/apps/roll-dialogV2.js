@@ -125,6 +125,13 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
         dialogData.data.speaker.alias = actor.prototypeToken.name;
         dialogData.data.targets = (context.skipTargets) ? [] : context.targets || Array.from(game.user.targets).filter(t => t.document.id != dialogData.data.speaker.token); // Remove self from targets
         delete context.targets;
+
+        // Used by scripts to store data and then pass onto the test
+        if (!context.flags)
+        {
+            context.flags = {};
+        }
+        
         if (actor && !actor?.token)
         {
             // getSpeaker retrieves tokens even if this sheet isn't a token's sheet
