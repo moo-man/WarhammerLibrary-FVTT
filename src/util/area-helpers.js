@@ -90,19 +90,22 @@ export default class AreaHelpers
             }
 
 
-            // Wait for semaphore to finish before removing effect data from the template
-            // Not really ideal but I don't know of a way to await the semaphore
-            let poll = setInterval(((semaphore) => 
+            if (template.getFlag(game.system.id, "instantaneous"))
             {
-                log("Checking semaphore...");    
-                if (!semaphore.remaining)
+                // Wait for semaphore to finish before removing effect data from the template
+                // Not really ideal but I don't know of a way to await the semaphore
+                let poll = setInterval(((semaphore) => 
                 {
-                    log("Semaphore finished");    
-                    template.setFlag(game.system.id, "effectData", null);
-                    clearInterval(poll);
-                }
-            }), 500, this.semaphore);
+                    log("Checking semaphore...");    
+                    if (!semaphore.remaining)
+                    {
+                        log("Semaphore finished");    
+                        template.setFlag(game.system.id, "effectData", null);
+                        clearInterval(poll);
+                    }
+                }), 500, this.semaphore);
 
+            }
             
         }
 
