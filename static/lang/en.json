@@ -196,6 +196,7 @@
                 "Initialize": "Initialize Content",
                 "Update": "Update Content"
             },
+            "DialogContent" : "<p class='centered'><strong>{title}</strong></p><p>{description}",
             "DeleteModuleContent": "Delete {module} Content",
             "DeleteModuleContentDesc": "<p>This process deletes all Documents from <strong>{module}</strong> that have were imported from Initialization.</p><p>Please note the following:</p><ul><li>Documents manually imported from the Compendium will not be deleted.</li><li>Any Document that is Owned by a Player will not be deleted.</li></ul><p>Remember that this process only deletes imported Documents. You can reimport anything deleted from the Compendium.</p>",
             "HelpText": "<p>Need Help? Check <a href=https://moo-man.github.io/WFRP4e-FoundryVTT/pages/premium.html#initializiation>the Wiki</a></p>",
@@ -318,6 +319,8 @@
             "TestIndependentHint": "If checked, this Effect can be called directly from the owning Actor's sheet, instead of from chat",
             "TransferType": "Transfer Type",
             "TransferTypeHint": "Configure how the Active Effect is transferred or applied.",
+            "TransferredFollow" : "Transfer Follow",
+            "TransferredFollowHint" : "Apply this Followed Effect to a target (or self), instead of contsantly to self",
             "TransferredAura": "Transferred Aura",
             "TransferredAuraHint": "Apply this Aura to a target (or self) instead of constantly to self",
             "ZoneType": "Zone Type",

@@ -5,6 +5,8 @@
     --attribute-input-border : transparent;
     --attribute-border : var(--color-dark-6);
     --fieldset-border : var(--color-dark-6);
+    --attribute-title : var(--color-dark-3);
+    --attribute-title-color : white;
     --attribute-locked-input : rgba(0, 0, 0, 0.1);
     --attribute-locked-border : transparent;
     --attribute-label : rgba(0, 0, 0, 0.1);;
@@ -28,6 +30,7 @@
     --attribute-input-border : transparent;
     --attribute-border : var(--color-cool-3);
     --attribute-title : var(--color-cool-3);
+    --attribute-title-color : white;
     --fieldset-border : var(--color-cool-3);
     --attribute-locked-input : transparent;
     --attribute-locked-border : transparent;
@@ -172,7 +175,9 @@
 
         &.titled {
             --rows: 3;
-            grid-template-rows: repeat(--title-height repeat(var(--rows), 1fr));
+            grid-template-rows: repeat(var(--title-height) repeat(var(--rows), 1fr));
+
+            height: calc((var(--rows) - 1) * var(--row-height) + var(--title-height));
         }
 
 
@@ -189,6 +194,7 @@
         box-sizing: content-box;
 
         .title {
+            color: var(--attribute-title-color);
             background: var(--attribute-title);
             height: var(--title-height);
         }

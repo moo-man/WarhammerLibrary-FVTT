@@ -22,9 +22,13 @@ export class DocumentReferenceModel extends foundry.abstract.DataModel
             {
                 this._document = foundry.utils.fromUuid(this.uuid);
             }
-            else 
+            else if (this.uuid)
             {
                 this._document = foundry.utils.fromUuidSync(this.uuid);
+            }
+            else if (this.id)
+            {
+                this._document = warhammer.utility.findItemId(this.id);
             }
 
         }

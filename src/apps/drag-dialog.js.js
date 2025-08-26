@@ -99,6 +99,25 @@ export default class DragDialog extends DraggableApp(HandlebarsApplicationMixin(
             return ui.notifications.error(this.onError);
         }
     }
+    
+    async _onDropActor(data, ev)
+    {
+        let actor = await Actor.implementation.fromDropData(data);
+        if (!this.filter)
+        {
+            this.document = actor;
+            this.render({force : true});
+        }
+        else if (this.filter && this.filter(actor)) 
+        {
+            this.document = actor;
+            this.render({force : true});
+        }
+        else if (this.onError)
+        {
+            return ui.notifications.error(this.onError);
+        }
+    }
 
     static async create({text, title, filter, onError}={}, options={})
     {

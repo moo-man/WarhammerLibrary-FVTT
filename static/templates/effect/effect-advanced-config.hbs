@@ -81,9 +81,8 @@
         </fieldset>
     {{/unless}}
 
-    {{#if ../configuration.zone}}
+    {{#if configuration.zone}}
         <fieldset>
-
             <legend>{{localize "WH.TransferType.Zone"}}</legend>
             {{#if (eq system.transferData.type "zone")}}
                 <div class="form-group">

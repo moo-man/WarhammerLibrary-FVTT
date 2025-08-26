@@ -62,7 +62,7 @@ export class WarhammerModuleInitializationV2 extends HandlebarsApplicationMixin(
     {
         let key = target.closest("[data-module]").dataset.module;
         let module = game.modules.get(key);
-        let dialogContent = format("WH.Updater.DialogContent", {title : module.title, description : module.description});
+        let dialogContent = format("WH.Initializer.DialogContent", {title : module.title, description : module.description});
         dialogContent += `
         <ul>
         ${module.flags.initializationPacks.map(p => 

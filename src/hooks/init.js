@@ -155,6 +155,11 @@ export default function ()
             return args.hash;
         });
 
+        Handlebars.registerHelper("concat", function (...strings) 
+        {
+            return strings.filter(i => typeof i == "string").join("");
+        });
+
 
         game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
             name: "WH.Initializer.SettingName",

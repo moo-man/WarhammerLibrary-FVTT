@@ -269,7 +269,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         let actor = this.actor;
 
         // If no owning actor, no test can be done
-        if (!actor)
+        if (!actor || this.parent.documentName == "Item")
         {
             return false;
         }
@@ -411,6 +411,36 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         effect.statuses = effect.statuses.length ? effect.statuses : [effect.name.slugify()];
 
         return effect;
+    }
+
+    // helper function for scripts to check zone actors
+    // If no zone  is provided, just use the actor's zones
+    actorsInZone(regions)
+    {
+        if (!regions)
+        {
+            regions = Array.from(this.actor?.getActiveTokens()[0]?.document.regions || []);
+        }
+        if (!(regions instanceof Array))
+        {
+            regions = [];
+        }
+
+        let actors = new Set();
+
+        for(let region of regions)
+        {
+            let tokens = Array.from(region.tokens);
+            for(let t of tokens)
+            {
+                if (t.actor)
+                {
+                    actors.add(t.actor);
+                }
+            }
+        }
+
+        return Array.from(actors).filter(a => a.uuid != this.actor?.uuid);
     }
 
     get show()
