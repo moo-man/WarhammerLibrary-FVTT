@@ -57,11 +57,10 @@ export class WarhammerActorSheet extends WarhammerSheetMixin(foundry.appv1.sheet
             return;
         }
         game.canvas.tokens.setTargets([]);
-    
-        for (let target of targets) 
-        {
-            await target.applyEffect({effectData});
-        }
+
+        await Promise.all(
+            targets.map(target => target.applyEffect(effectData))
+        );
     }
     
     async _onPlaceAreaEffect(ev) 

@@ -71,10 +71,10 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
         game.canvas.tokens.setTargets([]);
                     
         applyData.messageId = messageId;
-        for(let target of targets)
-        {
-            await target.applyEffect(applyData);
-        }
+
+        await Promise.all(
+            targets.map(target => target.applyEffect(applyData))
+        );
     }
 
     static async onPlaceAreaEffect(ev, target) 

@@ -240,10 +240,9 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         game.canvas.tokens.setTargets([]);
     
-        for (let target of targets) 
-        {
-            await target.applyEffect({effectData});
-        }
+        await Promise.all(
+            targets.map(target => target.applyEffect(effectData))
+        );
     }
     
     async _onPlaceAreaEffect(effect) 

@@ -396,7 +396,7 @@ export default class ZoneHelpers
         }
         else 
         {
-            SocketHandlers.executeOnOwner(region, "applyZoneEffect", {effectUuids, effectData, regionUuid : region.uuid, messageId});
+            SocketHandlers.call("applyZoneEffect", {effectUuids, effectData, regionUuid : region.uuid, messageId}, "GM");
         }
     }
 

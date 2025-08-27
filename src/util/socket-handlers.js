@@ -9,59 +9,90 @@ export class SocketHandlers
     static register(handlers)
     {
         Object.assign(this, handlers);
-        game.socket.on(`system.${game.system.id}`, data => 
+        CONFIG.queries[`${game.system.id}.updateActor`] = (queryData, {timeout}) => { return this.updateActor(queryData); };
+        CONFIG.queries[`${game.system.id}.updateMessage`] = (queryData, {timeout}) => { return this.updateMessage(queryData); };
+        CONFIG.queries[`${game.system.id}.updateDrawing`] = (queryData, {timeout}) => { return this.updateDrawing(queryData); };
+        CONFIG.queries[`${game.system.id}.applyEffect`] = (queryData, {timeout, userId}) => { return this.applyEffect(queryData, userId); };
+        CONFIG.queries[`${game.system.id}.applyZoneEffect`] = (queryData, {timeout, userId}) => { return this.applyZoneEffect(queryData, userId); };
+        CONFIG.queries[`${game.system.id}.createActor`] = (queryData, {timeout}) => { return this.createActor(queryData); };
+    }
+
+    static async call(type, payload, userId)
+    {
+        let result = [];
+        let users = [];
+        if (userId == "GM")
         {
-            this[data.type]({...data.payload}, data.userId);
-        });
+            users.push(game.users.activeGM);
+        }
+        else if (userId == "ALL")
+        {
+            users = game.users.filter(u => u.active);
+        }
+        else if (userId)
+        {
+            const user = game.users.get(userId);
+            users.push(user);
+        }
+        for (const user of users)
+        {
+            if (user.id == game.user.id)
+            {
+                result.push(this[type]({ ...payload }) ?? 0);
+            }
+            else
+            {
+                result.push(user.query(`${game.system.id}.${type}`, payload) ?? 0);
+            }
+        }
+        return await Promise.all(result);
     }
 
-    static call(type, payload, userId)
+    static async updateActor({speaker, update}={})
     {
-        game.socket.emit(`system.${game.system.id}`, {type, payload, userId});
-    }
-
-    static updateActor({speaker, update}={})
-    {
+        let result = null;
         if (game.user.isGM)
         {
-            return CONFIG.ChatMessage.documentClass.getSpeakerActor(speaker)?.update(update);
+            result = await CONFIG.ChatMessage.documentClass.getSpeakerActor(speaker)?.update(update);
         }
+        return result;
     }
 
-    static updateMessage({id, data}={})
+    static async updateMessage({id, data}={})
     {
+        let result = null;
         if (game.user.isGM)
         {
-            return game.messages.get(id)?.update(data);
+            result = await game.messages.get(id)?.update(data);
         }
+        return result;
     }
 
-    static updateDrawing({uuid, data}={})
+    static async updateDrawing({uuid, data}={})
     {
+        let result = null;
         if (game.user.isGM)
         {
-            return fromUuidSync(uuid).update(data);
+            result = await fromUuidSync(uuid).update(data);
         }
+        return result;
     }
 
-    static applyEffect({effectUuids, effectData, actorUuid, messageId}, userId)
+    static async applyEffect({effectUuids, effectData, actorUuid, messageId})
     {
-        if (game.user.id == userId)
-        {
-            return fromUuidSync(actorUuid)?.applyEffect({effectUuids, effectData, messageId});
-        }  
+        const result = await fromUuidSync(actorUuid)?.applyEffect({effectUuids, effectData, messageId});
+        return result;
     }
 
-    static applyZoneEffect({effectUuids, effectData, regionUuid, messageId}, userId)
+    static async applyZoneEffect({effectUuids, effectData, regionUuid, messageId})
     {
-        if (game.user.id == userId)
-        {
-            return ZoneHelpers.applyEffectToZone({effectUuids, effectData}, fromUuidSync(regionUuid), messageId);
-        }  
+        const result = await ZoneHelpers.applyEffectToZone({effectUuids, effectData}, fromUuidSync(regionUuid), messageId);
+        return result;
     }
 
-    static createActor(data) 
+    static async createActor(data) 
     {
+        let result = null;
         if (game.user.id == game.users.activeGM?.id)
         {
             let id = data.fromId;
@@ -71,10 +102,10 @@ export class SocketHandlers
                 default: 0,
                 [id]: 3
             };
-            return Actor.implementation.create(actorData, {keepId : true});
+            result = await Actor.implementation.create(actorData, {keepId : true});
         }
+        return result;
     }
-
 
     /**
      * Not used by sockets directly, but is called when a socket handler should be executed by
@@ -85,15 +116,14 @@ export class SocketHandlers
      * @param {object} payload Data for socket handler, should generally include document UUID 
      * @returns {any} If owner, returns socket operation performed
      */
-    static executeOnOwner(document, type, payload)
+    static async executeOnOwner(document, type, payload)
     {
         let ownerUser = getActiveDocumentOwner(document);
         if (game.user.id == ownerUser.id)
         {
-            return this[type](payload);
+            return await this[type](payload);
         }
-        // ui.notifications.notify(game.i18n.format("WH.SendingSocketRequest", {name : ownerUser.name}));
-        this.call(type, payload, ownerUser.id);
+        return await this.call(type, payload, ownerUser.id);
     }
 
 }
