@@ -1,6 +1,6 @@
 import ItemDialog from "../apps/item-dialog";
 import { SocketHandlers } from "./socket-handlers";
-import { getActiveDocumentOwner, sleep, systemConfig } from "./utility";
+import { getActiveDocumentOwner, localize, sleep, systemConfig } from "./utility";
 const {getProperty} = foundry.utils;
 
 const {setProperty, deepClone} = foundry.utils;
@@ -422,13 +422,13 @@ export default class ZoneHelpers
                     <p>Convert ${drawings.length} Drawings into Zones?
                     <hr>
                     <div class="form-group">
-                        <label>Keep Drawings?</label>
+                        <label> ${localize("WH.KeepDrawings")}</label>
                         <div class="form-fields">
                             <input type="checkbox" checked name="keep">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Make Zones Visible?</label>
+                        <label> ${localize("WH.MakeZonesVisible")}</label>
                         <div class="form-fields">
                             <input type="checkbox" name="show">
                         </div>
