@@ -78,7 +78,10 @@
 
 .application.dialog.initialization {
 
+  .dialog-form {
+    overflow: auto;
+  }
+
   .hint {
-    margin-bottom: 0.5rem;
   }
 }
