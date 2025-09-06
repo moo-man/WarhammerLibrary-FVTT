@@ -3,7 +3,8 @@ export default function()
 
     Hooks.on("ready", async (app, html) => 
     {
-
+        // Register Socket Handlers
+        SocketHandlers.register();
         if (game.mErr)
         {
             warhammer.utility.error("Failed to load compendium data", true);
