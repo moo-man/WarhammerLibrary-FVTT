@@ -25,26 +25,45 @@
             "Wiki": "WIKI"
         },
         "BugReporter": {
-            "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
-            "APIReached": "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website.",
-            "BugReportFormError": "Please fill out the form",
-            "BugReportNameError": "Please include your Discord tag or email in the Name section.",
-            "Contact": "Contact Info",
-            "ContactPlaceholder": "Discord Tag or Email.",
-            "DescriptionPlaceholder": "What happened, how to reproduce, etc.",
-            "GeneralBugReportError": "Something went wrong",
+
+            "Title" : "Submit an Issue",
+            "Report": "Report",
+            "SubmittedIssues": "Submitted Issues",
+            "APILimitReached" : "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website.",
             "LoadingIssues": "Loading Issues",
-            "ManyModules": "You have non-Warhammer modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
-            "MatchingIssues": "Has your issue already been posted?",
+
+            "Form" : {
+                "Title" : "Report Title",
+                "Module" : "Module",
+                "Type" : "Type",
+                "Contact" : "Contact",
+                "Description" : "Description",
+                "PAT" : "PAT",
+
+                "MatchingIssues": "Has your issue already been posted?"
+
+            },
+            "Error" : {
+                "Incomplete" : "Please complete with form with a title, type, the relevant module, type, and description",
+
+                "Generic": "Something went wrong",
+                "Report": "Error sending bug report. Please see console for details.",
+
+                "APIReached": "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website."
+
+            },
+
+            "Warning" : {
+                "Email": "<b>Be aware</b>: Your email will be publicly posted on this system's GitHub issues page. If you do not desire this, use your Discord tag or contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
+                "NeedHelp": "Do not use the reporter if you need immediate assistance or want to ask general questions. Please see <a href='{url}'>Troubleshooting</a>",
+                "PAT": "The PAT is considered sensitive information and is saved in this world's settings for future reports. This can be found by other users in this world if they know where to look."
+            },
+            "Closed": "Closed",
             "NeedsAttention": "NEEDS ATTENTION",
-            "NotUpdated": "<p>The Following Warhammer packages are not up to date</p>",
-            "PostError": "Error sending bug report. Please see console for details.",
-            "PostSuccess": "Bug report submitted! See the console for a link.",
-            "Resolved": "RESOLVED",
-            "Title": "Bug Reporter",
-            "Troubleshooting": "Before submitting a report, please consult the <a href='{url}'>Troubleshooting</a> page.",
-            "Updated": "<p>All Warhammer packages up to date!</p>",
-            "Warning": "<b>Be aware</b>: This information is posted on the GitHub issues page, which is public, so Discord tag is preferred. Otherwise, contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly."
+            "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
+
+            "ReportSuccess": "Issue submitted! See the console for a link."
+
         },
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "Chat": {

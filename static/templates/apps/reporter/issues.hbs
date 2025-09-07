@@ -1,0 +1,20 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="{{tab.id}}">
+    {{#each record.open}}
+        <div class="issue-details">
+            <div class="issue-title">
+                <a href="{{this.html_url}}">{{this.title}}</a>
+            </div>
+            {{#if this.alert}}
+                <strong class="status" data-tooltip="{{localize 'WH.BugReporter.AlertHint'}}"><a class="alert">{{localize "WH.BugReporter.NeedsAttention"}}</a></strong>
+            {{/if}}
+        </div>
+    {{/each}}
+    {{#each record.closed}}
+        <div class="issue-details closed">
+            <div class="issue-title">
+                <a href="{{this.html_url}}">{{this.title}}</a>
+            </div>
+            <strong class="status">{{localize "WH.BugReporter.Closed"}}</strong>
+        </div>
+    {{/each}}
+</section>

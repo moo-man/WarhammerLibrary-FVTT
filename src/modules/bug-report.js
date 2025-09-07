@@ -1,103 +1,219 @@
-import { localize, log, systemConfig } from "../util/utility";
-const {isNewerVersion} = foundry.utils;
 
-export default class WarhammerBugReport extends Application 
+import {error, log, systemConfig} from "../util/utility";
+const { ApplicationV2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
+
+
+export default class WarhammerBugReporter extends HandlebarsApplicationMixin(ApplicationV2)
 {
-
-    
     static issues = []; // Keep issues in static to avoid API limit
     static apiLimitReached = false;
+
+    static DEFAULT_OPTIONS = {
+        tag: "form",
+        classes: ["bug-report", "warhammer"],
+        window: {
+            resizable: true,
+            title: "WH.BugReporter.Title",
+            contentClasses: ["standard-form"]
+        },
+        position: {
+            height: 700,
+            width:  550
+        },
+        actions: {
+
+        },
+        defaultTab: "report",
+        form: {
+            handler: this.submit,
+            closeOnSubmit : true,
+            submitOnChange: false
+        }
+    };
 
     constructor(app) 
     {
         super(app);
 
-        this.endpoint = systemConfig().bugReporterConfig.endpoint;
-        this.github = systemConfig().bugReporterConfig.githubURL;
-        this.troubleshootingURL = systemConfig().bugReporterConfig.troubleshootingURL;
-
+        this.endpoint = "https://v3amewbngjjguio5j4nng5hcyq0fjona.lambda-url.us-east-2.on.aws/";
+        this.github = systemConfig().bugReporterConfig.repoEndpoint;
+        this._notifications = {};
+        this.settings = game.settings.get("warhammer-lib", "bugReporter");
         this.loadingIssues = this.loadIssues();
-        this.latest = this.checkVersions();
     }
 
-    static get defaultOptions() 
+    static #schema = new foundry.data.fields.SchemaField({
+        issues : new foundry.data.fields.ArrayField(new foundry.data.fields.NumberField()),
+        contact : new foundry.data.fields.StringField(),
+        PAT : new foundry.data.fields.StringField()
+    });
+
+    static get schema() 
     {
-        const options = super.defaultOptions;
-        options.id = "bug-report";
-        options.template = "modules/warhammer-lib/templates/modules/bug-report.hbs";
-        options.classes.push(game.system.id, "bug-report");
-        options.resizable = true;
-        options.width = 600;
-        options.minimizable = true;
-        options.title = localize("WH.BugReporter.Title");
-        options.tabs = [{ navSelector: ".tabs", contentSelector: ".content", initial: "submit" }];
-        return options;
+        return this.#schema;
     }
 
-
-    async _render(...args)
+    keyToLabel(key) 
     {
-        await super._render(...args);
-        this.latest = await this.latest;
-        this.element.find(".module-check").replaceWith(this.formatVersionWarnings());
-    }
-
-    async getData() 
-    {
-        let data = await super.getData();
-        await this.loadingIssues;
-        data.domains = systemConfig().premiumModules;
-        data.name = game.settings.get(game.system.id, "bugReportName");
-        data.record = await this.buildRecord();
-        data.troubleshootingURL = this.troubleshootingURL;
-        if (this.constructor.apiLimitReached)
+        if (key.includes("-")) 
         {
-            ui.notifications.error("WH.BugReporter.APIReached", {permanent : true, localize: true});
-        }
-        return data;
-    }
-
-    formatVersionWarnings() 
-    {
-
-        if (!this.latest || this.latest instanceof Promise)
-        {
-            return "<div></div>";
-        }
-
-
-        let allUpdated = true;
-        let outdatedList = "";
-
-        for (let key in this.latest) 
-        {
-            if (!this.latest[key]) 
-            {
-                allUpdated = false;
-                outdatedList += `<li>${systemConfig().premiumModules[key]}</li>`;
-            }
-        }
-
-        let element = `<div class='notification ${allUpdated ? "stable" : "warning"}'>`;
-
-        if (allUpdated) 
-        {
-            element += localize("WH.BugReporter.Updated");
+            return key.slice(key.indexOf("-") + 1);
         }
         else 
         {
-            element += localize("WH.BugReporter.NotUpdated");
-            element += "<ul>";
-            element += outdatedList;
-            element += "</ul>";
+            return "";
         }
-
-        element += "</div>";
-
-        return element;
     }
 
-    submit(data) 
+    static PARTS = {
+        tabs: { template: "modules/warhammer-lib/templates/partials/sheet-tabs.hbs" },
+        report: { template: "modules/warhammer-lib/templates/apps/reporter/report.hbs"},
+        issues: { template: "modules/warhammer-lib/templates/apps/reporter/issues.hbs" }
+    };
+
+    static TABS = {
+        report: {
+            id: "report",
+            group: "primary",
+            label: "WH.BugReporter.Report",
+        },
+        issues: {
+            id: "issues",
+            group: "primary",
+            label: "WH.BugReporter.SubmittedIssues",
+        }
+    };
+
+    static addBugReporterButton(html)
+    {
+        let sidebarInfo = html.querySelector(".sidebar-info");
+        if (sidebarInfo && systemConfig().bugReporterConfig?.repoEndpoint)
+        {
+            let button = document.createElement("button");
+            button.textContent = "Submit Issue";
+            button.addEventListener("click", ev => 
+            {
+                new this().render({force: true});
+            });
+            sidebarInfo.append(button);
+        }
+    }
+
+    async _onRender(options) 
+    {
+        await super._onRender(options);
+        this.getLatestVersions().then(latest => 
+        {
+            this.restrictOptions(latest);
+        });
+
+        if (this._addRecordAlert)
+        {
+            this.element.querySelector("a[data-tab='issues']").innerHTML += `<i style="color: gold" class="fa-solid fa-circle-exclamation"></i>`;
+        }
+        this.addListeners();
+    }
+
+    // Disable any module choices if that module is out of date
+    restrictOptions(isLatest)
+    {
+        let select = this.element.querySelector("[name='module']");
+        for(let module in isLatest)
+        {
+            if(!isLatest[module])
+            {
+                let option = select.querySelector(`option[value='${module}']`);
+                if (option)
+                {
+                    option.disabled = true;
+                }
+            }
+        }
+
+        // Add notification if any module is out of date
+        if (Object.values(isLatest).some(i => !i))
+        {
+            this.addNotification("Some options are disabled because they are out of date!", select.parentElement, {classes : "warning hint", position: "afterend", key: "modules"});
+        }
+    }
+
+    addNotification(text, element, {classes="", position="beforebegin", key}={})
+    {
+
+        let p = document.createElement("p");
+        p.classList.add("notification", ...classes.split(" "));
+        p.innerHTML = text;
+        if (key && this._notifications[key])
+        {
+            this._notifications[key].replaceWith(p);
+        }
+        else 
+        {
+            element.insertAdjacentElement(position, p);
+        }
+
+        if (key)
+        {
+            this._notifications[key] = p;
+        }
+
+    }
+
+    async _prepareContext(options) 
+    {
+        let context = await super._prepareContext(options);
+        await this.loadingIssues;
+        context.tabs = this._prepareTabs();
+        context.modules = systemConfig().premiumModules;
+        context.settings = this.settings;
+        context.record = await this.buildRecord();
+        if (context.record.alert)
+        {
+            this._addRecordAlert = true;
+        }
+        if (this.constructor.apiLimitReached) 
+        {
+            ui.notifications.error("WH.BugReporter.APILimitReached", { permanent: true, localize: true });
+        }
+        return context;
+    }
+    
+    
+    async _preparePartContext(partId, context) 
+    {
+        context.partId = `${this.id}-${partId}`;
+        context.tab = context.tabs[partId];
+
+        let fn = this[`_prepare${partId.capitalize()}Context`]?.bind(this);
+        if (typeof fn == "function")
+        {
+            fn(context);
+        }
+
+        return context;
+    }
+    
+    _prepareTabs()
+    {
+        let tabs = foundry.utils.deepClone(this.constructor.TABS);
+
+        for (let t in tabs) 
+        {
+            tabs[t].active = this.tabGroups[tabs[t].group] === tabs[t].id,
+            tabs[t].cssClass = tabs[t].active ? "active" : "";
+        }
+
+        if (!Object.values(tabs).some(t => t.active)) 
+        {
+            tabs.report.active = true;
+            tabs.report.cssClass = "active";
+        }
+
+        return tabs;
+    }
+
+    sendIssue(data) 
     {
         fetch(this.endpoint, {
             method: "POST",
@@ -108,40 +224,43 @@ export default class WarhammerBugReport extends Application
                 title: data.title,
                 body: data.description,
                 assignees: ["moo-man"],
-                labels: data.labels
+                labels: data.labels,
+                system: game.system.id
             })
         })
             .then(res => 
             {
-                if (res.status == 201) 
+                if (res.status == 201 || res.status == 200) 
                 {
-                    ui.notifications.notify(localize("WH.BugReporter.PostSuccess"));
+                    ui.notifications.info("WH.BugReporter.ReportSuccess", {localize : true});
                     res.json().then(json => 
                     {
-                        
-                        console.log(systemConfig().bugReporterConfig.successMessage.replace("@URL", json.html_url));
+                        ui.notifications.info(systemConfig().bugReporterConfig.successMessage.replace("@URL", json.html_url));
                         this.recordIssue(json.number);
                     });
                 }
                 else 
                 {
-                    ui.notifications.error("WH.Error.PostError", {localize: true});
-                    console.error(res);
+                    ui.notifications.error(game.i18n.localize("WH.BugReporter.Error.Report"));
+                    res.json().then(json => 
+                    {
+                        console.error(json);
+                    });
                 }
 
             })
             .catch(err => 
             {
-                ui.notifications.error("WH.Error.GeneralBugReport", {localize: true});
+                ui.notifications.error(game.i18n.localize("WH.BugReporter.Error.Generic"));
                 console.error(err);
             });
     }
 
-    recordIssue(number)
+    recordIssue(number) 
     {
-        let postedIssues = foundry.utils.deepClone(game.settings.get(game.system.id, "postedIssues"));
-        postedIssues.push(number);
-        game.settings.set(game.system.id, "postedIssues", postedIssues).then(() => 
+        let bugReporterData = foundry.utils.deepClone(game.settings.get("warhammer-lib", "bugReporter"));
+        bugReporterData.issues.push(number);
+        game.settings.set("warhammer-lib", "bugReporter", bugReporterData).then(() => 
         {
             this.refreshIssues();
         });
@@ -150,70 +269,80 @@ export default class WarhammerBugReport extends Application
 
     async loadIssues() 
     {
-        log("Loading GitHub Issues...");
-        if (this.constructor.issues.length == 0)
+        warhammer.utility.log("Loading GitHub Issues...");
+        try 
         {
-            for(let i = 1; i <= 10; i++)
-            {
-                foundry.applications.ui.SceneNavigation.displayProgressBar({label: localize("WH.LoadingIssues"), pct: Math.round((i / 10) * 100) });
 
-                this.constructor.issues = this.constructor.issues.concat((await fetch(this.github + `issues?per_page=100&page=${i}&state=all`)
-                    .then(r => r.json())
-                    .catch(error => 
-                    {
-                        if (error.status == 403)
+            if (this.constructor.issues.length == 0) 
+            {
+                for (let i = 1; i <= 4; i++) 
+                {
+                    foundry.applications.ui.SceneNavigation.displayProgressBar({ label: game.i18n.localize("WH.BugReporter.LoadingIssues"), pct: Math.round((i / 10) * 100) });
+
+                    this.constructor.issues = this.constructor.issues.concat((await fetch(this.github + `/issues?per_page=100&page=${i}&state=all`)
+                        .then(r => r.json())
+                        .catch(error => 
                         {
-                            this.constructor.apiLimitReached = true;
-                        }
-                        console.error(error);
-                        this.constructor.issues = [];
-                        return [];
-                    
-                    })).map(this.trimIssue));
+                            if (error.status == 403) 
+                            {
+                                this.constructor.apiLimitReached = true;
+                            }
+                            console.error(error);
+                            this.constructor.issues = [];
+                            return [];
+
+                        })).map(this.trimIssue));
+                }
             }
+            else 
+            {
+                warhammer.utility.log("Skipping requests, issues already loaded");
+            }
+            warhammer.utility.log("Issues: ", undefined, this.constructor.issues);
         }
-        else 
-        { 
-            log("Skipping requests, issues already loaded");
+        catch(e)
+        {
+            console.error(e);
         }
-        log("Issues: ", undefined, this.constructor.issues);
+
         return this.constructor.issues;
     }
 
     // Issues are big objects, no need to keep everything, so just take what's needed
-    trimIssue(issue)
+    trimIssue(issue) 
     {
         return {
             number: issue.number,
-            title : issue.title,
-            html_url : issue.html_url,
-            labels : issue.labels,
-            state : issue.state
+            title: issue.title,
+            html_url: issue.html_url,
+            labels: issue.labels,
+            state: issue.state,
+            created_at : issue.created_at
         };
     }
 
-    async refreshIssues()
+    async refreshIssues() 
     {
         // Request a new page of issues, only keep issues we don't have
-        let newIssues = (await fetch(this.github + `issues?per_page=100&state=all`).then(r => r.json()).catch(error => console.error(error))).map(this.trimIssue);
+        let newIssues = (await fetch(this.github + `/issues?per_page=100&state=all`).then(r => r.json()).catch(error => console.error(error))).map(this.trimIssue);
         this.constructor.issues = this.constructor.issues.concat(newIssues.filter(newIssue => !this.constructor.issues.find(i => i.number == newIssue.number)));
     }
 
-    async buildRecord()
+    async buildRecord() 
     {
-        let numbersSubmitted = game.settings.get(game.system.id, "postedIssues");
+        let numbersSubmitted = this.settings.issues;
 
         let issuesSubmitted = this.constructor.issues.filter(i => numbersSubmitted.includes(i.number));
 
         let record = {
-            open : issuesSubmitted.filter(i => i.state == "open"),
-            closed : issuesSubmitted.filter(i => i.state == "closed"),
-            alert : false
+            open: issuesSubmitted.filter(i => i.state == "open"),
+            closed: issuesSubmitted.filter(i => i.state == "closed"),
+            alert: false
         };
 
-        for(let issue of record.open)
+        for (let issue of record.open) 
         {
-            if (issue.labels.find(l => l.name == "non-repro" || l.name == "needs-info"))
+            if (issue.labels.find(l => l.name == "non-repro" || l.name == "needs-info")) 
             {
                 issue.alert = true;
                 record.alert = true;
@@ -223,21 +352,21 @@ export default class WarhammerBugReport extends Application
         return record;
     }
 
-    async checkVersions() 
+    async getLatestVersions() 
     {
         let latest = {};
-        log("Checking Version Numbers...");
+        warhammer.utility.log("Checking Version Numbers...");
         for (let key in systemConfig().premiumModules) 
         {
             if (key == game.system.id) 
             {
                 // Have to use release tag instead of manifest version because CORS doesn't allow downloading release asset for some reason
-                let release = await fetch(this.github + "releases/latest").then(r => r.json()).catch(e => 
+                let release = await fetch(this.github + "/releases/latest").then(r => r.json()).catch(e => 
                 {
                     console.error("Could not fetch latest versions: " + e);
                     return latest;
                 });
-                latest[key] = !isNewerVersion(release.tag_name, game.system.version);
+                latest[key] = !foundry.utils.isNewerVersion(release.tag_name, game.system.version);
             }
             else if (game.modules.get(key)) 
             {
@@ -246,18 +375,17 @@ export default class WarhammerBugReport extends Application
                     console.error("Could not fetch latest versions: " + e);
                     return latest;
                 });
-                latest[key] = !isNewerVersion(manifest.version, game.modules.get(key).version);
+                latest[key] = !foundry.utils.isNewerVersion(manifest.version, game.modules.get(key).version);
             }
-            log(key + ": " + latest[key]);
+            warhammer.utility.log(key + ": " + latest[key]);
         }
-        log("Version Status:", undefined, latest);
+        warhammer.utility.log("Version Status:", undefined, latest);
         return latest;
     }
 
     matchIssues(text) 
     {
-
-        let issues = this.constructor.issues.filter(i => i.state == "open");
+        let issues = this.constructor.issues.filter(i => i.state != "closed");
 
         let words = text.toLowerCase().split(" ");
         let percentages = new Array(issues.length).fill(0);
@@ -269,140 +397,124 @@ export default class WarhammerBugReport extends Application
             words.forEach((word) => 
             {
                 {
-                    if (issueWords.includes(word))
-                    {percentages[issueIndex]++;}
+                    if (issueWords.includes(word)) { percentages[issueIndex]++; };
                 }
             });
         });
         let matchingIssues = [];
-        percentages = percentages.map(i => i/issues.length);
+        percentages = percentages.map(i => i / issues.length);
         percentages.forEach((p, i) => 
         {
-            if (p > 0)
-            {matchingIssues.push(issues[i]);}
+            if (p > 0) { matchingIssues.push(issues[i]); };
         });
         return matchingIssues;
     }
 
-    showMatchingpostedIssues(element, issues)
+    findMatchingIssues() 
     {
-        if(!issues || issues?.length <= 0)
-        {element[0].style.display="none";}
+        let text = this.element.querySelector("[name='title']").value + " " + this.element.querySelector("[name='description']").value;
+
+        let matchedIssues = this.matchIssues(text);
+
+        let issueList = this.element.querySelector(".issues");
+
+
+        if (!matchedIssues || matchedIssues?.length <= 0) 
+        {
+            issueList.style.display = "none";
+        }
         else 
         {
-            element[0].style.display="flex";
-            let list = element.find(".issue-list");
-            list.children().remove();
-            list.append(issues.map(i => `<div class="issue"><a href="${i.html_url}">${i.title}</div>`));
-        }
-    }
-
-    checkWarnings(text)
-    {
-        let publicityWarning = this.element.find(".publicity")[0];
-        let discordNameWarning = this.element.find(".discord")[0];
-        publicityWarning.style.display = text.includes("@") ? "block" : "none";
-        discordNameWarning.style.display = text.includes("#") ? "block" : "none";
-    }
-
-    activateListeners(html) 
-    {
-
-
-        let modulesWarning = html.find(".active-modules")[0];
-        let title = html.find(".bug-title")[0];
-        let description = html.find(".bug-description")[0];
-        let matching = html.find(".matching");
-        let issuer = html.find(".issuer")[0];
-
-        this.checkWarnings(issuer.value);
-
-        html.find(".issuer").keyup(ev => 
-        {
-            this.checkWarnings(ev.target.value);
-        });
-
-        html.find(".issue-label").change(ev => 
-        {
-            if (ev.currentTarget.value == "bug") 
+            issueList.style.display = "flex";
+            let list = issueList.querySelector(".list");
+            let matchedElements = matchedIssues.map(i => 
             {
-                if (game.modules.contents.filter(i => i.active).map(i => i.id).filter(i => !systemConfig().premiumModules[i]).length > 0)
-                {modulesWarning.style.display = "block";}
-                else
-                {modulesWarning.style.display = "none";}
-            }
-            else
-            {modulesWarning.style.display = "none";}
-        });
-
-        html.find(".bug-title, .bug-description").keyup(async ev => 
-        {
-            let text = title.value + " " + description.value;
-            text = text.trim();
-            if (text.length > 2) 
-            {
-                this.showMatchingpostedIssues(matching, this.matchIssues(text));
-            }
-        });
-
-        html.find(".bug-submit").click(ev => 
-        {
-            let data = {};
-            let form = $(ev.currentTarget).parents(".bug-report")[0];
-            data.domain = $(form).find(".domain")[0].value;
-            data.title = $(form).find(".bug-title")[0].value;
-            data.description = $(form).find(".bug-description")[0].value;
-            data.issuer = $(form).find(".issuer")[0].value;
-            let label = $(form).find(".issue-label")[0].value;
-
-
-            if (!data.domain || !data.title || !data.description)
-            {return ui.notifications.error("WH.BugReporter.BugReportFormError", {localize: true});}
-            if (!data.issuer)
-            {return ui.notifications.error("WH.BugReporter.BugReportNameError", {localize: true});}
-
-
-            data.title = `[${systemConfig().premiumModules[data.domain]}] ${data.title}`;
-            data.description = data.description + `<br/>**From**: ${data.issuer}`;
-
-            data.labels = [data.domain.split("-")[1]];
-
-            if (label)
-            {data.labels.push(label);}
-
-            game.settings.set(game.system.id, "bugReportName", data.issuer);
-
-            let premiumModules = Array.from(game.modules).filter(m => systemConfig().premiumModules[m.id]);
-
-            let versions = `<br/>foundry: ${game.version}<br/>${game.system.id}: ${game.system.version}`;
-
-            for (let mod of premiumModules) 
-            {
-                let modData = game.modules.get(mod.id);
-                if (modData.active)
-                {versions = versions.concat(`<br/>${mod.id}: ${modData.version}`);}
-            }
-
-            data.description = data.description.concat(versions);
-            data.description += `<br/>Active Modules: ${game.modules.contents.filter(i => i.active).map(i => i.id).filter(i => !systemConfig().premiumModules[i]).join(", ")}`;
-
-            this.submit(data);
-            this.close();
-        });
-    }
-    static addSidebarButton(app, html)
-    {
-        if (app.options.id == "settings")
-        {
-            let button = $(`<button class='bug-report'>${game.i18n.localize("WH.BugReporter.Title")}</button>`);
-                
-            button.click(ev => 
-            {
-                new WarhammerBugReport().render(true);
+                let match = document.createElement("div");
+                match.classList.add("match");
+                match.innerHTML = `<a href="${i.html_url}">${i.title}</a> <span>Created ${foundry.utils.timeSince(i.created_at)}</span>`;
+                return match;
             });
-                
-            button.insertAfter(html.find("#game-details"));
-                
+            list.replaceChildren(...matchedElements);
         }
+    }
+
+    static async submit(ev, form, formData)
+    {
+        let report = {};
+        report.module = formData.object["module"];
+        report.title = formData.object["title"];
+        report.description = formData.object["description"];
+        report.contact = formData.object["contact"];
+        let label = formData.object["type"];
+
+
+        if (!report.module || !report.title || !report.description || !report.contact) 
+        { 
+            throw game.i18n.localize("WH.BugReporter.Error.Incomplete");
+        };
+
+        report.title = `[${systemConfig().premiumModules[report.module]}] ${report.title}`;
+        report.description = report.description + `<br/>**From**: ${report.contact}`;
+
+        report.labels = [this.keyToLabel(report.module)].filter(i => i);
+
+        if (label) 
+        { 
+            report.labels.push(label); 
+            if (report.module != game.system.id)
+            {
+                report.labels.push("module");
+            }
+        }
+
+        game.settings.set("warhammer-lib", "bugReporter", {
+            contact : report.contact,
+            PAT : report.PAT, 
+        });
+
+        let premiumModules = Array.from(game.modules).filter(m => systemConfig().premiumModules[m.id]);
+
+        let versions = `<br/>foundry: ${game.version}<br/>${game.system.id}: ${game.system.version}`;
+
+        for (let mod of premiumModules) 
+        {
+            let modData = game.modules.get(mod.id);
+            if (modData.active) { versions = versions.concat(`<br/>${mod.id}: ${modData.version}`); };
+        }
+
+        report.description = report.description.concat(versions);
+        report.description += `<br/>Active Modules: ${game.modules.contents.filter(i => i.active).map(i => i.id).filter(i => !systemConfig().premiumModules[i]).join(", ")}`;
+
+        this.sendIssue(report);
+    }
+
+    addListeners() 
+    {
+        this.element.querySelectorAll("[name='title'],[name='description']").forEach(i => i.addEventListener("keyup", async ev => 
+        {
+
+            this.findMatchingIssues();
+
+            if (ev.target.value.toLowerCase().includes("help") || ev.target.value.toLowerCase().includes("how do"))
+            {
+                this.addNotification(game.i18n.format("WH.BugReporter.Warning.NeedHelp", {url : systemConfig().bugReporterConfig.troubleshooting}), ev.target.parentElement, {classes : "warning hint", position: "afterend", key : "help"});
+            }
+        }));
+
+        this.element.querySelector("[name='contact']").addEventListener("keyup", ev => 
+        {
+            if (ev.target.value.includes("@"))
+            {
+                this.addNotification(game.i18n.localize("WH.BugReporter.Warning.Email"), ev.target.parentElement, {classes : "warning hint", position: "afterend", key : "contact"});
+            }
+        });
+
+        this.element.querySelector("[name='PAT']").addEventListener("keyup", ev => 
+        {
+            if (ev.target.value)
+            {
+                this.addNotification(game.i18n.localize("WH.BugReporter.Warning.PAT"), ev.target.parentElement, {classes : "warning hint", position: "afterend", key: "PAT"});
+            }
+        });
     }
 }

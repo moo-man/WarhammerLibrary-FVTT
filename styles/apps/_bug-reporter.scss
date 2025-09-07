@@ -1,38 +1,67 @@
-#bug-report {
+.application.bug-report {
 
-    .matching {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+  --border: var(--color-cool-3);
+  --issue: var(--color-cool-3);
+
+  [data-tab="report"] {
+    height: 100%;
+    
+    .report-container {
+      height: 100%;
+      
+      .form-group.stacked {
+        textarea {
+          height: 100px;
+        }
+      }
+      p.notification {
+        display: unset;
+      }
+
+      .issues {
+        display: flex;
+        flex-direction: column;
+        .list {
+          display: flex;
+          gap: 0.5rem;
+          overflow-x:auto;
+          .match {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            height: 6rem;
+            max-width: 10rem;
+            min-width: 6rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+          }
+        }
+      }
     }
-
-    .issue-list {
-      overflow-x: auto;
-      display: flex;
-      width: 100%;
-
+    button[type="submit"] {
+      
     }
-
-    .issue {
-      display: flex;
-      align-items: center;
-      height: 100px;
-      min-width: 150px;
-      max-width: 150px;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 5px;
-      padding: 3px;
-    }
-
-    textarea {
-      height: 150px;
-      width: 100%;
-      resize: none;
-    }
-
-    .notification::before {
-      content: none
-    }
-
   }
+
+  [data-tab="issues"] {
+    .issue-details {
+      background: var(--issue);
+      padding: 0.5rem 0.5rem;
+      display: flex;
+      align-items: center;
+      &.closed {
+        opacity: 0.7;
+      }
+      .issue-title {
+        flex: 1;
+      }
+      .status {
+        text-align: center;
+        flex: 0 0 10%;
+      }
+    }
+  }
+}

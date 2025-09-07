@@ -1,6 +1,7 @@
 import { systemConfig } from "../util/utility";
 import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
 import { WarhammerModuleInitializationV2 } from "../modules/module-initializationV2";
+import WarhammerBugReporter from "../modules/bug-report";
 const {hasProperty} = foundry.utils;
 
 /**
@@ -162,6 +163,13 @@ export default function ()
             icon : "fa-solid fa-download",
             type: WarhammerModuleInitializationV2,
             restricted: true
+        });
+
+        game.settings.register("warhammer-lib", "bugReporter", {
+            name: "Bug Reporter Details",
+            scope: "client",
+            config: false,
+            type: WarhammerBugReporter.schema
         });
 
         // Compendium Browser source exclusion
