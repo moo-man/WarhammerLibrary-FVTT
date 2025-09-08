@@ -119,10 +119,6 @@ export class SocketHandlers
     static async executeOnOwner(document, type, payload)
     {
         let ownerUser = getActiveDocumentOwner(document);
-        if (game.user.id == ownerUser.id)
-        {
-            return await this[type](payload);
-        }
         return await this.call(type, payload, ownerUser.id);
     }
 
