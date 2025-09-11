@@ -57,10 +57,9 @@ export default class DragDialog extends DraggableApp(HandlebarsApplicationMixin(
 
     /**
      * Submits the dialog, returning the input value
-     * 
      * @param {Event} event event triggering submission
      * @param {HTMLElement} form HTML Element for the form
-     * @param {Object} formData form data from the dialog
+     * @param {object} formData form data from the dialog
      * @returns 
      */
     static async submit(event, form, formData)
@@ -84,38 +83,53 @@ export default class DragDialog extends DraggableApp(HandlebarsApplicationMixin(
     async _onDropItem(data, ev)
     {
         let item = await Item.implementation.fromDropData(data);
-        if (!this.filter)
+        try 
         {
-            this.document = item;
-            this.render({force : true});
+            if (!this.filter)
+            {
+                this.document = item;
+                this.render({force : true});
+            }
+            else if (this.filter && this.filter(item)) 
+            {
+                this.document = item;
+                this.render({force : true});
+            }
+            else if (this.onError)
+            {
+                return ui.notifications.error(this.onError);
+            }
         }
-        else if (this.filter && this.filter(item)) 
+        catch(e)
         {
-            this.document = item;
-            this.render({force : true});
+            ui.notifications.error(e);
         }
-        else if (this.onError)
-        {
-            return ui.notifications.error(this.onError);
-        }
+
     }
     
     async _onDropActor(data, ev)
     {
         let actor = await Actor.implementation.fromDropData(data);
-        if (!this.filter)
+        try 
         {
-            this.document = actor;
-            this.render({force : true});
+            if (!this.filter)
+            {
+                this.document = actor;
+                this.render({force : true});
+            }
+            else if (this.filter && this.filter(actor)) 
+            {
+                this.document = actor;
+                this.render({force : true});
+            }
+            else if (this.onError)
+            {
+                return ui.notifications.error(this.onError);
+            }
         }
-        else if (this.filter && this.filter(actor)) 
+        catch(e)
         {
-            this.document = actor;
-            this.render({force : true});
-        }
-        else if (this.onError)
-        {
-            return ui.notifications.error(this.onError);
+            ui.notifications.error(e);
         }
     }
 

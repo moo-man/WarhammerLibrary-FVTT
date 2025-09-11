@@ -82,7 +82,7 @@
         background: var(--form-input);
         border: 1px solid transparent;
         border-radius: 4px;
-        color: var(--input-text-color);
+        color: var(--color-text-primary);
         text-align: center;
         display: flex;
         align-items: center;
@@ -257,6 +257,7 @@
         .progress-bar {
             height: var(--row-height);
             border: 0px;
+            
         }
 
         input:disabled,
@@ -286,7 +287,6 @@
         border-radius: var(--radius);
         border: 1px solid var(--color);
         height: 50%;
-        height: --var(--height);
         .fill {
             background-color: var(--color);
         }

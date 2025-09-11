@@ -275,7 +275,7 @@ export default class WarhammerBugReporter extends HandlebarsApplicationMixin(App
 
             if (this.constructor.issues.length == 0) 
             {
-                for (let i = 1; i <= 4; i++) 
+                for (let i = 1; i <= 10; i++) 
                 {
                     foundry.applications.ui.SceneNavigation.displayProgressBar({ label: game.i18n.localize("WH.BugReporter.LoadingIssues"), pct: Math.round((i / 10) * 100) });
 
