@@ -12,12 +12,20 @@ export class SocketHandlers
         CONFIG.queries[`${game.system.id}.updateActor`] = (queryData, {timeout}) => { return this.updateActor(queryData); };
         CONFIG.queries[`${game.system.id}.updateMessage`] = (queryData, {timeout}) => { return this.updateMessage(queryData); };
         CONFIG.queries[`${game.system.id}.updateDrawing`] = (queryData, {timeout}) => { return this.updateDrawing(queryData); };
-        CONFIG.queries[`${game.system.id}.applyEffect`] = (queryData, {timeout, userId}) => { return this.applyEffect(queryData, userId); };
-        CONFIG.queries[`${game.system.id}.applyZoneEffect`] = (queryData, {timeout, userId}) => { return this.applyZoneEffect(queryData, userId); };
+        CONFIG.queries[`${game.system.id}.applyEffect`] = (queryData, {timeout}) => { return this.applyEffect(queryData); };
+        CONFIG.queries[`${game.system.id}.applyZoneEffect`] = (queryData, {timeout}) => { return this.applyZoneEffect(queryData); };
         CONFIG.queries[`${game.system.id}.createActor`] = (queryData, {timeout}) => { return this.createActor(queryData); };
+
+        for(let name in handlers)
+        {
+            CONFIG.queries[`${game.system.id}.${name}`] = (queryData) => 
+            {
+                return this[name](queryData);
+            };
+        }
     }
 
-    static async call(type, payload, userId)
+    static async call(type, payload, userId="GM")
     {
         let result = [];
         let users = [];
