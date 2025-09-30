@@ -42,7 +42,7 @@ export default function ()
 
         Handlebars.registerHelper("configLookup", function (obj, key) 
         {
-            if (obj && key)
+            if (obj != null && key != null)
             {return systemConfig()[obj]?.[key];}
             
         });

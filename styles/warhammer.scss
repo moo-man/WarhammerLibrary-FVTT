@@ -307,6 +307,10 @@ blockquote.foundry-note {
         color: #1c3132;
     }
 
+    a {
+        color: darkslategrey;
+    }
+
     &::before {
         content: url(../../../icons/vtt.png);
         float: left;

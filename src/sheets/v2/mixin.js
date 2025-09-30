@@ -296,7 +296,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     async _prepareContext(options) 
     {
         let context = await super._prepareContext(options);
-        if (this.document)
+        if (this.document?.system)
         {
             context.system = this.document.system;
             context.fields = this.document.system.schema.fields;

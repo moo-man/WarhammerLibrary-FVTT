@@ -29,6 +29,9 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
     static PARTS = {
         form: {
             template: "modules/warhammer-lib/templates/apps/dialog/value-dialog.hbs",
+        },
+        footer: {
+            template: "templates/generic/form-footer.hbs"
         }
     };
 
@@ -104,6 +107,7 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
             });
         }
 
+        context.buttons = [{ type: "submit", label: "Submit"}];
         context.defaultValue = this.defaultValue;
         return context;
     }

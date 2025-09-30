@@ -238,6 +238,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             }
 
 
+            if (!items.length)
+            {
+                ui.notifications.error("WH.Error.AppliedEffectNoItems", {localize: true});
+                throw "Failed to apply Effect";
+            }
+
             this.updateSource({"system.itemTargetData.ids" : items.map(i => i.id)});
         }
     }

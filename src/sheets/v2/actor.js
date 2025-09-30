@@ -156,7 +156,8 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         // Non-database effect
         if (!effect && ev.target.dataset.path)
         {
-            let item = fromUuidSync(ev.target.dataset.uuid.slice(0, ev.target.dataset.uuid.indexOf(".ActiveEffect.")));
+            let uuid = ev.target.parentElement.closest("[data-uuid]")?.dataset?.uuid;
+            let item = fromUuidSync(uuid);
             if (item)
             {
                 effect = foundry.utils.getProperty(item, ev.target.dataset.path);
@@ -241,7 +242,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         game.canvas.tokens.setTargets([]);
     
         await Promise.all(
-            targets.map(target => target.applyEffect(effectData))
+            targets.map(target => target.applyEffect({effectData}))
         );
     }
     

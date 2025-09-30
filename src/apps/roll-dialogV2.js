@@ -131,6 +131,11 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
         {
             context.flags = {};
         }
+
+        if (!context.scripts)
+        {
+            context.scripts = [];
+        }
         
         if (actor && !actor?.token)
         {

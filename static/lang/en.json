@@ -176,14 +176,15 @@
         "Error": {
             "CreateZoneEffect": "Effects must be created via an Active Effect with the 'Zone' Transfer Type",
             "ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
-            "LibraryOutaded": "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}.",
+            "LibraryOutaded": "The Warhammer Library is out of date. {system} defines the minimum library version to be {minimum}.",
             "MismatchedItemType": "Mismatched Item type",
             "NoActorAssigned": "No assigned Actor, you can assign Actors via Player Configuration at the bottom left of the screen.",
             "NoDrawingsToConvert": "No Drawings to Convert!",
             "NoTargetedActors": "No targeted Actors!",
             "NoTargets": "No targeted Actors!",
             "NotValidChoiceType": "Not a valid choice",
-            "WrongChoiceOptionType": "This type of Item isn't allowed. Allowed Types: {types}"
+            "WrongChoiceOptionType": "This type of Item isn't allowed. Allowed Types: {types}",
+            "AppliedEffectNoItems" : "No Items passed the Active Effect's filter!"
         },
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",

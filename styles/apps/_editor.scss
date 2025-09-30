@@ -1,5 +1,17 @@
 .warhammer.script-editor
 {
+    .window-content {
+
+        
+        div[data-application-part=editor] {
+            height: 100%;
+            overflow:hidden
+        }
+        code-mirror[name='script']
+        {
+            height: 100%;
+        }
+    }
  
     .script-fields {
         // flex: 1;
