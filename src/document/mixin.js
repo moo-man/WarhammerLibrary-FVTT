@@ -145,8 +145,22 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
      */
     getScripts(trigger, scriptFilter) 
     {
-        let effects = Array.from(this.allApplicableEffects()).filter(i => !i.disabled);
-        let scripts = effects.reduce((prev, current) => prev.concat(current.scripts.filter(i => i.trigger == trigger)), []);
+        let effects = Array.from(this.allApplicableEffects());
+        let scripts = [];
+
+        // Get scripts from active effects or disabled effects if runIfDisabled is true
+        effects.forEach(e => 
+        {
+            let effectScripts = e.scripts.filter(i => i.trigger == trigger);
+            if (e.disabled)
+            {
+                scripts = scripts.concat(effectScripts.filter(s => s.options.runIfDisabled));
+            }
+            else 
+            {
+                scripts = scripts.concat(effectScripts);
+            }
+        });
         if (scriptFilter) 
         {
             scripts = scripts.filter(scriptFilter);

@@ -262,6 +262,8 @@
         "Resist": "Resist",
         "RichEditor": "Rich Text Editor",
         "RollMode": "Roll Mode",
+        "RunIfDisabled" : "Run if Disabled",
+        "RunIfDisabledHint" : "Run this script even when the effect is disabled",
         "Script": "Script",
         "ScriptConfig": "Script Config",
         "ScriptEditor": "Script Editor",

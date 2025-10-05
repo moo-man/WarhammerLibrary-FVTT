@@ -33,7 +33,6 @@
         </div>
     {{/if}}
 
-
     {{#if (eq scriptData.trigger "immediate")}}
         <div class="form-group">
             <label>{{localize "WH.DeleteEffect"}}</label>
@@ -43,6 +42,14 @@
             </div>
         </div>
     {{/if}}
+
+            <div class="form-group">
+            <label>{{localize "WH.RunIfDisabled"}}</label>
+            <div class="form-fields">
+                <p class="hint">{{localize "WH.RunIfDisabledHint"}}</p>
+                <input name="runIfDisabled" type="checkbox" {{checked scriptData.options.runIfDisabled}}>
+            </div>
+        </div>
 
 
         {{#if hasScriptReferences}}
