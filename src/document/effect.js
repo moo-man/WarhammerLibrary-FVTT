@@ -195,7 +195,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _handleConditionCreation(data, options)
     {
         // options.condition tells us that it has already gone through addCondition, so this avoids a loop
-        if (this.isCondition && !options.condition) 
+        if (this.isCondition && !options.condition && !options.temporary) 
         {
             // If adding a condition, prevent it and go through `addCondition`      // TODO handle these options
             await this.parent?.addCondition(this.key, this.conditionValue, {origin: this.origin, flags : this.flags});
@@ -364,6 +364,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
         
         return allowed;
+    }
+
+
+    convertToPassive()
+    {
+        return {
+            duration: null,
+            statuses : []
+        };
     }
 
     // To be applied, some data needs to be changed

@@ -427,9 +427,9 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let doc = await this._getDocumentAsync(ev, target) || this.document;
         let list = this._getList(ev, target);
 
-        if (list)
+        if (list || target.dataset.force)
         {
-            if (list instanceof Array)
+            if (list instanceof Array || target.dataset.force)
             {
                 return this._handleArrayCreate(doc, ev);
             }
@@ -556,7 +556,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
     _handleArrayCreate(doc, ev)
     {
         let list = this._getPath(ev);
-        let arr = foundry.utils.getProperty(doc, list);
+        let arr = foundry.utils.getProperty(doc, list) || [];
 
         // Not very good probably but it will do for now
         let value = parseInt(ev.target.value) || ev.target.value;
@@ -596,7 +596,7 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
                 {
                     if (internalPath)
                     {
-                        let newVal = foundry.utils.duplicate(val);
+                        let newVal = foundry.utils.duplicate(val) || {};
                         foundry.utils.setProperty(newVal, internalPath, value);
                         return newVal;
                     }
