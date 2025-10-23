@@ -46,7 +46,7 @@ export default class WarhammerScript
     }
 
 
-    // Dialog modifiers only
+    // Dialog modifiers / manual only
     hidden(args)
     {
         if (!this.options?.hideScript)

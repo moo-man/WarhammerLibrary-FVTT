@@ -232,12 +232,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         return effects.reduce((prev, current) => prev.concat(current.scripts), []).concat(fromActor).filter(i => i.trigger == trigger);
     }
 
-    *allApplicableEffects() 
+    *allApplicableEffects(ignoreDisabled=false) 
     {
-        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()).filter(e => this.system.effectIsApplicable(e)))
+        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()).filter(e => this.system.effectIsApplicable(e, {ignoreDisabled})))
         {
-            if (!effect.disabled)
-            {yield effect;};
+            yield effect;
         }
     }
  
@@ -321,8 +320,26 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get manualScripts() 
     {
-        let effects = Array.from(this.allApplicableEffects()).filter(e => e.system.transferData.type == "document");
-        return effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+        let effects = Array.from(this.allApplicableEffects(true)).filter(e => e.system.transferData.type == "document");
+        let scripts = effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+        let unique = [];
+        for(let script of scripts)
+        {
+            let existing = unique.find(i => i.label == script.label);
+            if (existing && !script.options.showDuplicates)
+            {
+                // Don't show multiple manual scripts from the same effect
+                if (existing.effect.name != script.effect.name)
+                {
+                    unique.push(script);
+                }
+            }
+            else 
+            {
+                unique.push(script);
+            }
+        }
+        return unique;
     }
 
     get testIndependentEffects()

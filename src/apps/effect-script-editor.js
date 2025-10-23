@@ -132,6 +132,7 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
         foundry.utils.setProperty(scriptObject, "options.defending", formData.object.defending);
         foundry.utils.setProperty(scriptObject, "options.deleteEffect", formData.object.deleteEffect);
         foundry.utils.setProperty(scriptObject, "options.runIfDisabled", formData.object.runIfDisabled);
+        foundry.utils.setProperty(scriptObject, "options.showDuplicates", formData.object.showDuplicates);
         if(!foundry.utils.isEmpty(script))
         {
             scriptObject.script = script;

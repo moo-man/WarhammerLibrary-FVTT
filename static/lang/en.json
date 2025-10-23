@@ -272,6 +272,8 @@
         "ScriptTrigger": "Trigger",
         "Scripts": "Scripts",
         "SendingSocketRequest": "Sending Socket Request",
+        "ShowDuplicates" : "Show Duplicates",
+        "ShowDuplicatesHint" : "Check to show this script's button even if there are other manual scripts with the same name",
         "SubmissionScript": "Submission Script",
         "SubmitChoices": "Submit Choices",
         "Target": "Target",

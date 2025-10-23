@@ -22,8 +22,6 @@ import AreaTemplate from "./util/area-template";
 import { WarhammerMessageModel} from "./model/message";
 import { WarhammerTestMessageModel} from "./model/test";
 import WarhammerModuleInitializer from "./modules/module-initialization";
-import { WarhammerActorSheet } from "./sheets/actor";
-import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
 import { error,
     findAllItems,
@@ -121,8 +119,6 @@ warhammer.apps = {
     WarhammerTestBase,
     AreaTemplate,
     WarhammerModuleInitializer,
-    WarhammerActorSheet,
-    WarhammerItemSheet,
     WarhammerActorSheetV2,
     WarhammerItemSheetV2,
     WarhammerZoneConfig,

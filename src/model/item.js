@@ -20,9 +20,9 @@ export class BaseWarhammerItemModel extends BaseWarhammerModel
         }
     }
 
-    effectIsApplicable(effect) 
+    effectIsApplicable(effect, {ignoreDisabled=false}={}) 
     {
-        return !effect.disabled;
+        return !effect.disabled || ignoreDisabled;
     }
 
     // If an item effect is disabled it should still transfer to the actor, so that it's visibly disabled

@@ -589,15 +589,23 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get manualScripts()
     {
-        if (this.disabled)
-        {
-            return [];
-        }
-        return this.scripts.filter(i => i.trigger == "manual").map((script, index) => 
+        let scripts = this.scripts.filter(i => i.trigger == "manual").map((script, index) => 
         {
             script.index = index; // When triggering manual scripts, need to know the index (listing all manual scripts on an actor is messy)
             return script;
         });
+
+        if (this.disabled)
+        {
+            scripts = scripts.filter(i => i.options.runIfDisabled);
+        }
+
+        scripts = scripts.filter(i => 
+        {
+            return !i.hidden({});
+        });
+
+        return scripts;
     }
 
     get sheetButtons() 

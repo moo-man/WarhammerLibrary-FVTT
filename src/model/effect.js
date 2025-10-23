@@ -84,6 +84,7 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
                 activateScript: new fields.StringField({}),
                 submissionScript: new fields.StringField({}),
                 deleteEffect: new fields.BooleanField({initial : false}),
+                showDuplicates: new fields.BooleanField({initial : false}),
             }),
             async: new fields.BooleanField()
         }));
