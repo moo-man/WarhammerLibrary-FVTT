@@ -1,4 +1,4 @@
-import WarhammerSheetMixinV2 from "../sheets/v2/mixin";
+import WarhammerSheetMixinV2 from "../sheets/mixin";
 import ChoiceDecision from "./choice-decision";
 import { ChoiceOptionFormV2 } from "./choice-option";
 import WarhammerDiffEditor from "./diff-editor";

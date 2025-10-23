@@ -1,34 +1,82 @@
 import ChoiceConfigV2 from "../apps/choice-config";
 import ChoiceDecision from "../apps/choice-decision";
-import WarhammerSheetMixin from "./mixin";
+import AreaTemplate from "../util/area-template";
+import ZoneHelpers from "../util/zone-helpers";
+import WarhammerSheetMixinV2 from "./mixin";
 
-export class WarhammerItemSheet extends WarhammerSheetMixin(foundry.appv1.sheets.ItemSheet)
+const { ItemSheetV2 } = foundry.applications.sheets;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
+
+export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(HandlebarsApplicationMixin(ItemSheetV2))
 {
-    async _render(force, options)
-    {
-        await super._render(force, options);
-        this.modifyHTML();
-    }
 
-    activateListeners(html) 
-    {
-        super.activateListeners(html);
-        if (!this.isEditable)
-        {
-            return false;
+    static DEFAULT_OPTIONS = {
+        classes: ["item"],
+        window : {
+            contentClasses: ["standard-form"]
+        },
+        actions: {
+            configureChoice : this._onConfigureChoice,
+            showDecision : this._onShowDecision
         }
-        html.find(".choice-config").click(this._onChoiceConfig.bind(this));
-        html.find(".choice-decision").click(this._onChoiceDecision.bind(this));
-    }
+    };
 
+    static TABS = {
 
-    _onChoiceConfig(ev) 
+    };
+
+    get item() 
     {
-        new ChoiceConfigV2(this.item, {path : ev.currentTarget.dataset.path}).render(true);
+        return this.document;
     }
 
-    _onChoiceDecision(ev) 
+    async _prepareContext(options) 
     {
-        new ChoiceDecision(foundry.utils.getProperty(this.item.system, ev.currentTarget.dataset.path)).render(true);
+        let context = await super._prepareContext(options);
+        context.item = this.item;
+        context.editable = options.editable ?? context.editable;
+        context.actor = this.item.actor;
+        return context;
     }
+
+    _prepareEffectsContext(context) 
+    {
+        let effects = {};
+        effects.active = this.item.effects.contents.filter(i => i.active);
+        effects.disabled = this.item.effects.contents.filter(i => i.disabled);
+        effects.temporary = this.item.actor?.getEffectsApplyingToItem(this.item) || [];
+        context.effects = effects;
+    }
+    
+
+    static _onConfigureChoice(ev, target)
+    {
+        new ChoiceConfigV2(this.item, {path : target.dataset.path}).render(true);
+    }
+
+    static _onShowDecision(ev, target)
+    {
+        new ChoiceDecision(foundry.utils.getProperty(this.item.system, target.dataset.path)).render(true);
+    }
+
+
+    async _onDropActiveEffect(data, event)
+    {
+        let document = await ActiveEffect.fromDropData(data);
+        if (document?.parent?.uuid != this.document.uuid)
+        {
+            this.document.createEmbeddedDocuments("ActiveEffect", [document]);
+        }
+    }
+
+
+    //#region Effects
+
+    
+    //#region Action Handlers
+
+
+    //#endregion
+
+    
 }

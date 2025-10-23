@@ -44,9 +44,9 @@ import { error,
     selectedWithFallback
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
-import WarhammerActorSheetV2 from "./sheets/v2/actor";
+import WarhammerActorSheetV2 from "./sheets/actor";
 import { SingletonItemModel } from "./model/components/singleton-item";
-import WarhammerItemSheetV2 from "./sheets/v2/item";
+import WarhammerItemSheetV2 from "./sheets/item";
 import addSheetHelpers from "./util/sheet-helpers";
 import { WarhammerZoneConfig } from "./apps/zone-config";
 import WarhammerDiffEditor from "./apps/diff-editor";
