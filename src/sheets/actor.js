@@ -173,15 +173,12 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         else 
         {
-            switch(ev.target.dataset.type)
+            if (!effect) 
             {
-            case "target" : 
-                return this._onApplyTargetEffect(effect);
-            case "area" : 
-                return this._onPlaceAreaEffect(effect);
-            case "zone" : 
-                return this._onApplyZoneEffect(effect);
+                return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
             }
+
+            effect.performEffectApplication();
         }
     }
 
@@ -215,73 +212,6 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         
         this.object.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
-
-    async _onApplyTargetEffect(effect) 
-    {
-        let effectData;
-        if (effect) 
-        {
-            effectData = effect.convertToApplied();
-        }
-        else 
-        {
-            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
-        }
-    
-        // let effect = actor.populateEffect(effectId, item, test)
-    
-        let targets = Array.from(game.user.targets).map(t => t.actor);    
-        if (effectData.system.transferData.selfOnly)
-        {
-            targets = [effect.actor];
-        }
-        if (!(await effect.runPreApplyScript({targets, effectData})))
-        {
-            return;
-        }
-        game.canvas.tokens.setTargets([]);
-    
-        await Promise.all(
-            targets.map(target => target.applyEffect({effectData}))
-        );
-    }
-    
-    async _onPlaceAreaEffect(effect) 
-    {
-        let effectData = {};
-        if (effect) 
-        {
-            effectData = effect.convertToApplied();
-        }
-        else 
-        {
-            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
-        }
-        if (!(await effect.runPreApplyScript({effectData})))
-        {
-            return;
-        }
-        let template = await AreaTemplate.fromEffect(effect.uuid, null, null, foundry.utils.diffObject(effectData, effect.convertToApplied()));
-        await template.drawPreview();
-    }
-
-    async _onApplyZoneEffect(effect) 
-    {
-        let effectData = {};
-        if (effect) 
-        {
-            effectData = effect.convertToApplied();
-        }
-        else 
-        {
-            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
-        }
-        if (!(await effect.runPreApplyScript({effectData})))
-        {
-            return;
-        }
-        ZoneHelpers.promptZoneEffect({effectData : [effectData]});
-    };
 
     //#endregion
 }

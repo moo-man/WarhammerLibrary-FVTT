@@ -3,6 +3,7 @@ import { format, log, systemConfig, localize } from "../util/utility";
 import WarhammerScript from "../system/script";
 import { WarhammerTestBase } from "../system/test";
 import ZoneHelpers from "../util/zone-helpers";
+import AreaTemplate from "../util/area-template";
 
 export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentClass
 {
@@ -457,6 +458,69 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
         return Array.from(actors).filter(a => a.uuid != this.actor?.uuid);
     }
+
+    performEffectApplication()
+    {
+
+        if (this.system.transferData.type == "target" || (this.system.transferData.type == "aura" && this.system.transferData.area.aura.transferred))
+        {
+            return this.applyToTargets();
+        }
+        if (this.system.transferData.type == "area")
+        {
+            return this.applyToArea();
+        }
+        if (this.system.transferData.type == "zone")
+        {
+            return this.applyToZone();
+        }
+    }
+
+    async applyToTargets() 
+    {
+        let effectData;
+        effectData = this.convertToApplied();
+    
+        let targets = Array.from(game.user.targets).map(t => t.actor);    
+        if (effectData.system.transferData.selfOnly)
+        {
+            targets = [this.actor];
+        }
+        if (!(await this.runPreApplyScript({targets, effectData})))
+        {
+            return;
+        }
+        game.canvas.tokens.setTargets([]);
+    
+        await Promise.all(
+            targets.map(target => target.applyEffect({effectData}))
+        );
+    }
+    
+    async applyToArea() 
+    {
+        let effectData;
+        effectData = this.convertToApplied();
+
+        if (!(await this.runPreApplyScript({effectData})))
+        {
+            return;
+        }
+        let template = await AreaTemplate.fromEffect(this.uuid, null, null, foundry.utils.diffObject(effectData, this.convertToApplied()));
+        await template.drawPreview();
+    }
+
+    async applyToZone() 
+    {
+        let effectData;
+        effectData = this.convertToApplied();
+
+        if (!(await this.runPreApplyScript({effectData})))
+        {
+            return;
+        }
+        ZoneHelpers.promptZoneEffect({effectData : [effectData]});
+    };
 
     get show()
     {

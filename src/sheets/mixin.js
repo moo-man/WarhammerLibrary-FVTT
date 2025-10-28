@@ -229,7 +229,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach(e => e.addEventListener("dragenter", async ev => 
         {
             this.dragTab = true;
-            console.log("enter");
             let {tab, group} = ev.currentTarget.dataset;
             await warhammer.utility.sleep(500);
             if (this.dragTab)
@@ -240,7 +239,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
         this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach(e => e.addEventListener("dragleave", ev => 
         {
-            console.log("leave");
             this.dragTab = false;
         }));
     
