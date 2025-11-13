@@ -284,6 +284,15 @@
             padding-inline-start: 2px;
             font-size: var(--font-size-12);
           }
+
+          .system-info {
+            position: relative;
+
+            .notification-pip {
+                top: 0px;
+                right: -15px;
+            }
+          }
       }
 
       button {
