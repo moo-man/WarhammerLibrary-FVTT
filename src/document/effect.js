@@ -26,6 +26,14 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             this.updateSource({[`system.sourceData.test`] : {...test}});
         }
+        
+        if (this.parent)
+        {
+            if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {data, options, user, type: "effect", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+        }
 
         let preventCreation = false;
         preventCreation = await this._handleFilter(data, options, user);

@@ -25,7 +25,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.isOwned)
         {
-            await Promise.all(this.actor.runScripts("createItem", this));
+            if ((await Promise.all(this.actor.runScripts("preUpdateDocument", {data, options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+
             await this._handleConditions(data, options);
         }
     
@@ -65,6 +69,17 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
             }
             await this.actor.system.updateSingleton(this);
 
+        }
+    }
+
+    async _preUpdate(data, options, user)
+    {
+        if (this.isOwned)
+        {
+            if ((await Promise.all(this.actor.runScripts("preUpdateDocument", {data, options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
         }
     }
     

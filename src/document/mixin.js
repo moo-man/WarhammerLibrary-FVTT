@@ -20,7 +20,7 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
         options.changed = foundry.utils.diffObject(this.toObject(), data);
         await super._preUpdate(data, options, user);
         await this.system._preUpdate(data, options, user);
-        await Promise.all(this.runScripts("preUpdateDocument", {data, options, user}));
+        await Promise.all(this.runScripts("preUpdateDocument", {data, options, user, type: "data"}));
     }
 
     async _preDelete(options, user)
