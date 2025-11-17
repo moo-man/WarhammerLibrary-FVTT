@@ -79,14 +79,13 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
 
     static async onPlaceAreaEffect(ev, target) 
     {
-        let messageId = target.dataset.messageId;
         let effectUuid = target.dataset.uuid;
         let effect = await fromUuid(effectUuid);
         if (!(await effect.runPreApplyScript()))
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect(effectUuid, messageId);
+        let template = await AreaTemplate.fromEffect(effectUuid, this.parent.id);
         await template.drawPreview(ev);
     }
     
