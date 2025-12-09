@@ -58,6 +58,17 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return await this.handleImmediateScripts(data, options, user);
     }
 
+    async _preDelete(options, user)
+    {
+        if (this.parent)
+        {
+            if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {options, user, type: "effect", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+        }
+    }
+
     async _onDelete(options, user)
     {
         await super._onDelete(options, user);
@@ -78,7 +89,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
         if (this.parent)
         {
-            await Promise.all(this.parent.runScripts("updateDocument", {options, user}));
+            await Promise.all(this.parent.runScripts("updateDocument", {options, user, type: "effect", document: this}));
         }
         for(let script of this.system.scripts.filter(i => i.trigger == "deleteEffect"))
         {
@@ -103,7 +114,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // If an owned effect is updated, run parent update scripts
         if (this.parent)
         {
-            await Promise.all(this.parent.runScripts("updateDocument", {data, options, user}));
+            await Promise.all(this.parent.runScripts("updateDocument", {data, options, user, type: "effect", document: this}));
         }
 
         if (foundry.utils.hasProperty(data, "system.transferData.area.aura.render") && this.actor && this.actor.getActiveTokens().length)
@@ -128,7 +139,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // If an owned effect is created, run parent update scripts
         if (this.parent)
         {
-            await Promise.all(this.parent.runScripts("updateDocument", {data, options, user}));
+            await Promise.all(this.parent.runScripts("updateDocument", {data, options, user, type: "effect", document: this}));
         }
         if (this.actor)
         {
@@ -222,7 +233,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     async _handleItemApplication()
     {
         let transferData = this.system.transferData;
-        if (transferData.documentType == "Item" && this.parent?.documentName == "Actor")
+        if (transferData.documentType == "Item" && this.parent?.documentName == "Actor" && this.system.itemTargetData.ids.length == 0) // Could already be configured before effect is applied
         {
             let items = this.parent.items.contents;
             let filter = this.system.filterScript;
@@ -712,7 +723,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
     get sourceActor() 
     {
-        return this.sourceTest ? CONFIG.ChatMessage.documentClass.getSpeakerActor(this.sourceTest.context.speaker) : this.sourceItem?.actor;
+        return !foundry.utils.isEmpty(this.sourceTest) ? CONFIG.ChatMessage.documentClass.getSpeakerActor(this.sourceTest.context.speaker) : this.sourceItem?.actor;
     }
 
     get sourceItem() 

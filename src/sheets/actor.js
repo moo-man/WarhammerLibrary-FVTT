@@ -3,6 +3,8 @@ import AreaTemplate from "../util/area-template";
 import ZoneHelpers from "../util/zone-helpers";
 import WarhammerSheetMixinV2 from "./mixin";
 import { localize } from "../util/utility";
+import ChoiceConfigV2 from "../apps/choice-config";
+import ChoiceDecision from "../apps/choice-decision";
 
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -15,7 +17,9 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         actions: {
             createItem : this._onCreateItem,
             triggerScript : this._onTriggerScript,
-            sortItems : this._onSortItemTypes
+            sortItems : this._onSortItemTypes,
+            configureChoice : this._onConfigureChoice,
+            showDecision : this._onShowDecision
         },
         window : {
             contentClasses: ["standard-form"]
@@ -212,6 +216,17 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         
         this.object.createEmbeddedDocuments("ActiveEffect", [effectData]).then(effects => effects[0].sheet.render(true));
     }
+
+    static _onConfigureChoice(ev, target)
+    {
+        new ChoiceConfigV2(this.document, {path : target.dataset.path}).render(true);
+    }
+
+    static _onShowDecision(ev, target)
+    {
+        new ChoiceDecision(foundry.utils.getProperty(this.document.system, target.dataset.path)).render(true);
+    }
+
 
     //#endregion
 }

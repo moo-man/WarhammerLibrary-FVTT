@@ -97,7 +97,7 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
         let hidden = {};
         let effect = this.document;
         let transferData = effect.system.transferData;
-        hidden.selfOnly = transferData.type != "target" && (transferData.type != "aura" || !transferData.area.aura.transferred);
+        hidden.selfOnly = transferData.type != "target" && (transferData.type != "aura" || !transferData.area.aura.transferred) && (transferData.type != "zone" || transferData.zone.type != "follow" || !transferData.zone.transferred);
         if (transferData.type == "document")
         {
             hidden.preApplyScript = true;

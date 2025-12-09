@@ -40,10 +40,10 @@ export class ChoiceModel extends foundry.abstract.DataModel
         return schema;
     }
 
-    async promptDecision()
+    async promptDecision(document, options)
     {
-        let decisions = await ChoiceDecision.awaitSubmit(this);
-        return Promise.all(decisions.map(i => this.getOptionDocument(i.id)));
+        let decisions = await ChoiceDecision.awaitSubmit(this, options);
+        return Promise.all(decisions.map(i => this.getOptionDocument(i.id, document)));
     }
 
     compileTree()
@@ -408,33 +408,40 @@ export class ChoiceModel extends foundry.abstract.DataModel
 
     _displayOptions(structure, displayOptions={})
     {
+        try 
+        {
+            if (!structure)
+            {
+                return this.options[0].name;
+            }
 
-        if (!structure)
-        {
-            return this.options[0].name;
+            if (structure.type == "option")
+            {
+                let option = this.options.find(i => i.id == structure.id);
+                if (displayOptions.links && option.idType == "uuid")
+                {
+                    return `@UUID[${option.documentId}]{${option.name}}`;
+                }
+                else 
+                {
+                    return option?.name;
+                }
+            }
+            else if (structure.type == "and" || structure.type == "or")
+            {
+                let connector = structure.type == "and" ? ",  " : "  OR  ";
+                let text = structure.options.map(o => this._displayOptions(o)).join(connector);
+                if (structure.id != "root")
+                {
+                    text = `(${text})`;
+                }
+                return text;
+            }
         }
-
-        if (structure.type == "option")
+        catch(e)
         {
-            let option = this.options.find(i => i.id == structure.id);
-            if (displayOptions.links && option.idType == "uuid")
-            {
-                return `@UUID[${option.documentId}]{${option.name}}`;
-            }
-            else 
-            {
-                return option.name;
-            }
-        }
-        else if (structure.type == "and" || structure.type == "or")
-        {
-            let connector = structure.type == "and" ? ",  " : "  OR  ";
-            let text = structure.options.map(o => this._displayOptions(o)).join(connector);
-            if (structure.id != "root")
-            {
-                text = `(${text})`;
-            }
-            return text;
+            console.error(e);
+            return "Error displaying choice options";
         }
     }
 }

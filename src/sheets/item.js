@@ -51,12 +51,12 @@ export default class WarhammerItemSheetV2 extends WarhammerSheetMixinV2(Handleba
 
     static _onConfigureChoice(ev, target)
     {
-        new ChoiceConfigV2(this.item, {path : target.dataset.path}).render(true);
+        new ChoiceConfigV2(this.document, {path : target.dataset.path}).render(true);
     }
 
     static _onShowDecision(ev, target)
     {
-        new ChoiceDecision(foundry.utils.getProperty(this.item.system, target.dataset.path)).render(true);
+        new ChoiceDecision(foundry.utils.getProperty(this.document.system, target.dataset.path)).render(true);
     }
 
 

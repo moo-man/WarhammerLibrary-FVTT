@@ -18,6 +18,11 @@ export class WarhammerZoneConfig extends WHFormApplication
             position : {
                 width : 300
             },
+            actions : {
+                deleteEffect: this._onDeleteEffect,
+                createEffect: this._onCreateEffect,
+                openEffect: this._onOpenEffect
+            },
             defaultTab : "config"
         };
 

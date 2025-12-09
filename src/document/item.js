@@ -54,7 +54,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.isOwned)
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemCreated: this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, type: "item", document: this}));
     
             // Cannot simply call runScripts here because that would only be for Item effects
             // If an item has a transfered effect, it won't call "onCreate" scripts because the effect's
@@ -74,6 +74,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     async _preUpdate(data, options, user)
     {
+        await super._preUpdate(data, options, user);
         if (this.isOwned)
         {
             if ((await Promise.all(this.actor.runScripts("preUpdateDocument", {data, options, user, type: "item", document: this }))).some(e => e == false))
@@ -94,7 +95,18 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemUpdated : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, type: "item", document: this}));
+        }
+    }
+
+    async _preDelete(options, user)
+    {
+        if (this.parent)
+        {
+            if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
         }
     }
     
@@ -125,7 +137,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {options, user, itemDeleted : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {options, user, type: "item", document: this}));
         }
     }
     
@@ -420,25 +432,6 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         }
 
         return new SelectChoices(choices);
-    }
-
-    /**
-     * 
-     * @inheritdoc
-     * @param {object} config Configuration for embedding behavior, changes for each system/type
-     */
-    async toEmbed(config, options={})
-    {
-        if (this.system.toEmbed)
-        {
-            let embed = await this.system.toEmbed(config, options);
-            embed.classList.add(`${game.system.id}-embed`, this.type);
-            return embed;
-        }
-        else 
-        {
-            return super.toEmbed(config, options);
-        }
     }
 
 }

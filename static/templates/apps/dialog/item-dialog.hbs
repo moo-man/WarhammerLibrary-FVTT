@@ -7,7 +7,7 @@
     {{#each items}}
     <li class="dialog-item" data-action="clickItem" data-index="{{@key}}" data-uuid="{{this.uuid}}">
       {{#if this.img}}
-      <img class="thumbnail" data-tooltip="{{this.name}}" src="{{this.img}}">
+      <img class="thumbnail" data-tooltip="{{this.name}}" {{#if ../useToken}}src="{{this.prototypeToken.texture.src}}"{{else}}src="{{this.img}}"{{/if}}>
       {{/if}}
       <label><a>{{this.name}}</a></label>
     </li>

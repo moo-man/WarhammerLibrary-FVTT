@@ -42,6 +42,10 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         this.items = data.items || [];
         this.count = data.count || 1;
         this.chosen = [];
+        if (options.defaultValue)
+        {
+            this.chosen = [data.items.findIndex(i => i.id == options.defaultValue)];
+        }
     }
 
     static _items = [];
@@ -52,8 +56,15 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         context.items = this.items;
         context.text = this.options.text;
         context.title = this.options.title;
+        context.useToken = this.options.useToken;
         context.chosen = this.chosen;
         return context;
+    }
+
+    async _onRender(options)
+    {
+        await super._onRender(options);
+        this._highlightChosen();
     }
 
     static async submit(event, form, fromData)
@@ -77,7 +88,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
         return items;
     }
 
-    static async create(items, count = 1, {title, text, skipSingularItemPrompt, indexed}={})
+    static async create(items, count = 1, {title, text, skipSingularItemPrompt, indexed, defaultValue="", useToken}={})
     {
 
         if (typeof items == "object" && !Array.isArray(items) && !(items instanceof Collection))
@@ -97,7 +108,7 @@ export default class ItemDialog extends HandlebarsApplicationMixin(ApplicationV2
 
         return new Promise((resolve) => 
         {
-            new this({items, count}, {text, resolve, indexed}).render(true, {window : {title}});
+            new this({items, count}, {text, resolve, indexed, defaultValue, useToken}).render(true, {window : {title}});
         });
     }
 
