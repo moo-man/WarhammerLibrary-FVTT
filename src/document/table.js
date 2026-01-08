@@ -42,4 +42,65 @@ export class WarhammerRollTable extends RollTable
         </tbody>
     </table>${config.description == "bottom" ? this.description : ""}</div>`, options))[0];
     }
+
+
+
+    /** @override */
+
+    // If the table formula specifies some inputs (e.g. `@modifier`), prompt for those values
+    async roll({roll, recursive=true}={})
+    {
+        let inputs = this.formula.match(/@([a-z.0-9_-]+)/gi);
+
+        if (inputs?.length || roll)
+        {
+            return await foundry.applications.api.Dialog.wait({
+                window: {title: this.name + " Formula"},
+                content: `
+                <div>
+                    <p style="text-align: center"><strong>Table formula requires inputs</strong></p>
+                    <p style="text-align: center">${this.formula}</p>
+                </div>
+                    ` + inputs.map(i => 
+                {
+                    let name = i.replaceAll("@", "");
+                    return `<div class="form-group"><label>${name}</label><div class="form-fields"><input type="number" name=${name}></div></div>`;
+                }).join(""),
+                buttons: [
+                    {
+                        action: "confirm",
+                        label : "Confirm",
+                        callback: async (event, button, dialog) =>
+                        {
+                            try 
+                            {
+                                let rollData = {};
+                                for(let input of inputs)
+                                {
+                                    let name = input.replaceAll("@", "");
+                                    rollData[name] = button.form.elements[name].value || 0;
+                                }
+                                
+                                let filledRoll = new Roll(this.formula, rollData);
+                                return super.roll({roll: filledRoll, recursive});
+                            }
+                            catch(e)
+                            {
+                                return super.roll();
+                            }
+                        }
+                    }
+                ],
+                close: () => 
+                {
+                    // Need to return to ensure the action listener re-enables the sheet button (if rolling from the sheet)
+                    return {roll: {}};
+                }
+            });
+        }
+        else 
+        {
+            return super.roll({roll, recursive});
+        }
+    }
 }
