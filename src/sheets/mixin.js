@@ -583,8 +583,19 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
         let internalPath = this._getDataAttribute(ev, "ipath");
         let arr = foundry.utils.getProperty(doc, list);
 
-        // Not very good probably but it will do for now
-        let value = parseInt(ev.target.value) || ev.target.value;
+
+        let value = null;
+
+        // Need to support data-string forcing it to be a string (Soulbound overcast descriptions usually are "+1 <text>"" so parseInt reduces that to just 1)
+        if (ev.target.dataset.string)
+        {
+            value = ev.target.value;
+        }
+        else 
+        {
+            // Not very good but i'm afraid of what will break if I change it
+            value = parseInt(ev.target.value) || ev.target.value;
+        }
 
         if (arr)
         {
