@@ -439,7 +439,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         if (this.system.transferData.avoidTest.value == "item")
         {
             effect.system.transferData.avoidTest.value = "custom";
-            foundry.utils.mergeObject(effect.system.transferData.avoidTest, this.item?.getTestData() || {});
+            foundry.utils.mergeObject(effect.system.transferData.avoidTest, this.item?.system.test.toObject() || {});
         }
     
         effect.origin = this.actor?.uuid || effect.origin;

@@ -17,7 +17,7 @@ export class WarhammerRollTable extends RollTable
                 : r.name || description;
         };
 
-        return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<div class="table-container">${config.description == "top" ? this.description : ""}<table class="${game.system.id} embedded">
+        return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<div style="${config.style || ""}" class="table-container">${config.description == "top" ? this.description : ""}<table class="${game.system.id} embedded">
         <thead>
         <tr class="title"><td colspan="${columns.length + 2}">@UUID[${this.uuid}]{${columns.length ? this.name.split("-")[0].trim() : this.name}}</td></tr>
         <tr class="subheader">

@@ -365,6 +365,26 @@ export function replacePopoutPath(path)
 };
 
 /**
+ * Helper function for embeds, typically used by documents being embedded into journals where those documents also have a link to that journal.
+ * We don't want that link in the embed
+ * 
+ * @param {String} html Serialized HTML
+ * @param {Document} document Document being embedded into, remove uuid
+ * @returns 
+ */
+export function removeSelfUUID(html, document)
+{
+    if (document)
+    {
+        return html.replaceAll(new RegExp(`<.{1,2}>@UUID\\[${document.uuid}.+?\\].+?<\/.>`, "gm"), "");
+    }
+    else 
+    {
+        return html;
+    }
+}
+
+/**
  *
  * @param type
  * @param loadingLabel
