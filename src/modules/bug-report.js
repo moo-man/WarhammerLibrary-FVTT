@@ -223,6 +223,7 @@ export default class WarhammerBugReporter extends HandlebarsApplicationMixin(App
             body: JSON.stringify({
                 title: data.title,
                 body: data.description,
+                contact: data.contact,
                 assignees: ["moo-man"],
                 labels: data.labels,
                 system: game.system.id

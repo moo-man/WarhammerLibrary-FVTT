@@ -198,5 +198,27 @@ export default function ()
             default: true,
             onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
         });
+
+        game.settings.register("warhammer-lib", "disableDragRuler", {
+            scope: "world",
+            config: true,
+            name: "WH.DisableDragRuler",
+            label: "WH.DisableDragRuler",
+            hint: "WH.DisableDragRulerHint",    
+            type: Boolean,
+            default: false,
+            requiresReload: true
+        });
+
+        game.settings.register(game.system.id, "firstLoad", {
+            scope: "world",
+            config: false,
+            name : "First Load",
+            type: Boolean,
+            default: false
+        });
+
+        
+
     });
 }
