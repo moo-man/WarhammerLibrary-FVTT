@@ -61,18 +61,26 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         return new this(template);
     }
 
-    static async fromEffect(effectUuid, messageId, radius, mergeData={}) 
+    static async fromEffect({effectUuid, effect, effectData}, messageId, radius, mergeData={}) 
     {
 
-        let effect = await fromUuid(effectUuid);
-        let effectData = effect.convertToApplied();
+        if (effectUuid)
+        {
+            effect = await fromUuid(effectUuid);
+            effectData = effect.convertToApplied();
+        }
+        else if (effect) 
+        {
+            effectData = effect.convertToApplied();
+        }
+
         // Sometimes, the radius needs to reference the test (usually overcasting)
-        
         foundry.utils.setProperty(effectData, "system.sourceData.test",  game.messages.get(messageId)?.system.test);
 
         foundry.utils.mergeObject(effectData, mergeData);
 
-        radius = radius || effect.radius; 
+
+        radius = radius || effect?.radius; 
 
         // Prepare template data
         const templateData = {
@@ -89,7 +97,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
                     messageId: messageId,
                     aura: false,
                     round: game.combat?.round ?? -1,
-                    instantaneous : effect.system.transferData.area.duration == "instantaneous"
+                    instantaneous : effectData.system.transferData.area.duration == "instantaneous"
                 }
             }
         };

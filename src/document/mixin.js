@@ -179,6 +179,10 @@ export const WarhammerDocumentMixin = (cls) => class extends cls
         {
             let embed = await this.system.toEmbed(config, options);
             embed.classList.add(`${game.system.id}-embed`, this.type);
+            if (config.classes)
+            {
+                embed.classList.add(config.classes);
+            }
             return embed;
         }
         else 

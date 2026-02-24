@@ -26,32 +26,16 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
     {
   
         let applyData = {};
-        let uuid = target.dataset.uuid;
-        let effectPath = target.dataset.path;
         let messageId = this.parent.id;
         let test = this.test;
         let actor = test?.actor ?? this.actor;
-        let item = test?.item ?? this.item;
-        let effect;
       
         if (!actor.isOwner)
         {return ui.notifications.error("CHAT.ApplyError");}
       
-      
-        if (effectPath)
-        {
-            effect = foundry.utils.getProperty(item, effectPath);
-            applyData = {effectData : [effect.convertToApplied(test)]};
-        }
-        else if (uuid)
-        {
-            effect = await fromUuid(uuid);
-            applyData = {effectData : [effect.convertToApplied(test)]};
-        }
-        else 
-        {
-            return ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
-        }
+        let effect = await this._getEffect(target.dataset);
+
+        applyData = {effectData : [effect.convertToApplied(test)]};
           
         let targets = [];
         if (effect.system.transferData.selfOnly)
@@ -79,24 +63,46 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
 
     static async onPlaceAreaEffect(ev, target) 
     {
-        let effectUuid = target.dataset.uuid;
-        let effect = await fromUuid(effectUuid);
+        let effect = await this._getEffect(target.dataset);
         if (!(await effect.runPreApplyScript()))
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect(effectUuid, this.parent.id);
+        let template = await AreaTemplate.fromEffect({effect}, this.parent.id);
         await template.drawPreview(ev);
     }
     
     static async onApplyZoneEffect(ev, target) 
     {
-        let test = this.test;
-        let effect = await fromUuid(target.dataset.uuid);
-        if (!(await effect.runPreApplyScript({test})))
+        let effect = await this._getEffect(target.dataset);
+        if (!(await effect.runPreApplyScript()))
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect({effectUuids: target.dataset.uuid}, this.parent.id);
+        ZoneHelpers.promptZoneEffect({effectData: effect.convertToApplied()}, this.parent.id);
     };
+
+    async _getEffect({uuid, id, path})
+    {
+        let test = this.test;
+        let item = test?.item ?? this.item;
+        let effect = await fromUuid(uuid);
+
+        if (!effect && path)
+        {
+            effect = foundry.utils.getProperty(item, path);
+        }
+        else if (!effect && id)
+        {
+            effect = item.effects.get(id);
+        }
+        
+        if (!effect)
+        {
+            ui.notifications.error("WH.ErrorUnableToFindEffect", {localize: true});
+            throw new Error("WH.ErrorUnableToFindEffect");
+        }
+        
+        return effect;
+    }
 }
