@@ -63,24 +63,25 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
 
     static async fromEffect({effectUuid, effect, effectData}, messageId, radius, mergeData={}) 
     {
+        let test = game.messages.get(messageId)?.system.test;
 
         if (effectUuid)
         {
             effect = await fromUuid(effectUuid);
-            effectData = effect.convertToApplied();
+            effectData = effect.convertToApplied(test);
         }
         else if (effect) 
         {
-            effectData = effect.convertToApplied();
+            effectData = effect.convertToApplied(test);
         }
 
         // Sometimes, the radius needs to reference the test (usually overcasting)
-        foundry.utils.setProperty(effectData, "system.sourceData.test",  game.messages.get(messageId)?.system.test);
+        foundry.utils.setProperty(effectData, "system.sourceData.test",  test);
 
         foundry.utils.mergeObject(effectData, mergeData);
 
 
-        radius = radius || effect?.radius; 
+        radius = radius || Number(effectData.system.transferData.area.radius) || effect?.radius; 
 
         // Prepare template data
         const templateData = {

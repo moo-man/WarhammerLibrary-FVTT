@@ -326,6 +326,18 @@
     .name-list,
     .document-reference  {
         position: relative; 
+        > div {
+            display: flex;
+            align-items: center;   
+            justify-content: center;
+            line-height: normal;
+            gap: 0.5rem;
+            img {
+                object-fit: contain;
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+        }
         .floating {
             position: absolute;
             top: -0.5rem;

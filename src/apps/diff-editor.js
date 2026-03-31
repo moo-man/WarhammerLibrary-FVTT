@@ -1,9 +1,8 @@
-import { localize } from "../util/utility";
-
+import DraggableApp from "./draggable";
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
-export default class WarhammerDiffEditor extends HandlebarsApplicationMixin(ApplicationV2)
+export default class WarhammerDiffEditor extends DraggableApp(HandlebarsApplicationMixin(ApplicationV2))
 {    
     static DEFAULT_OPTIONS = {
         tag : "form",
@@ -25,7 +24,8 @@ export default class WarhammerDiffEditor extends HandlebarsApplicationMixin(Appl
         actions : {
             contentLink : this._onClickContentLink,
             dereference : this._onDereference
-        }
+        },
+        dragDrop: [{dropSelector: null}]
     };
 
     static PARTS = {

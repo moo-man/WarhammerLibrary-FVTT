@@ -37,13 +37,38 @@ export class ChoiceModel extends foundry.abstract.DataModel
                 value : new fields.StringField(),
             })),
         }));
+
+        schema.script = new fields.JavaScriptField({async: true});
+
         return schema;
     }
 
     async promptDecision(document, options)
     {
         let decisions = await ChoiceDecision.awaitSubmit(this, options);
-        return Promise.all(decisions.map(i => this.getOptionDocument(i.id, document)));
+        let choices = await Promise.all(decisions.map(i => this.getOptionDocument(i.id, document)));
+
+        choices = this.runScript(choices, document);
+
+        return choices;
+    }
+
+    async runScript(choices, document)
+    {
+        let args = {choices};
+        if (this.script)
+        {
+            let asyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+            try 
+            {
+                await new asyncFunction(["args"], this.script).bind({item: document})(args);
+            }
+            catch(e)
+            {
+                ui.notifications.error(e.message);
+            }
+        }
+        return args.choices;
     }
 
     compileTree()

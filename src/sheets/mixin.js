@@ -31,7 +31,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             editRichText : this._onEditRichText,
             clickEffectButton : this._onClickEffectButton,
             editDiff : this._onEditDiff
-
         },
         window: {
             resizable: true
@@ -44,8 +43,8 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
 
     async close(options={}) 
     {
-        super.close(options);
         ui.context?.close();
+        return super.close(options);
     }
 
     /**
@@ -671,7 +670,6 @@ const WarhammerSheetMixinV2 = (cls) => class extends cls
             containers[config.container.id].append(element);
         }
     }
-
     
 };
 

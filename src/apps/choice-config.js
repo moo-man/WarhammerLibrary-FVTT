@@ -9,6 +9,7 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
 {
 
     static DEFAULT_OPTIONS = {
+        tag : "form",
         classes: ["choice-config", "warhammer"],
         window: {
             resizable : true,
@@ -32,6 +33,11 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
             toggleConnector : this._onToggleConnector,
             openChoiceDialog : this._onOpenChoiceDialog,
             editDiff : this._onEditDiff
+        },
+        form: {
+            handler: this.submit,
+            submitOnChange: true,
+            closeOnSubmit: false
         },
         dragDrop: [{ dragSelector: '.option', dropSelector: ".option" }],
 
@@ -62,6 +68,12 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
             group: "primary",
             label: "WH.Choice.Structure",
             icon: "fa-solid fa-share-nodes"
+        },
+        script: {
+            id: "script",
+            group: "primary",
+            label: "WH.Choice.Script",
+            icon: "fa-solid fa-code"
         }
     };
 
@@ -70,6 +82,8 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
         let data = await super._prepareContext(options);
         data.options = this.choices.options;
         data.structureHTML = this.constructStructureHTML();
+        data.script = this.choices.script;
+        data.scriptField = this.choices.schema.fields.script;
         return data;
     }
 
@@ -130,6 +144,11 @@ export default class ChoiceConfigV2 extends WarhammerSheetMixinV2(HandlebarsAppl
         await this.document.update({[`system.${this.options.path}`] : choices});
         this.choices = foundry.utils.getProperty(this.document.system, this.options.path);
         this.render(true);
+    }
+
+    static async submit(ev, form, formData)
+    {
+        this.document.update(formData.object);
     }
 
     _canDragStart(selector) 

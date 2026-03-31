@@ -405,6 +405,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
 
         effect.system.transferData.originalType = effect.system.transferData.type;
 
+        // "other" is generally assumed to be target, but assume aura if transferred aura is checked
+        if (effect.system.transferData.type == "other" && effect.system.transferData.area.aura.transferred)
+        {
+            effect.system.transferData.type = "aura";
+        }
+
         // An applied transferred aura should stay as an aura type, but it is no longer transferred
         if (effect.system.transferData.type == "aura" && effect.system.transferData.area.aura.transferred)
         {
