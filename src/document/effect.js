@@ -150,6 +150,13 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         }
     }
 
+    // V14 removed the statuses check for this getter, however all transferred effects have their statuses set, so this is still useful.
+    // Maybe not ideal but unless every applied effect can define its duration, this seems like the easiest solution
+    get isTemporary()
+    {
+        return super.isTemporary || this.statuses.size > 0;
+    }
+
     //#region Creation Handling
 
     async handleImmediateScripts(data, options, user)

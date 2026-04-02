@@ -37,73 +37,38 @@ export default class TokenHelpers
         }
     }  
     
+    /**
+     * Creates and deletes auras based on changes to the token or actor
+     * 
+     * @param {TokenDocument} token Token updated or created
+     * @returns 
+     */
     static async updateAuras(token)
     {
         let actor = token?.actor;
         if (actor && game.users.activeGM.id == game.user.id)
         {
-            let existingAuraTemplates = token.parent.templates.contents.filter(i => i.getFlag(game.system.id, "aura")?.owner == actor.uuid);
-            if (token._destroyed)
-            {
-                return await token.parent.deleteEmbeddedDocuments("MeasuredTemplate", existingAuraTemplates.map(i => i.id));
-            }
+            let existingAuras = token.parent.regions.contents.filter(i => i.getFlag(game.system.id, "aura")?.owner == actor.uuid);
+
             let auraEffects = actor.auraEffects;
+
             // create templates from all aura effects
             let allAuraTemplates = (await Promise.all(auraEffects.map(e => AreaTemplate.fromAuraEffect(e.uuid, token)))).map(i => i.document);
             
-            // Find all templates that have already been created 
-            
-
             // Filter to keep any templates that need to be created 
-            let newAuraTemplates = allAuraTemplates.filter(t => !existingAuraTemplates.find(existing => existing.getFlag(game.system.id, "effectUuid") == t.getFlag(game.system.id, "effectUuid")));
+            let toCreate = allAuraTemplates.filter(t => !existingAuras.find(existing => existing.getFlag(game.system.id, "effectUuid") == t.getFlag(game.system.id, "effectUuid")));
 
-            let toDelete = existingAuraTemplates.filter(existing => !auraEffects.find(e => e.uuid == existing.getFlag(game.system.id, "effectUuid")));
+            // If an actor doesn't produce an aura effect anymore, remove it
+            let toDelete = existingAuras.filter(existing => !auraEffects.find(e => e.uuid == existing.getFlag(game.system.id, "effectUuid")));
             
             // Create those templates
             if (toDelete.length)
             {
-                await token.parent.deleteEmbeddedDocuments("MeasuredTemplate", toDelete.map(i => i.id));
+                await token.parent.deleteEmbeddedDocuments("Region", toDelete.map(i => i.id));
             }
-            if (newAuraTemplates.length)
+            if (toCreate.length)
             {
-                return token.parent.createEmbeddedDocuments("MeasuredTemplate", newAuraTemplates.map(i => i.toObject()));
-            }
-        }
-    }
-
-    static async moveAuras(token, update, options, user)
-    {
-        if (game.users.activeGM.id == game.user.id)
-        {
-            let tokenAnimations = [...token.object.animationContexts.values()];
-            let hidden = token.hidden;
-            if (update.x || update.y || update.hidden)
-            {
-                let auraTemplates = token.parent.templates.contents.filter(i => i.getFlag(game.system.id, "aura")?.owner == token.actor?.uuid);
-
-                for(let t of auraTemplates)
-                {
-                    foundry.canvas.animation.CanvasAnimation.animate([{parent: t.object, attribute : "x", to: options._newCenter[token.id].x}, {parent: t.object, attribute : "y", to: options._newCenter[token.id].y}], {duration : tokenAnimations[0]?.duration || 0});
-                }
-
-                let auraTemplateData = auraTemplates.map(i => i.toObject());
-
-                for(let t of auraTemplateData)
-                {
-                    // If the token is hidden, always hide the aura
-                    if (hidden)
-                    {
-                        t.hidden = hidden;
-                    }
-                    if (options._newCenter)
-                    {
-                        t.x = options._newCenter[token.id].x;
-                        t.y = options._newCenter[token.id].y;
-                    }
-                }
-
-                await Promise.all(tokenAnimations.map(i => i.promise));
-                token.parent.updateEmbeddedDocuments("MeasuredTemplate", auraTemplateData);
+                return token.parent.createEmbeddedDocuments("Region", toCreate.map(i => i.toObject()));
             }
         }
     }

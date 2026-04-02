@@ -14,7 +14,7 @@ export default function ()
     {
         CONFIG.ux.ContextMenu = warhammer.apps.WarhammerContextMenu;
 
-        CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
+        CONFIG.Region.documentClass.prototype.regionEffect = function () 
         {
             let effectData = this.getFlag(game.system.id, "effectData");
             if (effectData) 
