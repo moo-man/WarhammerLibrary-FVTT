@@ -5,12 +5,7 @@
     <label>{{localize "WH.RollMode"}}</label>
     <div class="form-fields">
         <select name="rollMode">
-            {{#select fields.rollMode}}
-                <option value="publicroll">{{localize "CHAT.RollPublic"}}</option>
-                <option value="gmroll">{{localize "CHAT.RollPrivate"}}</option>
-                <option value="blindroll">{{localize "CHAT.RollBlind"}}</option>
-                <option value="selfroll">{{localize "CHAT.RollSelf"}}</option>
-            {{/select}}
+            {{selectOptions rollModes selected=fields.rollMode}}
         </select>
     </div>
 </div>

@@ -59,6 +59,12 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
             "follow" : "WH.FollowToken"
         };
 
+        context.auraVisibilities = {
+            0 : "Only on Region Layer",
+            1 : "Always for Gamemaster",
+            2 : "Always for Everyone"
+        };
+
         context.fields = this.document.system.schema.fields.transferData.fields;
         return context;
     }  
@@ -68,52 +74,5 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
         let update = foundry.utils.expandObject(formData.object);
         await this.document.update(update);
         this.render({force : true});
-    }
-
-}
-
-export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(ApplicationV2)
-{
-    static DEFAULT_OPTIONS = {
-        tag : "form",
-        window: {
-            contentClasses: ["standard-form"],
-            title : "WH.TemplateCustomization"
-        },
-        form: {
-            handler: this.submit,
-            submitOnChange: false,
-            closeOnSubmit: true
-        }
-    };
-
-    static PARTS = {
-        form: {
-            template: "modules/warhammer-lib/templates/apps/template-config.hbs"
-        }
-    };
-
-    constructor(document, options)
-    {
-        super(options);
-        this.document = document;
-    }
-
-    async _prepareContext(options)
-    {
-        let context = await super._prepareContext(options);
-        context.values = this.document._source.system.transferData.area.templateData;
-        context.fields = this.document.system.schema.fields.transferData.fields.area.fields.templateData.fields;
-        return context;
-    }
-
-    static async submit(event, form, formData)
-    {
-        this.document.update(formData.object);
-    }
-
-    get list() 
-    {
-        return foundry.utils.getProperty(this.document, this.path);
     }
 }

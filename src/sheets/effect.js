@@ -1,11 +1,12 @@
 import AdvancedEffectConfig from "../apps/advanced-effect";
 import WarhammerEffectScriptEditor from "../apps/effect-script-editor";
+import WarhammerEffectShapeConfig from "../apps/effect-shape-config";
 import { localize, systemConfig } from "../util/utility";
 
 export default class WarhammerActiveEffectConfig extends foundry.applications.sheets.ActiveEffectConfig
 {
     systemTemplate = "";
-    effectKeysTemplate = "";
+    changeKeysTemplate = "modules/warhammer-lib/templates/effect/change-key-options.hbs";
     _advancedConfig = null;
     
     static DEFAULT_OPTIONS = {
@@ -15,7 +16,10 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
             editScript : this._onEditScript,
             deleteScript : this._onDeleteScript,
             advancedConfig : this._onAdvancedConfig,
-            manualToggle : this._onManualToggle
+            manualToggle : this._onManualToggle,
+        },
+        advancedActions: {
+            configureShape : this._onConfigureShape
         }
     };
 
@@ -74,7 +78,7 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
         {
             for (let element of changes.querySelectorAll(".key input"))
             {
-                element.parentElement.innerHTML = await foundry.applications.handlebars.renderTemplate(this.effectKeysTemplate || systemConfig().effectKeysTemplate, {name : element.name, value : element.value});
+                element.parentElement.innerHTML = await foundry.applications.handlebars.renderTemplate(this.changeKeysTemplate, foundry.utils.mergeObject({name : element.name, value : element.value}, this.document.changeKeys));
             }
         }
 
@@ -147,11 +151,19 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
         this.submit();
     }
 
+    static async _onConfigureShape(ev, target)
+    {
+        if (!this.document.apps.shape?.rendered)
+        {
+            this.document.apps.shape = await new WarhammerEffectShapeConfig(this.document).render({force: true});
+        }
+    }
+
     static async _onAdvancedConfig(ev, target)
     {
         if (!this.document.apps.advanced?.rendered)
         {
-            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this), actions : this.options.advancedActions || {}}).render(true);
+            this.document.apps.advanced = await new AdvancedEffectConfig(this.document, {systemTemplate : this.systemTemplate, hiddenProperties : this.hiddenProperties.bind(this), actions : this.options.advancedActions || {}}).render({force: true});
         }
     }
 

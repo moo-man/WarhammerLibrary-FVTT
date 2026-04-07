@@ -139,13 +139,7 @@
                         <label>{{localize "WH.TransferData.AreaDuration"}}</label>
                         <div class="form-fields">
                             <select name="system.transferData.area.duration">
-                                {{#select system.transferData.area.duration}}
-                                    <option value="instantaneous">
-                                        {{localize "WH.TransferData.AreaDurationInstantaneous"}}
-                                    </option>
-                                    <option value="sustained">{{localize "WH.TransferData.AreaDurationSustained"}}
-                                    </option>
-                                {{/select}}
+                                {{selectOptions (config "areaDurations") selected=system.transferData.area.duration}}
                             </select>
                         </div>
                     </div>
@@ -162,12 +156,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label>{{localize "WH.TransferData.RenderAura"}}</label>
+                        <label>{{localize "WH.TransferData.AuraVisibility"}}</label>
                         <div class="form-fields">
-                            <input type="checkbox" name="system.transferData.area.aura.render" {{checked
-                                system.transferData.area.aura.render}}>
+                            <select name="system.transferData.area.aura.visibility">
+                                {{selectOptions auraVisibilities selected=system.transferData.area.aura.visibility}}
+                            </select>
                         </div>
-                        <p class="notes">{{localize "WH.TransferData.RenderAuraHint"}}</p>
+                        <p class="notes">{{localize "WH.TransferData.AuraVisibilityHint"}}</p>
                     </div>
                 {{/if}}
 
@@ -188,11 +183,11 @@
                     <p class="notes">{{localize "WH.TransferData.RadiusHint"}}</p>
                 </div>
                 <div class="form-group">
-                    <label>{{localize "WH.TransferData.TemplateData"}}
-                        <a class="configure-template" data-path="system.transferData.area.templateData"><i
-                                class="fa-solid fa-gear"></i></a>
+                    <label>
+                        <a data-action="configureShape" data-path="system.transferData.area.shapeData">{{localize "WH.TransferData.ConfigureShape"}} <i class="fa-solid fa-gear"></i></a>
                     </label>
-                    <p class="notes">{{{localize "WH.TransferData.TemplateDataHint"}}}</p>
+                    
+                    <p class="notes">{{{localize "WH.TransferData.ConfigureShapeHint"}}}</p>
                 </div>
             </fieldset>
         {{/if}}

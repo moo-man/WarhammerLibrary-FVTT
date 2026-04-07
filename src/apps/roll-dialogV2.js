@@ -413,6 +413,12 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
             data : this.data,
             fields : this.fields,
             tooltips : this.tooltips.getTooltips(),
+            rollModes : {
+                publicroll : "WH.Dialog.RollPublic",
+                gmroll : "WH.Dialog.RollPrivate",
+                blindroll : "WH.Dialog.RollBlind",
+                selfroll : "WH.Dialog.RollSelf"
+            }
         };
     }
 
@@ -610,6 +616,7 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
      * When a modifier (script) is selected, either activate or deactivate it by adding its index to 
      * selected or unselected scripts respectively. 
      * @param {Event} ev Triggering event
+     * @param target
      */
     static _onModifierClicked(ev, target)
     {

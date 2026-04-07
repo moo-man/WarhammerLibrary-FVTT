@@ -1,0 +1,51 @@
+<div class="shape-config">
+    {{formGroup fields.color value=source.color label="Color"}}
+
+{{log this}}
+    {{#unless aura}}
+
+        <div class="form-group">
+            <label>Type</label>
+            <div class="form-fields">
+                <select name="system.transferData.area.shape.type">
+                    {{selectOptions types selected=source.type}}
+                </select>
+            </div>
+        </div>
+
+
+        {{#unless (or (eq source.type "rectangle") (eq source.type "ellipse") (eq source.type "line"))}}
+        <div class="form-group">
+            <label>Radius</label>
+            <div class="form-fields">
+                <input type="text" value="{{radius}}" disabled placeholder="Inherit">
+            </div>
+        </div>
+        {{/unless}}
+
+
+
+        {{#if (eq source.type "circle")}}
+
+        {{/if}}
+        
+        {{#if (eq source.type "cone")}}
+            {{formGroup fields.curvature value=source.curvature choices=curvatures label="Curvature"}}
+            {{formGroup fields.angle value=source.angle label="Angle"}}
+        {{/if}}
+
+        {{#if (or (eq source.type "rectangle") (eq source.type "ellipse"))}}
+            {{formGroup fields.width value=source.width label="Width (X)"}}
+            {{formGroup fields.height value=source.height label="Height (Y)"}}
+        {{/if}}
+
+        {{#if (eq source.type "line")}}
+            {{formGroup fields.length value=source.length label="Length (Y)"}}
+            {{formGroup fields.width value=source.width label="Width (X)"}}
+        {{/if}}
+        
+
+    {{else}}
+        <p>Shape options not available for Aura effects</p>
+    {{/unless}}
+</div>

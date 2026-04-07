@@ -89,19 +89,27 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
 
         radius = radius || Number(effectData.system.transferData.area.radius) || effect?.radius; 
 
+        let shapeData = effectData.system.transferData.area.shape;
+
+        shapeData.radius = this._convertGridUnits(radius);
+
+        shapeData.width = this._convertGridUnits(shapeData.width);
+        shapeData.height = this._convertGridUnits(shapeData.height);
+        shapeData.length = this._convertGridUnits(shapeData.length);
+        shapeData.x = 0;
+        shapeData.y = 0;
+
+        shapeData.radiusX = shapeData.width;
+        shapeData.radiusY = shapeData.height;
+
+
         // Prepare template data
         const templateData = {
             user: game.user.id,
             name: effectData.name,
-            color: game.user.color,
+            color: shapeData.color || game.user.color,
             visibility: 3,
-            shapes : [{
-                type: "circle",
-                radius: (radius / canvas.grid.distance) * canvas.grid.size,
-                x: 0,
-                y: 0,
-                gridBased: false
-            }],
+            shapes : [shapeData],
             flags: {
                 [game.system.id]: {
                     effectData: effectData,
@@ -119,6 +127,12 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
         // Return the template constructed from the item data
         return new this(template);
     }
+
+    static _convertGridUnits(units)
+    {
+        return (units / canvas.grid.distance) * canvas.grid.size;
+    }
+
     /* -------------------------------------------- */
 
     
@@ -127,14 +141,15 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
 
         let effect = await fromUuid(effectUuid);
         let effectData = effect.convertToApplied();
+        let shapeData = effectData.system.transferData.area.shape;
         
 
         // Prepare template data
         const templateData = {
             name: effect.name,
             user: game.user.id,
-            color: game.user.color,
-            visibility: 2,
+            color: shapeData.color || game.user.color,
+            visibility: effectData.system.transferData.area.aura.visibility,
             attachment: {
                 token: token.id
             },
@@ -149,7 +164,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
                     x: token.x,
                     y: token.y
                 },
-                radius: (effect.radius / canvas.grid.distance) * canvas.grid.size,
+                radius: this._convertGridUnits(effect.radius),
                 gridBased: false
             }],
             flags: {

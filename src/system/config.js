@@ -76,6 +76,11 @@ export default {
         "Item" : "Item"
     },
 
+    areaDurations: {
+        "instantaneous" : "WH.TransferData.AreaDurationInstantaneous",
+        "sustained" : "WH.TransferData.AreaDurationSustained"
+    },
+
     
     filterValues : {
 
