@@ -118,12 +118,12 @@
                 {{/if}}
             {{/if}}
 
-            {{#if (and (eq system.transferData.type "zone") (ne system.zone.type "tokens"))}}
+            {{#if (and (eq system.transferData.type "zone") (ne system.transferData.zone.type "tokens"))}}
                 <div class="form-group">
                     <label>{{localize "WH.TransferData.SkipImmediatePlacement"}}</label>
                     <div class="form-fields">
-                        <input type="checkbox" name="system.zone.skipImmediateOnPlacement" {{checked
-                            system.zone.skipImmediateOnPlacement}}>
+                        <input type="checkbox" name="system.transferData.zone.skipImmediateOnPlacement" {{checked
+                            system.transferData.zone.skipImmediateOnPlacement}}>
                     </div>
                     <p class="notes">{{localize "WH.TransferData.SkipImmediatePlacementHint"}}</p>
                 </div>

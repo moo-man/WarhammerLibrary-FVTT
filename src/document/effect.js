@@ -163,7 +163,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     {
 
         // Block immediate scripts (when zone effect is placed it shouldn't run immediate scripts)
-        if (this.system.zone.skipImmediateOnPlacement && this.system.transferData.originalType == "zone")
+        if (this.system.transferData.zone.skipImmediateOnPlacement && this.system.transferData.originalType == "zone")
         {
             return;
         }
@@ -752,6 +752,11 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get sourceArea()
     {
         return fromUuidSync(this.system.sourceData.area);
+    }
+
+    get changeKeys()
+    {
+        return {choices: [], groups: []};
     }
 
     static getCreateData(effectData, overlay=false)

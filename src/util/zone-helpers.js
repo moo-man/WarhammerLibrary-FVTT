@@ -350,12 +350,12 @@ export default class ZoneHelpers
         let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
-            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.zone.type == "zone"));
+            let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.transferData.zone.type == "zone"));
 
             // One-time application effects that aren't added to a zone but instead added to tokens in the zone
             let tokenEffectUuids = [];
-            let tokenEffectData = effectData.filter(i => i.system.zone.type == "tokens");
-            let newZoneEffectNames = effectData.filter(i => i.system.zone.type == "zone").map(i => i.name); // Used for scrolling text
+            let tokenEffectData = effectData.filter(i => i.system.transferData.zone.type == "tokens");
+            let newZoneEffectNames = effectData.filter(i => i.system.transferData.zone.type == "zone").map(i => i.name); // Used for scrolling text
             for (let uuid of effectUuids)
             {
                 let originalEffect = fromUuidSync(uuid);
@@ -386,7 +386,7 @@ export default class ZoneHelpers
             {
                 let unblockedEffects = region.getFlag(game.system.id, "effects").map(e => 
                 {
-                    e.system.zone.skipImmediateOnPlacement = false; // This property blocks immediate scripts from running, so update the zone effect. 
+                    e.system.transferData.zone.skipImmediateOnPlacement = false; // This property blocks immediate scripts from running, so update the zone effect. 
                     return e;                                        // Since the tokens in the zone already have the effect, they won't receive this change until the exit and leave. 
                 });
 
