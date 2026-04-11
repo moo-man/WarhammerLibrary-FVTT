@@ -2,9 +2,9 @@ import { getActiveDocumentOwner } from "./utility";
 
 /**
  * Shamelessly copied from dnd5e's spell template implementation
- * @augments {MeasuredTemplate}
+ * @augments {Region}
  */
-export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemplate
+export default class AreaTemplate extends foundry.canvas.placeables.Region
 {
 
     /**
@@ -35,15 +35,21 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         if (aoeString.toLowerCase().includes(game.i18n.localize("AoE").toLowerCase()))
         {aoeString = aoeString.substring(aoeString.indexOf("(")+1, aoeString.length-1);};
       
+        let radius = diameter ? parseInt(aoeString) / 2 : parseInt(aoeString);
+
         // Prepare template data
         const templateData = {
-            t: "circle",
+            name: "Preview",
             user: game.user.id,
-            distance: diameter ? parseInt(aoeString) / 2 : parseInt(aoeString),
-            direction: 0,
-            x: 0,
-            y: 0,
-            fillColor: game.user.color,
+            color: game.user.color,
+            visibility: 3,
+            shapes : [{
+                type: "circle",
+                radius: (radius / canvas.grid.distance) * canvas.grid.size,
+                x: 0,
+                y: 0,
+                gridBased: false
+            }],
             flags: {
                 [game.system.id]: {
                     itemuuid: `Actor.${actorId}.Item.${itemId}`,
@@ -54,52 +60,79 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
             }
         };
   
-        const cls = CONFIG.MeasuredTemplate.documentClass;
+        const cls = CONFIG.Region.documentClass;
         const template = new cls(templateData, {parent: canvas.scene});
   
         // Return the template constructed from the item data
         return new this(template);
     }
 
-    static async fromEffect(effectUuid, messageId, radius, mergeData={}) 
+    static async fromEffect({effectUuid, effect, effectData}, messageId, radius, mergeData={}) 
     {
+        let test = game.messages.get(messageId)?.system.test;
 
-        let effect = await fromUuid(effectUuid);
-        let effectData = effect.convertToApplied();
+        if (effectUuid)
+        {
+            effect = await fromUuid(effectUuid);
+            effectData = effect.convertToApplied(test);
+        }
+        else if (effect) 
+        {
+            effectData = effect.convertToApplied(test);
+        }
+
         // Sometimes, the radius needs to reference the test (usually overcasting)
-        
-        foundry.utils.setProperty(effectData, "system.sourceData.test",  game.messages.get(messageId)?.system.test);
+        foundry.utils.setProperty(effectData, "system.sourceData.test",  test);
 
         foundry.utils.mergeObject(effectData, mergeData);
 
-        radius = radius || effect.radius; 
+
+        radius = radius || Number(effectData.system.transferData.area.radius) || effect?.radius; 
+
+        let shapeData = effectData.system.transferData.area.shape;
+
+        shapeData.radius = this._convertGridUnits(radius);
+
+        shapeData.width = this._convertGridUnits(shapeData.width);
+        shapeData.height = this._convertGridUnits(shapeData.height);
+        shapeData.length = this._convertGridUnits(shapeData.length);
+        shapeData.x = 0;
+        shapeData.y = 0;
+
+        shapeData.radiusX = shapeData.width;
+        shapeData.radiusY = shapeData.height;
+
 
         // Prepare template data
         const templateData = {
-            t: "circle",
             user: game.user.id,
-            distance: radius,
-            direction: 0,
-            x: 0,
-            y: 0,
-            fillColor: game.user.color,
+            name: effectData.name,
+            color: shapeData.color || game.user.color,
+            visibility: 3,
+            shapes : [shapeData],
             flags: {
                 [game.system.id]: {
                     effectData: effectData,
                     messageId: messageId,
                     aura: false,
                     round: game.combat?.round ?? -1,
-                    instantaneous : effect.system.transferData.area.duration == "instantaneous"
+                    instantaneous : effectData.system.transferData.area.duration == "instantaneous"
                 }
             }
         };
 
-        const cls = CONFIG.MeasuredTemplate.documentClass;
+        const cls = CONFIG.Region.documentClass;
         const template = new cls(templateData, {target: true, parent: canvas.scene });
 
         // Return the template constructed from the item data
         return new this(template);
     }
+
+    static _convertGridUnits(units)
+    {
+        return (units / canvas.grid.distance) * canvas.grid.size;
+    }
+
     /* -------------------------------------------- */
 
     
@@ -108,19 +141,32 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
 
         let effect = await fromUuid(effectUuid);
         let effectData = effect.convertToApplied();
+        let shapeData = effectData.system.transferData.area.shape;
         
+
         // Prepare template data
         const templateData = {
-            t: "circle",
+            name: effect.name,
             user: game.user.id,
-            distance: effect.radius,
-            direction: 0,
-            x: token.object.center.x,
-            y: token.object.center.y,
-            fillColor: effectData.system.transferData.area.templateData.fillColor || game.user.color,
-            borderColor: effectData.system.transferData.area.templateData.borderColor || "#000000",
-            texture: effectData.system.transferData.area.templateData.texture,
-            hidden : !effectData.system.transferData.area.aura.render,
+            color: shapeData.color || game.user.color,
+            visibility: effectData.system.transferData.area.aura.visibility,
+            attachment: {
+                token: token.id
+            },
+            // visibility: effectData.system.transferData.area.aura.render ? 3 : 1,
+            shapes : [{
+                type: "emanation",
+                base: {
+                    type: "token",
+                    height: token.height,
+                    width: token.width,
+                    shape: 4,
+                    x: token.x,
+                    y: token.y
+                },
+                radius: this._convertGridUnits(effect.radius),
+                gridBased: false
+            }],
             flags: {
                 [game.system.id]: {
                     effectData: effectData,
@@ -135,7 +181,8 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
             }
         };
 
-        const cls = CONFIG.MeasuredTemplate.documentClass;
+    
+        const cls = CONFIG.Region.documentClass;
         const template = new cls(templateData, {target: true, parent: canvas.scene });
 
         // Return the template constructed from the item data
@@ -199,6 +246,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
      */
     async _finishPlacement(event) 
     {
+        event.interactionData = {}; // Needed for upstream cancellation
         this.layer._onDragLeftCancel(event);
         canvas.stage.off("mousemove", this.#events.move);
         canvas.stage.off("mousedown", this.#events.confirm);
@@ -208,6 +256,13 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         await this.actorSheet?.maximize();
     }
 
+
+    _updateShape(data={})
+    {
+        let shape = this.document.shapes[0].toObject();
+        foundry.utils.mergeObject(shape, data);
+        this.document.updateSource({shapes: [shape]});
+    }
     /* -------------------------------------------- */
 
     /**
@@ -220,15 +275,23 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         let now = Date.now(); // Apply a 20ms throttle
         if ( now - this.#moveTime <= 20 ) {return;}
         const center = event.data.getLocalPosition(this.layer);
-        const snapped = canvas.grid.getSnappedPosition(center.x, center.y, 2);
-        this.document.updateSource({x: snapped.x, y: snapped.y});
+        if (!canvas.grid.isGridless)
+        {
+            const snapped = this.getSnappedPosition(center);
+            this._updateShape(snapped);
+        }
+        else 
+        {
+            this._updateShape(center);
+        }
         this.refresh();
         this.#moveTime = now;
         if (this.document.getFlag(game.system.id, "target"))
         {
-            this.updateAOETargets();
+            this.updateAOETargets(this.document);
         }
     }
+
 
     /* -------------------------------------------- */
 
@@ -242,8 +305,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         event.stopPropagation();
         let delta = canvas.grid.type > CONST.GRID_TYPES.SQUARE ? 30 : 15;
         let snap = event.shiftKey ? delta : 5;
-        const update = {direction: this.document.direction + (snap * Math.sign(event.deltaY))};
-        this.document.updateSource(update);
+        this._updateShape({rotation: this.document.shapes[0].rotation + (snap * Math.sign(event.deltaY))});
         this.refresh();
     }
 
@@ -256,14 +318,14 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
     async _onConfirmPlacement(event) 
     {
         await this._finishPlacement(event);
-        const destination = canvas.grid.getSnappedPosition(this.document.x, this.document.y, 2);
-        this.document.updateSource(destination);
-        this.#events.resolve(canvas.scene.createEmbeddedDocuments("MeasuredTemplate", [this.document.toObject()]).then(templates => 
+        const destination = this.getSnappedPosition(this.document.shapes[0]);
+        this._updateShape(destination);
+        this.#events.resolve(CONFIG.Region.documentClass.create(this.document.toObject(), {parent: this.document.parent}).then(region =>  
         {
-            let test = game.messages.get(templates[0].flags[game.system.id].messageId)?.system?.test;
+            let test = game.messages.get(region.flags[game.system.id].messageId)?.system?.test;
             if (test && test.data.context.templates)
             {
-                test.data.context.templates = test.data.context.templates.concat(templates[0].id);
+                test.data.context.templates = test.data.context.templates.concat(region.id);
                 test.renderRollCard();
             }
         }));
@@ -281,26 +343,14 @@ export default class AreaTemplate extends foundry.canvas.placeables.MeasuredTemp
         this.#events.reject();
     }
 
-    updateAOETargets()
+    getSnappedPosition(...args)
     {
-        let grid = canvas.scene.grid;
-        let templateGridSize = this.document.distance/grid.distance * grid.size;
+        return this.layer.getSnappedPoint(...args);
+    }
 
-        let minx = this.document.x - templateGridSize;
-        let miny = this.document.y - templateGridSize;
-
-        let maxx = this.document.x + templateGridSize;
-        let maxy = this.document.y + templateGridSize;
-
-        let newTokenTargets = [];
-        canvas.tokens.placeables.forEach(t => 
-        {
-            if ((t.x + (t.width / 2)) < maxx && (t.x + (t.width / 2)) > minx && (t.y + (t.height / 2)) < maxy && (t.y + (t.height / 2)) > miny)
-            {newTokenTargets.push(t.id);};
-        });
-
-        game.canvas.tokens.setTargets(newTokenTargets);
-
+    updateAOETargets(region)
+    {
+        canvas.tokens.setTargets(canvas.scene.tokens.contents.filter(t => t.testInsideRegion(region)).map(t => t.id));
     }
 
 }

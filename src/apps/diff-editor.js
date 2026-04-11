@@ -1,10 +1,8 @@
-import WarhammerSheetMixinV2 from "../sheets/v2/mixin";
-import { localize } from "../util/utility";
-
+import DraggableApp from "./draggable";
 const { ApplicationV2 } = foundry.applications.api;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
-export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(HandlebarsApplicationMixin(ApplicationV2))
+export default class WarhammerDiffEditor extends DraggableApp(HandlebarsApplicationMixin(ApplicationV2))
 {    
     static DEFAULT_OPTIONS = {
         tag : "form",
@@ -24,8 +22,10 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
             closeOnSubmit: true
         },
         actions : {
-            contentLink : this._onClickContentLink
-        }
+            contentLink : this._onClickContentLink,
+            dereference : this._onDereference
+        },
+        dragDrop: [{dropSelector: null}]
     };
 
     static PARTS = {
@@ -92,9 +92,16 @@ export default class WarhammerDiffEditor extends WarhammerSheetMixinV2(Handlebar
         return true;
     }
       
-    static async _onClickContentLink(ev)
+    static async _onClickContentLink(ev, target)
     {
-        let document = await this._getDocumentAsync(ev);
-        document.sheet.render(true, {editable : false});
+        let document = await foundry.utils.fromUuid(target.dataset.uuid);
+        document?.sheet.render(true, {editable : false});
+    }
+
+    static async _onDereference(ev, target)
+    {
+        let document = this.options.document;
+        this.generatedDiff = {name : document.name, flags : document.flags, effects : document.effects.contents.map(i => i.toObject()), img : document.img, type : document.type, dereferenced : true, system : document.system.toJSON()};
+        this.render(true);
     }
 }

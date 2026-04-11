@@ -112,6 +112,11 @@ export class DocumentReferenceListModel extends ListModel
         return {[this.schema.fields.list.fieldPath] : this.list.concat(value)};
     }
 
+    has({id, uuid})
+    {
+        return this.list.find(i => i.id == id || i.uuid == uuid);
+    }
+
     get documents() 
     {
         if (this.relative)
@@ -134,6 +139,12 @@ export class DeferredReferenceListModel extends ListModel
     add(document)
     {
         return {[this.schema.fields.list.fieldPath] : this.list.concat({uuid : document.uuid, id : document.id, name : document.name})};
+    }
+
+    
+    has({id, uuid})
+    {
+        return this.list.find(i => i.id == id || i.uuid == uuid);
     }
 
     get documents() 

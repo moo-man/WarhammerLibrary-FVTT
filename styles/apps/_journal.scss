@@ -43,3 +43,9 @@
 
       }
 }
+
+.journal-sheet {
+    .toc .level4 .page-title {
+        text-indent: calc(3 * var(--level-indent));
+    }
+}

@@ -1,9 +1,5 @@
 import { addLinkSources } from "../util/utility";
 
-
-/**
- *
- */
 export default function() 
 {
     /**
@@ -21,6 +17,10 @@ export default function()
             html.querySelector(`nav [data-anchor='${header.dataset.anchor}']`)?.remove();
         }
 
+        for(let header of html.querySelectorAll(".roll-table-embed:not(.include-toc) [data-anchor]"))
+        {
+            html.querySelector(`nav [data-anchor='${header.dataset.anchor}']`)?.remove();
+        }
     });
 
     Hooks.on("renderJournalEntryPageProseMirrorSheet", (sheet, html) => 

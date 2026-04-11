@@ -59,6 +59,12 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
             "follow" : "WH.FollowToken"
         };
 
+        context.auraVisibilities = {
+            0 : "Only on Region Layer",
+            1 : "Always for Gamemaster",
+            2 : "Always for Everyone"
+        };
+
         context.fields = this.document.system.schema.fields.transferData.fields;
         return context;
     }  
@@ -78,7 +84,7 @@ export class EmbeddedMeasuredTemplateConfig extends HandlebarsApplicationMixin(A
         tag : "form",
         window: {
             contentClasses: ["standard-form"],
-            title : "WH.TemplateCustomization"
+            title : "Template Customization"
         },
         form: {
             handler: this.submit,

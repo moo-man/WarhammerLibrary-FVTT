@@ -314,7 +314,7 @@ export function addLinkSources(html)
     html.querySelectorAll(".content-link").forEach(element => 
     {
         let uuid = element.dataset.uuid;
-        let tooltip = element.dataset.tooltip || "";
+        let tooltip = element.dataset.tooltipText || "";
         if (uuid)
         {
             let moduleKey = uuid.split(".")[1];
@@ -322,7 +322,7 @@ export function addLinkSources(html)
             {
                 if (!tooltip)
                 {
-                    tooltip = `${systemConfig().premiumModules[moduleKey]}`;
+                    tooltip = `${foundry.utils.parseUuid(uuid).type} (${systemConfig().premiumModules[moduleKey]})`;
                 }
                 else 
                 {
@@ -331,7 +331,7 @@ export function addLinkSources(html)
             }
         }
 
-        element.dataset.tooltip = tooltip;
+        element.dataset.tooltipText = tooltip;
 
     });
 }
@@ -363,6 +363,26 @@ export function replacePopoutPath(path)
     }
     return path.replace("tokens/popout/", "tokens/");
 };
+
+/**
+ * Helper function for embeds, typically used by documents being embedded into journals where those documents also have a link to that journal.
+ * We don't want that link in the embed
+ * 
+ * @param {String} html Serialized HTML
+ * @param {Document} document Document being embedded into, remove uuid
+ * @returns 
+ */
+export function removeSelfUUID(html, document)
+{
+    if (document)
+    {
+        return html.replaceAll(new RegExp(`<.{1,2}>@UUID\\[${document.uuid}.+?\\].+?<\/.>`, "gm"), "");
+    }
+    else 
+    {
+        return html;
+    }
+}
 
 /**
  *

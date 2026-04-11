@@ -25,26 +25,45 @@
             "Wiki": "WIKI"
         },
         "BugReporter": {
-            "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
-            "APIReached": "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website.",
-            "BugReportFormError": "Please fill out the form",
-            "BugReportNameError": "Please include your Discord tag or email in the Name section.",
-            "Contact": "Contact Info",
-            "ContactPlaceholder": "Discord Tag or Email.",
-            "DescriptionPlaceholder": "What happened, how to reproduce, etc.",
-            "GeneralBugReportError": "Something went wrong",
+
+            "Title" : "Submit an Issue",
+            "Report": "Report",
+            "SubmittedIssues": "Submitted Issues",
+            "APILimitReached" : "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website.",
             "LoadingIssues": "Loading Issues",
-            "ManyModules": "You have non-Warhammer modules activated, perhaps one of them is interfering? Please disable non-official Warhammer modules and translations.",
-            "MatchingIssues": "Has your issue already been posted?",
+
+            "Form" : {
+                "Title" : "Report Title",
+                "Module" : "Module",
+                "Type" : "Type",
+                "Contact" : "Contact",
+                "Description" : "Description",
+                "PAT" : "PAT",
+
+                "MatchingIssues": "Has your issue already been posted?"
+
+            },
+            "Error" : {
+                "Incomplete" : "Please complete with form with a title, type, the relevant module, type, and description",
+
+                "Generic": "Something went wrong",
+                "Report": "Error sending bug report. Please see console for details.",
+
+                "APIReached": "You have reached GitHub's API usage limit. You will need to either wait an hour before submitting or submit it manually on the Github website."
+
+            },
+
+            "Warning" : {
+                "Email": "<b>Be aware</b>: Your email will be publicly posted on this system's GitHub issues page. If you do not desire this, use your Discord tag or contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
+                "NeedHelp": "Do not use the reporter if you need immediate assistance or want to ask general questions. Please see <a href='{url}'>Troubleshooting</a>",
+                "PAT": "The PAT is considered sensitive information and is saved in this world's settings for future reports. This can be found by other users in this world if they know where to look."
+            },
+            "Closed": "Closed",
             "NeedsAttention": "NEEDS ATTENTION",
-            "NotUpdated": "<p>The Following Warhammer packages are not up to date</p>",
-            "PostError": "Error sending bug report. Please see console for details.",
-            "PostSuccess": "Bug report submitted! See the console for a link.",
-            "Resolved": "RESOLVED",
-            "Title": "Bug Reporter",
-            "Troubleshooting": "Before submitting a report, please consult the <a href='{url}'>Troubleshooting</a> page.",
-            "Updated": "<p>All Warhammer packages up to date!</p>",
-            "Warning": "<b>Be aware</b>: This information is posted on the GitHub issues page, which is public, so Discord tag is preferred. Otherwise, contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly."
+            "AlertHint": "This report either wasn't reproducible or needs some more information. Click on the title to see details.",
+
+            "ReportSuccess": "Issue submitted! See the console for a link."
+
         },
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "Chat": {
@@ -73,6 +92,7 @@
             "Options": "Options",
             "Placeholder": "Placeholder",
             "Structure": "Structure",
+            "Script": "Script",
             "SubmitChoices": "Submit Choices"
         },
         "CompendiumBrowser": {
@@ -129,20 +149,34 @@
         },
         "Configuration": "Configuration",
         "ConfigureZoneTT": "Configure Zone",
+        "ConvertDrawings": "Convert Drawings to Zones",
         "DefendingAgainst": "Defending Against",
         "DefendingAgainstTT": "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
         "DeleteEffect": "Delete Effect",
         "DeleteEffectHint": "Delete the Active Effect after running this script",
         "DeletingEffectItems": "Deleting Effect Items: {items}",
-        "Dialog.EnterValue": "Enter Value",
-        "Dialog.Initial": "Initial",
-        "Dialog.Modifiers": "Dialog Modifiers",
-        "Dialog.SelectValue": "Select Value",
-        "Dialog.UserEntry": "User Entry",
-        "Dialog.ValueDialog": "Value Dialog",
+        "DereferenceTooltip": "Fully defines the Item inside the diff, allowing for the deletion of the original Item.",
+        "Dialog": {
+            "DragDialog": "Drag Dialog",
+            "DragFilter": "Document provided is not allowed.",
+            "DragText": "Provide a Document",
+            "EnterValue": "Enter Value",
+            "Initial": "Initial",
+            "Modifiers": "Dialog Modifiers",
+            "SelectValue": "Select Value",
+            "UserEntry": "User Entry",
+            "ValueDialog": "Value Dialog",
+
+           "RollPublic" : "Public",
+           "RollPrivate" : "Private",
+           "RollBlind" : "Blind",
+           "RollSelf" : "Self"
+        },
         "DialogScript": "Dialog Script",
         "DiffDescription": "A \"Diff\" represents alterations that should be made to the original Item. This can be done manually, or can be generated by dragging and dropping an Item of the same type.",
         "DiffEditor": "Diff Editor",
+        "DisableDragRuler": "Disable Drag Ruler",
+        "DisableDragRulerHint" : "Disables Foundry's Token Drag Ruler",
         "EffectFiltered": "Effect Filtered",
         "EffectPrevented": "Effect Prevented",
         "Effects": "Effects",
@@ -150,12 +184,15 @@
         "Error": {
             "CreateZoneEffect": "Effects must be created via an Active Effect with the 'Zone' Transfer Type",
             "ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
-            "LibraryOutaded": "The Warhammer Library is out of date. {system} defines the minimum version library version to be {minimum}.",
+            "LibraryOutaded": "The Warhammer Library is out of date. {system} defines the minimum library version to be {minimum}.",
             "MismatchedItemType": "Mismatched Item type",
             "NoActorAssigned": "No assigned Actor, you can assign Actors via Player Configuration at the bottom left of the screen.",
+            "NoDrawingsToConvert": "No Drawings to Convert!",
             "NoTargetedActors": "No targeted Actors!",
             "NoTargets": "No targeted Actors!",
-            "NotValidChoiceType": "Not a valid choice"
+            "NotValidChoiceType": "Not a valid choice",
+            "WrongChoiceOptionType": "This type of Item isn't allowed. Allowed Types: {types}",
+            "AppliedEffectNoItems" : "No Items passed the Active Effect's filter!"
         },
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",
@@ -189,6 +226,7 @@
             },
             "DeleteModuleContent": "Delete {module} Content",
             "DeleteModuleContentDesc": "<p>This process deletes all Documents from <strong>{module}</strong> that have were imported from Initialization.</p><p>Please note the following:</p><ul><li>Documents manually imported from the Compendium will not be deleted.</li><li>Any Document that is Owned by a Player will not be deleted.</li></ul><p>Remember that this process only deletes imported Documents. You can reimport anything deleted from the Compendium.</p>",
+            "DialogContent": "<p class='centered'><strong>{title}</strong></p><p>{description}",
             "HelpText": "<p>Need Help? Check <a href=https://moo-man.github.io/WFRP4e-FoundryVTT/pages/premium.html#initializiation>the Wiki</a></p>",
             "OverwriteActors": "Overwrite Actors",
             "OverwriteJournals": "Overwrite Journals",
@@ -219,16 +257,21 @@
         },
         "ItemDialog": "Item Dialog",
         "ItemsNotAllowed": "This Item is not allowed on this Actor type",
+        "KeepDrawings": "Keep Drawings?",
+        "MakeZonesVisible": "Make Zones Visible?",
         "ManualEffectKeys": "Manual Effect Keys",
         "NewEffect": "New Effect",
         "NewItem": "New Item",
         "NewScript": "New Script",
+        "OriginalDocument": "Original Document",
         "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
         "PlaceEffect": "Place {name}",
         "PreApplyScript": "Pre-Apply Script for {name}",
         "Resist": "Resist",
         "RichEditor": "Rich Text Editor",
         "RollMode": "Roll Mode",
+        "RunIfDisabled" : "Run if Disabled",
+        "RunIfDisabledHint" : "Run this script even when the effect is disabled",
         "Script": "Script",
         "ScriptConfig": "Script Config",
         "ScriptEditor": "Script Editor",
@@ -237,6 +280,8 @@
         "ScriptTrigger": "Trigger",
         "Scripts": "Scripts",
         "SendingSocketRequest": "Sending Socket Request",
+        "ShowDuplicates" : "Show Duplicates",
+        "ShowDuplicatesHint" : "Check to show this script's button even if there are other manual scripts with the same name",
         "SubmissionScript": "Submission Script",
         "SubmitChoices": "Submit Choices",
         "Target": "Target",
@@ -264,6 +309,7 @@
                 "Readable": "Readable"
             }
         },
+        "ToggleEffect" : "Toggle Effect",
         "TokensInZone": "Tokens in Zone",
         "TransferData": {
             "AdvancedConfig": "Open Advanced Configuration",
@@ -295,22 +341,24 @@
             "PromptHint": "Provide a prompt and choose which document to Active Effect. Can be used with <strong>Filter</strong> to narrow the selection.",
             "Radius": "Radius",
             "RadiusHint": "Radius of the template",
-            "RenderAura": "Render Aura",
-            "RenderAuraHint": "Render the aura on the Canvas as a Measured Template",
+            "AuraVisibility": "Aura Visibility",
+            "AuraVisibilityHint": "Configure how and when the aura Region is visible",
             "Reversed": "Reversed",
             "ReversedHint": "Instead, prevent this effect when the test is failed.",
             "SelfOnly": "Self Only",
             "SelfOnlyHint": "This effect should only be applied to the owning Actor, instead of Targets.",
             "SkipImmediatePlacement": "Skip Immediate on Placement",
             "SkipImmediatePlacementHint": "Prevents Immediate scripts from running when the effect is placed.",
-            "TemplateData": "Template Data",
-            "TemplateDataHint": "Configure template data, such as color or texture",
+            "ConfigureShape": "Configure Shape",
+            "ConfigureShapeHint": "Configure the shape of the effect's area",
             "TestIndependent": "Test Independent",
             "TestIndependentHint": "If checked, this Effect can be called directly from the owning Actor's sheet, instead of from chat",
             "TransferType": "Transfer Type",
             "TransferTypeHint": "Configure how the Active Effect is transferred or applied.",
             "TransferredAura": "Transferred Aura",
             "TransferredAuraHint": "Apply this Aura to a target (or self) instead of constantly to self",
+            "TransferredFollow": "Transfer Follow",
+            "TransferredFollowHint": "Apply this Followed Effect to a target (or self), instead of contsantly to self",
             "ZoneType": "Zone Type",
             "ZoneTypeHint": "<strong>Zone Effect</strong> means the effect is tied to the zone, <strong>Tokens in Zone</strong> means it applies to all Tokens in that Zone, <strong>Follow Token</strong> means it applies to whatever zone the targeted Token is in"
         },

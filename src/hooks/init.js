@@ -1,6 +1,7 @@
 import { systemConfig } from "../util/utility";
 import CompendiumBrowserSettingsConfig from "../apps/browser/compendium-browser-settings.mjs";
 import { WarhammerModuleInitializationV2 } from "../modules/module-initializationV2";
+import WarhammerBugReporter from "../modules/bug-report";
 const {hasProperty} = foundry.utils;
 
 /**
@@ -13,7 +14,7 @@ export default function ()
     {
         CONFIG.ux.ContextMenu = warhammer.apps.WarhammerContextMenu;
 
-        CONFIG.MeasuredTemplate.documentClass.prototype.areaEffect = function () 
+        CONFIG.Region.documentClass.prototype.regionEffect = function () 
         {
             let effectData = this.getFlag(game.system.id, "effectData");
             if (effectData) 
@@ -41,7 +42,7 @@ export default function ()
 
         Handlebars.registerHelper("configLookup", function (obj, key) 
         {
-            if (obj && key)
+            if (obj != null && key != null)
             {return systemConfig()[obj]?.[key];}
             
         });
@@ -155,7 +156,6 @@ export default function ()
             return args.hash;
         });
 
-
         game.settings.registerMenu(game.system.id, "moduleInitializationMenu", {
             name: "WH.Initializer.SettingName",
             label: "WH.Initializer.SettingLabel",
@@ -163,6 +163,13 @@ export default function ()
             icon : "fa-solid fa-download",
             type: WarhammerModuleInitializationV2,
             restricted: true
+        });
+
+        game.settings.register("warhammer-lib", "bugReporter", {
+            name: "Bug Reporter Details",
+            scope: "client",
+            config: false,
+            type: WarhammerBugReporter.schema
         });
 
         // Compendium Browser source exclusion
@@ -191,5 +198,27 @@ export default function ()
             default: true,
             onChange: () => warhammer.apps.CompendiumBrowser.instance?.render(false, {changedTab: true})
         });
+
+        game.settings.register("warhammer-lib", "disableDragRuler", {
+            scope: "world",
+            config: true,
+            name: "WH.DisableDragRuler",
+            label: "WH.DisableDragRuler",
+            hint: "WH.DisableDragRulerHint",    
+            type: Boolean,
+            default: false,
+            requiresReload: true
+        });
+
+        game.settings.register(game.system.id, "firstLoad", {
+            scope: "world",
+            config: false,
+            name : "First Load",
+            type: Boolean,
+            default: false
+        });
+
+        
+
     });
 }

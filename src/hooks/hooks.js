@@ -12,6 +12,7 @@ import debug from "./debug";
 import sidebar from "./sidebar";
 import directories from "./directories.js";
 import i18n from "./i18n.js";
+import table from "./table.js";
 
 /**
  *
@@ -30,6 +31,7 @@ export default function()
     token();
     sidebar();
     i18n();
+    table();
 
     // #if _ENV == "development"
     debug();

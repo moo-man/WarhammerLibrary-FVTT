@@ -46,7 +46,7 @@ export default class WarhammerScript
     }
 
 
-    // Dialog modifiers only
+    // Dialog modifiers / manual only
     hidden(args)
     {
         if (!this.options?.hideScript)
@@ -118,6 +118,16 @@ export default class WarhammerScript
     message(content, chatData={})
     {
         return CONFIG.ChatMessage.documentClass.create(mergeObject({content}, this.getChatData(chatData)));
+    }
+    
+    dialogConfig(content, config={})
+    {
+        return foundry.utils.mergeObject({window: {title: this.effect.name}, content}, config);
+    }
+
+    dialog(content, type="confirm", config={})
+    {
+        return foundry.applications.api.Dialog[type](this.dialogConfig(content, config));
     }
 
     scriptNotification(...args)

@@ -29,6 +29,9 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
     static PARTS = {
         form: {
             template: "modules/warhammer-lib/templates/apps/dialog/value-dialog.hbs",
+        },
+        footer: {
+            template: "templates/generic/form-footer.hbs"
         }
     };
 
@@ -63,6 +66,12 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
         }
     }
 
+    close()
+    {
+        super.close();
+        this.options.resolve();
+    }
+
     /**
      * Submits the dialog, returning the input value
      * 
@@ -94,10 +103,11 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
 
             context.values = Object.keys(this.values).map(v => 
             {
-                return {key : v, display : this.values[v] == "string" ? this.values[v] : v};
+                return {key : v, display : typeof this.values[v] == "string" ? this.values[v] : v};
             });
         }
 
+        context.buttons = [{ type: "submit", label: "Submit"}];
         context.defaultValue = this.defaultValue;
         return context;
     }
@@ -113,11 +123,12 @@ export default class ValueDialog extends HandlebarsApplicationMixin(ApplicationV
      * @param {string} defaultValue Define a default value if desired
      * @param {Object|Array} values Define some preset options
      */
-    static async create({text, title}, defaultValue = "", values={})
+    static async create({text, title}, defaultValue = "", values={}, options={})
     {
         return new Promise(resolve => 
         {
-            new this({text, title}, defaultValue, values, {resolve}).render({force : true, window : {title : title || game.i18n.localize("WH.ValueDialog")}});
+            options.resolve = resolve;
+            new this({text, title}, defaultValue, values, options).render({force : true, window : {title : title || game.i18n.localize("WH.ValueDialog")}});
         });
     }
 }

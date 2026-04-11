@@ -1,6 +1,6 @@
 import * as Filter from "./filter.mjs";
 import CompendiumBrowserSettingsConfig from "./compendium-browser-settings.mjs";
-import WarhammerSheetMixinV2 from "../../sheets/v2/mixin.js";
+import WarhammerSheetMixinV2 from "../../sheets/mixin.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 

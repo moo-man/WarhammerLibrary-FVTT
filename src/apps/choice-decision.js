@@ -72,7 +72,7 @@ export default class ChoiceDecision extends HandlebarsApplicationMixin(Applicati
         }
         return new Promise(resolve => 
         {
-            new this(choices, mergeObject(options, {resolve})).render(true);
+            new this(choices, foundry.utils.mergeObject(options, {resolve})).render(true);
         });
     }
 

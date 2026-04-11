@@ -79,7 +79,7 @@ class SheetHelpers
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuidSync(uuid) : this.document[collection || "items"]?.get(id));
+        return this.document[collection || "items"]?.get(id) || fromUuidSync(uuid);
     };
 
     static _getDocumentAsync = function (event, target) 
@@ -92,7 +92,7 @@ class SheetHelpers
         let collection = this._getCollection(event);
         let uuid = this._getUUID(event);
 
-        return (uuid ? fromUuid(uuid) : this.document[collection || "items"]?.get(id));
+        return this.document[collection || "items"]?.get(id) || fromUuid(uuid);
     };
 };
 

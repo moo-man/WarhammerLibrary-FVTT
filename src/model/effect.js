@@ -40,16 +40,21 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
 
             area : new fields.SchemaField({
                 radius: new fields.StringField({ nullable: true }), // Area/Aura radius, if null, inherit from item
-                templateData: new fields.SchemaField({
-                    borderColor : new fields.ColorField({label : "Border Color"}),
-                    fillColor : new fields.ColorField({label : "Fill Color"}),
-                    texture : new fields.FilePathField({label : "Texture", categories : ['IMAGE', 'VIDEO']})
-                }),
+                shape: new fields.SchemaField({
+                    color : new fields.ColorField({label : "Color"}),
+                    type: new fields.StringField({initial: "circle"}),
+                    width: new fields.NumberField(),
+                    height: new fields.NumberField(),
+                    length: new fields.NumberField(),
+                    angle: new fields.NumberField({initial: 60}),
+                    curvature: new fields.StringField({initial: "round"})
+                }), //new fields.TypedSchemaField(foundry.data.BaseShapeData.TYPES, {required: false}),
+
                 keep: new fields.BooleanField({ initial: false }), // Area/Aura - should they keep the effect when leaving
-    
                 aura : new fields.SchemaField({
                     transferred : new fields.BooleanField({initial : false}),
-                    render: new fields.BooleanField({ initial: false }), // Whether or not to render the measured template
+                    render: new fields.BooleanField({ initial: false }), // DEPRECATED, use visibility 
+                    visibility: new fields.NumberField({initial: 0})
                 }),
     
                 // Placed Template
@@ -79,10 +84,12 @@ export class WarhammerActiveEffectModel extends foundry.abstract.DataModel
             options: new fields.SchemaField({
                 targeter: new fields.BooleanField({initial : false}),
                 defending: new fields.BooleanField({initial : false}),
+                runIfDisabled: new fields.BooleanField({initial : false}),
                 hideScript: new fields.StringField({}),
                 activateScript: new fields.StringField({}),
                 submissionScript: new fields.StringField({}),
                 deleteEffect: new fields.BooleanField({initial : false}),
+                showDuplicates: new fields.BooleanField({initial : false}),
             }),
             async: new fields.BooleanField()
         }));

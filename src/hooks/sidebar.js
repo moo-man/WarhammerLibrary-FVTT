@@ -1,3 +1,4 @@
+import WarhammerBugReporter from "../modules/bug-report";
 import {systemConfig} from "../util/utility";
 /**
  *
@@ -71,5 +72,7 @@ export function renderSettings(html)
     section.append(_generateLinks());
     if ( pip ) {section.querySelector(".system-info").insertAdjacentElement("beforeend", pip);}
     html.querySelector(".info").insertAdjacentElement("afterend", section);
+
+    WarhammerBugReporter.addBugReporterButton(html);
 }
   

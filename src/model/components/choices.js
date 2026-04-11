@@ -37,13 +37,38 @@ export class ChoiceModel extends foundry.abstract.DataModel
                 value : new fields.StringField(),
             })),
         }));
+
+        schema.script = new fields.JavaScriptField({async: true});
+
         return schema;
     }
 
-    async promptDecision()
+    async promptDecision(document, options)
     {
-        let decisions = await ChoiceDecision.awaitSubmit(this);
-        return Promise.all(decisions.map(i => this.getOptionDocument(i.id)));
+        let decisions = await ChoiceDecision.awaitSubmit(this, options);
+        let choices = await Promise.all(decisions.map(i => this.getOptionDocument(i.id, document)));
+
+        choices = this.runScript(choices, document);
+
+        return choices;
+    }
+
+    async runScript(choices, document)
+    {
+        let args = {choices};
+        if (this.script)
+        {
+            let asyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+            try 
+            {
+                await new asyncFunction(["args"], this.script).bind({item: document})(args);
+            }
+            catch(e)
+            {
+                ui.notifications.error(e.message);
+            }
+        }
+        return args.choices;
     }
 
     compileTree()
@@ -70,6 +95,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
         let option;
         if (data.documentName == "Item")        
         {
+            let restrictions = this.schema.options.restrictType;
+            if (restrictions?.length > 0 && !restrictions.includes(data.type))
+            {
+                ui.notifications.error("WH.Error.WrongChoiceOptionType", {localize : true, format : {types : restrictions.join(", ")}});
+                throw new Error(game.i18n.format("WH.Error.WrongChoiceOptionType", {types : restrictions.join(", ")}));
+            }
             option = this._createDocumentOption(data);
         }
         else if (data.documentName == "ActiveEffect")
@@ -188,7 +219,12 @@ export class ChoiceModel extends foundry.abstract.DataModel
         }
         else if (option.type == "placeholder")
         {
-            return foundry.utils.mergeObject({name : option.name}, systemConfig().placeholderItemData);
+            let data = foundry.utils.mergeObject({name : option.name}, systemConfig().placeholderItemData);
+            if (this.schema.options.restrictType?.length)
+            {
+                data.type = this.schema.options.restrictType[0];
+            }
+            return data;
         }
         else if (["id", "uuid"].includes(option.idType))
         {
@@ -390,21 +426,47 @@ export class ChoiceModel extends foundry.abstract.DataModel
         return this._displayOptions(this.structure);
     }
 
-    _displayOptions(structure)
+    get textDisplayWithLinks() 
     {
-        if (structure.type == "option")
+        return this._displayOptions(this.structure, {links : true});
+    }
+
+    _displayOptions(structure, displayOptions={})
+    {
+        try 
         {
-            return this.options.find(i => i.id == structure.id).name;
-        }
-        else if (structure.type == "and" || structure.type == "or")
-        {
-            let connector = structure.type == "and" ? ",  " : "  OR  ";
-            let text = structure.options.map(o => this._displayOptions(o)).join(connector);
-            if (structure.id != "root")
+            if (!structure)
             {
-                text = `(${text})`;
+                return this.options[0].name;
             }
-            return text;
+
+            if (structure.type == "option")
+            {
+                let option = this.options.find(i => i.id == structure.id);
+                if (displayOptions.links && option.idType == "uuid")
+                {
+                    return `@UUID[${option.documentId}]{${option.name}}`;
+                }
+                else 
+                {
+                    return option?.name;
+                }
+            }
+            else if (structure.type == "and" || structure.type == "or")
+            {
+                let connector = structure.type == "and" ? ",  " : "  OR  ";
+                let text = structure.options.map(o => this._displayOptions(o)).join(connector);
+                if (structure.id != "root")
+                {
+                    text = `(${text})`;
+                }
+                return text;
+            }
+        }
+        catch(e)
+        {
+            console.error(e);
+            return "Error displaying choice options";
         }
     }
 }

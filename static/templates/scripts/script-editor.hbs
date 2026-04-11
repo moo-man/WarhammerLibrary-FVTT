@@ -1,7 +1,5 @@
 <div>
-    {{formInput script value=script language="javascript" elementType="code-mirror"}}
-
-    {{#if (isGM)}}
-    <button type="submit">{{localize "Submit"}}</button>
-    {{/if}}
+    <code-mirror language="javascript" indent="2" name="script" value="{{script}}">
+      {{script}}
+    </code-mirror>
 </div>

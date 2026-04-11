@@ -1,15 +1,13 @@
-const { ApplicationV2 } = foundry.applications.api;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+import { WHFormApplication } from "./form-application";
 
-export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(ApplicationV2)
+export default class WarhammerScriptEditor extends WHFormApplication
 {    
     static DEFAULT_OPTIONS = {
         tag : "form",
-        classes: ["script-editor", "warhammer"],
+        classes: ["script-editor"],
         window: {
             resizable : true,
             title : "WH.ScriptEditor",
-            contentClasses: ["standard-form"]
         },
         position : {
             height: 600,
@@ -26,15 +24,11 @@ export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(Ap
     };
 
     static PARTS = {
-        choices : {template : "modules/warhammer-lib/templates/scripts/script-editor.hbs"}
+        editor : {template : "modules/warhammer-lib/templates/scripts/script-editor.hbs"},
+        footer : {
+            template : "templates/generic/form-footer.hbs"
+        }
     };
-
-    constructor(document, options)
-    {
-        super(options);
-        
-        this.document = document;
-    }
 
     static async wait(script, options={})
     {
@@ -48,9 +42,10 @@ export default class WarhammerScriptEditor extends HandlebarsApplicationMixin(Ap
 
     async _prepareContext() 
     {
-        let data = await super._prepareContext();
-        data.script = this._getScript();
-        return data;
+        let context = await super._prepareContext();
+        context.script = this._getScript();
+        context.buttons = [{ type: "submit", label: "Submit", icon: "fa-solid fa-save" }];
+        return context;
     }
 
     _getScript()

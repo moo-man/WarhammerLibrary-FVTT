@@ -89,12 +89,19 @@ export class BaseDialogTooltips
     }
 
     // Resets a field's values to the provided value
-    set(type, value, source)
+    set(type, value, source, replace=false)
     {
         let field = this[`_${type}`];
         if (field && value && source)
         {
-            field.list = [{value, source, set: true}].concat(field.list);
+            if (replace)
+            {
+                field.list = [{value, source, set: true}];
+            }
+            else 
+            {
+                field.list = [{value, source, set: true}].concat(field.list);
+            }
         }
     }
 

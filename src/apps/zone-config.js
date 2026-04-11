@@ -1,5 +1,6 @@
 import addSheetHelpers from "../util/sheet-helpers";
 import { localize } from "../util/utility";
+import { WHFormApplication } from "./form-application";
 
 export class WarhammerZoneConfig extends WHFormApplication
 {
@@ -17,6 +18,11 @@ export class WarhammerZoneConfig extends WHFormApplication
             position : {
                 width : 300
             },
+            actions : {
+                deleteEffect: this._onDeleteEffect,
+                createEffect: this._onCreateEffect,
+                openEffect: this._onOpenEffect
+            },
             defaultTab : "config"
         };
 
@@ -33,12 +39,12 @@ export class WarhammerZoneConfig extends WHFormApplication
         config: {
             id: "config",
             group: "primary",
-            label: localize("WH.Configuration"),
+            label: "WH.Configuration",
         },
         effects: {
             id: "effects",
             group: "primary",
-            label: localize("WH.Effects"),
+            label: "WH.Effects",
         }
     };
 
@@ -105,42 +111,35 @@ export class WarhammerZoneConfig extends WHFormApplication
     static _onDeleteEffect(ev)
     {
         let index = this._getIndex(ev);  
-        this.document.setFlag(game.system.id, "effects", this.document.flags[game.system.id].effects.filter((_, i) => i != index)).then(() => this.render(true));
+        this.document.setFlag(game.system.id, "effects", this.document.flags[game.system.id].effects.filter((_, i) => i != index)).then(() => this.render({force: true}));
     } 
 
     static _onOpenEffect(ev)
     {
         let index = this._getIndex(ev);
         let effectData = this.document.getFlag(game.system.id, "effects")[index];
-        new ActiveEffect.implementation(effectData, {parent: {documentName : "Region"}}).sheet.render(true, {editable : false});
+        new ActiveEffect.implementation(effectData, {parent: {documentName : "Region"}}).sheet.render({force: true, editable : false});
     }
         
     static addRegionControls()
     {
-        foundry.applications.sheets.RegionConfig.DEFAULT_OPTIONS.window.controls = [
+        Hooks.on("renderRegionConfig", (app, html, data, options) => 
+        {
+            if (!options.isFirstRender)
             {
-                icon: 'fa-solid fa-game-board-simple',
-                label: "Zone",
-                action: "zoneConfig"
+                return;
             }
-        ];
-        Hooks.on("renderRegionLegend", (app, html) => 
-        {
-            html.querySelectorAll(".region").forEach(region => 
+
+            let button = document.createElement("button");
+            button.classList.add("header-control", "icon", "fa-solid", "fa-game-board-simple");
+            button.dataset.tooltip="WH.ConfigureZoneTT";
+            button.type = "button";
+            button.addEventListener("click", ev => 
             {
-                $(`<button class="icon" data-tooltip="WH.ConfigureZoneTT"><i class="fa-solid fa-game-board-simple"></i></button>`).insertBefore(region.querySelector("button")).on("click", (ev) => 
-                {
-                    let region = canvas.scene.regions.get(ev.currentTarget.parentElement.dataset.regionId);
-                    new this(region).render(true);
-                });
+                new this(app.document).render({force: true});
             });
-        });
-        Hooks.on('setup', (app, html) => 
-        {
-            foundry.applications.sheets.RegionConfig.DEFAULT_OPTIONS.actions.zoneConfig = function (event, target) 
-            {
-                new this(this.document).render(true);
-            };
+            
+            html.querySelector(".window-header button").insertAdjacentElement("beforebegin", button);
         });
     }
 }

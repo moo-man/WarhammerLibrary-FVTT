@@ -42,5 +42,11 @@
             {{{structureHTML}}}
         </div>
 
+        <div class="tab {{#if tabs.script.active}}active{{/if}}" data-tab="script" data-group="primary">
+        <p>This script runs after choices have been made, allowing them to be altered.</p>
+            {{formInput scriptField value=script language="javascript" elementType="code-mirror"}}
+        </div>
+
+
             
     </div>

@@ -125,6 +125,18 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
         dialogData.data.speaker.alias = actor.prototypeToken.name;
         dialogData.data.targets = (context.skipTargets) ? [] : context.targets || Array.from(game.user.targets).filter(t => t.document.id != dialogData.data.speaker.token); // Remove self from targets
         delete context.targets;
+
+        // Used by scripts to store data and then pass onto the test
+        if (!context.flags)
+        {
+            context.flags = {};
+        }
+
+        if (!context.scripts)
+        {
+            context.scripts = [];
+        }
+        
         if (actor && !actor?.token)
         {
             // getSpeaker retrieves tokens even if this sheet isn't a token's sheet
@@ -193,6 +205,11 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
             // Need to remember binded function to later remove
             this.#onKeyPress = this._onKeyPress.bind(this);
             document.addEventListener("keypress", this.#onKeyPress);
+        }
+
+        if (this.abort)
+        {
+            this.close();
         }
 
     }
@@ -396,6 +413,12 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
             data : this.data,
             fields : this.fields,
             tooltips : this.tooltips.getTooltips(),
+            rollModes : {
+                publicroll : "WH.Dialog.RollPublic",
+                gmroll : "WH.Dialog.RollPrivate",
+                blindroll : "WH.Dialog.RollBlind",
+                selfroll : "WH.Dialog.RollSelf"
+            }
         };
     }
 
@@ -593,6 +616,7 @@ export default class WarhammerRollDialogV2 extends HandlebarsApplicationMixin(Ap
      * When a modifier (script) is selected, either activate or deactivate it by adding its index to 
      * selected or unselected scripts respectively. 
      * @param {Event} ev Triggering event
+     * @param target
      */
     static _onModifierClicked(ev, target)
     {

@@ -45,4 +45,9 @@ export class SingletonItemModel extends DocumentReferenceModel
         this.document?.delete();
         return {[`${this.schema.fieldPath}`] : {id : "", uuid : "", name : ""}};
     }
+
+    unset()
+    {
+        return this.delete();
+    }
 }

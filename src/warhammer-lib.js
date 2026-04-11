@@ -22,8 +22,6 @@ import AreaTemplate from "./util/area-template";
 import { WarhammerMessageModel} from "./model/message";
 import { WarhammerTestMessageModel} from "./model/test";
 import WarhammerModuleInitializer from "./modules/module-initialization";
-import { WarhammerActorSheet } from "./sheets/actor";
-import { WarhammerItemSheet } from "./sheets/item";
 import overrides from "./util/overrides";
 import { error,
     findAllItems,
@@ -34,6 +32,7 @@ import { error,
     log,
     replacePopoutPath,
     replacePopoutTokens,
+    removeSelfUUID,
     sleep,
     targetedOrAssignedActors,
     sortObjectEntries,
@@ -44,9 +43,9 @@ import { error,
     selectedWithFallback
 } from "./util/utility";
 import { DeferredReferenceListModel, DiffReferenceListModel, DocumentReferenceListModel, ListModel } from "./model/components/list";
-import WarhammerActorSheetV2 from "./sheets/v2/actor";
+import WarhammerActorSheetV2 from "./sheets/actor";
 import { SingletonItemModel } from "./model/components/singleton-item";
-import WarhammerItemSheetV2 from "./sheets/v2/item";
+import WarhammerItemSheetV2 from "./sheets/item";
 import addSheetHelpers from "./util/sheet-helpers";
 import { WarhammerZoneConfig } from "./apps/zone-config";
 import WarhammerDiffEditor from "./apps/diff-editor";
@@ -66,6 +65,7 @@ import WarhammerRollDialogV2 from "./apps/roll-dialogV2";
 import DraggableApp from "./apps/draggable";
 import ContainerizedApp from "./apps/containerized";
 import { WHFormApplication } from "./apps/form-application";
+import DragDialog from "./apps/drag-dialog.js";
 hooks();
 overrides();
 
@@ -92,6 +92,7 @@ warhammer.utility = {
     findUuid,
     replacePopoutTokens,
     replacePopoutPath,
+    removeSelfUUID,
     addSheetHelpers,
     sleep,
     targetedOrAssignedActors,
@@ -107,6 +108,7 @@ warhammer.apps = {
     WarhammerScript,
     ItemDialog,
     ValueDialog,
+    DragDialog,
     WarhammerScriptEditor,
     WarhammerDiffEditor,
     WarhammerBugReport,
@@ -119,8 +121,6 @@ warhammer.apps = {
     WarhammerTestBase,
     AreaTemplate,
     WarhammerModuleInitializer,
-    WarhammerActorSheet,
-    WarhammerItemSheet,
     WarhammerActorSheetV2,
     WarhammerItemSheetV2,
     WarhammerZoneConfig,

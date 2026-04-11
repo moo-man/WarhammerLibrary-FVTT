@@ -25,7 +25,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.isOwned)
         {
-            await Promise.all(this.actor.runScripts("createItem", this));
+            if ((await Promise.all(this.actor.runScripts("preUpdateDocument", {data, options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+
             await this._handleConditions(data, options);
         }
     
@@ -50,7 +54,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.isOwned)
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemCreated: this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, type: "item", document: this}));
     
             // Cannot simply call runScripts here because that would only be for Item effects
             // If an item has a transfered effect, it won't call "onCreate" scripts because the effect's
@@ -67,6 +71,18 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
         }
     }
+
+    async _preUpdate(data, options, user)
+    {
+        await super._preUpdate(data, options, user);
+        if (this.isOwned)
+        {
+            if ((await Promise.all(this.actor.runScripts("preUpdateDocument", {data, options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+        }
+    }
     
     async _onUpdate(data, options, user)
     {
@@ -79,7 +95,18 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, itemUpdated : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {data, options, user, type: "item", document: this}));
+        }
+    }
+
+    async _preDelete(options, user)
+    {
+        if (this.parent)
+        {
+            if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {options, user, type: "item", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
         }
     }
     
@@ -110,7 +137,7 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
     
         if (this.actor) 
         {
-            await Promise.all(this.actor.runScripts("updateDocument", {options, user, itemDeleted : this}));
+            await Promise.all(this.actor.runScripts("updateDocument", {options, user, type: "item", document: this}));
         }
     }
     
@@ -232,12 +259,11 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
         return effects.reduce((prev, current) => prev.concat(current.scripts), []).concat(fromActor).filter(i => i.trigger == trigger);
     }
 
-    *allApplicableEffects() 
+    *allApplicableEffects(ignoreDisabled=false) 
     {
-        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()).filter(e => this.system.effectIsApplicable(e)))
+        for(let effect of this.effects.contents.concat(this.system.getOtherEffects()).filter(e => this.system.effectIsApplicable(e, {ignoreDisabled})))
         {
-            if (!effect.disabled)
-            {yield effect;};
+            yield effect;
         }
     }
  
@@ -321,8 +347,26 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
     get manualScripts() 
     {
-        let effects = Array.from(this.allApplicableEffects()).filter(e => e.system.transferData.type == "document");
-        return effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+        let effects = Array.from(this.allApplicableEffects(true)).filter(e => e.system.transferData.type == "document");
+        let scripts = effects.reduce((scripts, effect) => scripts.concat(effect.manualScripts), []);
+        let unique = [];
+        for(let script of scripts)
+        {
+            let existing = unique.find(i => i.label == script.label);
+            if (existing && !script.options.showDuplicates)
+            {
+                // Don't show multiple manual scripts from the same effect
+                if (existing.effect.name != script.effect.name)
+                {
+                    unique.push(script);
+                }
+            }
+            else 
+            {
+                unique.push(script);
+            }
+        }
+        return unique;
     }
 
     get testIndependentEffects()
@@ -389,4 +433,5 @@ export class WarhammerItem extends WarhammerDocumentMixin(Item)
 
         return new SelectChoices(choices);
     }
+
 }

@@ -1,0 +1,20 @@
+<div>
+  {{#if text}}
+    <div class="dialog-text">{{{text}}}</div>
+  {{/if}}
+
+  <div class="drop-container">
+    
+      <p class="centered"><strong>{{#if this.document}}{{this.document.name}}{{else}}&nbsp;{{/if}}</strong></p>
+    
+    <div class="droppable">
+      {{#if this.document}}
+        <img src="{{this.document.img}}">
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="form-footer" style="margin-top: 0.5rem">
+    <button>{{localize "Submit"}}</button>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+.theme-light .warhammer.drag-dialog {
+  --border: var(--color-dark-6);
+}
+
+.warhammer.drag-dialog {
+    --border: var(--color-cool-3);
+
+    display: flex;
+    flex-direction: column;
+
+    .window-content>div {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-text {
+      text-align: center;
+    }
+
+    .drop-container {
+
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .droppable {
+        border: 1px dashed var(--border);
+        height: 100px;
+        width: 100px;
+        img {
+          height: 100%;
+          width: 100%;
+        }
+      }
+    }
+  }
