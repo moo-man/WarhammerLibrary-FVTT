@@ -31,7 +31,7 @@ export default class ChatCommands
         for(let command in commands)
         {
             this.commands[command] = {
-                pattern : new RegExp(`^${command.prefix || this.prefix}(?<command>${command})\\s?(?<args>.*)`),
+                pattern : new RegExp(`^(?:<.+?>)*${command.prefix || this.prefix}(?<command>${command})\\s?(?<args>.+?)?(?:<\\/.+>)+`),
                 callback : commands[command].callback,
                 args : commands[command].args,
                 defaultArg : commands[command].defaultArg,
@@ -128,7 +128,7 @@ export default class ChatCommands
             let match = this.match(text);
             if (match)
             {
-                this.call(match.groups.command, match.groups.args);
+                this.call(match.groups.command, match.groups.args || "");
                 return false;
             }
         });
