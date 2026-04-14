@@ -128,7 +128,7 @@ export default class ChatCommands
             let match = this.match(text);
             if (match)
             {
-                this.call(match.groups.command, match.groups.args);
+                this.call(match.groups.command, match.groups.args || "");
                 return false;
             }
         });
