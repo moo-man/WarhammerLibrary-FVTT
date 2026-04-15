@@ -60,9 +60,9 @@ export default class AdvancedEffectConfig extends HandlebarsApplicationMixin(App
         };
 
         context.auraVisibilities = {
-            0 : "Only on Region Layer",
-            1 : "Always for Gamemaster",
-            2 : "Always for Everyone"
+            0 : "WH.AuraVisibility.OnlyRegionLayer",
+            1 : "WH.AuraVisibility.AlwaysGM",
+            2 : "WH.AuraVisibility.AlwaysEveryone"
         };
 
         context.fields = this.document.system.schema.fields.transferData.fields;

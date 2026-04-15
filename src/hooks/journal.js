@@ -26,7 +26,7 @@ export default function()
     Hooks.on("renderJournalEntryPageProseMirrorSheet", (sheet, html) => 
     {
         let selector = html.querySelector("[name='title.level']");
-        selector?.insertAdjacentHTML("beforeend", `<option value='4' ${sheet.document.title.level == 4 ? "selected" : ""}>Level 4</option>`);
+        selector?.insertAdjacentHTML("beforeend", `<option value='4' ${sheet.document.title.level == 4 ? "selected" : ""}>${game.i18n.localize("WH.Journal.TitleLevel4")}</option>`);
     });
 
 }

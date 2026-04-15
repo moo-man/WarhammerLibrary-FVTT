@@ -109,7 +109,7 @@ export default class ChatCommands
                 let commandData = this.commands[command];
                 content += `<p><strong>${commandData.description}</strong></p>
                 <p><span style='font-family:monospaced'>${this.prefix}${command}</span></p>
-                <p><strong>Arguments</strong>: ${commandData.args?.length == 0 ? "None" : "<span style='font-family:monospaced'>" + commandData.args.join("</span>, <span style='font-family:monospaced'>")}</span></p>
+                <p><strong>${game.i18n.localize("WH.Chat.Commands.Arguments")}</strong>: ${commandData.args?.length == 0 ? game.i18n.localize("WH.Chat.Commands.None") : "<span style='font-family:monospaced'>" + commandData.args.join("</span>, <span style='font-family:monospaced'>")}</span></p>
                 ${commandData.defaultArg ? "<p><strong>" + localize("WH.Chat.Commands.DefaultArgument") + "</strong>: " + commandData.defaultArg +  "</p>" : ""}
                 ${commandData.notes ? "<p><strong>" + localize("WH.Chat.Commands.Notes") + "</strong>: " + commandData.notes +  "</p>" : ""}
                 ${commandData.examples ? "<p><strong>" + localize("WH.Chat.Commands.Examples") + "</strong>: " + commandData.examples +  "</p>" : ""}

@@ -109,7 +109,7 @@ export class WarhammerModuleContentHandler
         {
             let existing = collection.get(doc.id);
             await existing.update(doc.toObject());
-            ui.notifications.notify(`Updated existing document ${doc.name}`);
+            ui.notifications.notify(game.i18n.format("WH.Initialization.UpdatedExistingDocument", {name: doc.name}));
         }
     }
 

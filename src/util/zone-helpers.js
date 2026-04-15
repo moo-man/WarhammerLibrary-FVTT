@@ -419,7 +419,7 @@ export default class ZoneHelpers
                 foundry.applications.api.DialogV2.confirm({
                     window: {title : "WH.ConvertDrawings"},
                     content : `
-                    <p>Convert ${drawings.length} Drawings into Zones?
+                    <p>${game.i18n.format("WH.Zone.ConfirmConvert", {count: drawings.length})}
                     <hr>
                     <div class="form-group">
                         <label> ${localize("WH.KeepDrawings")}</label>
@@ -455,7 +455,7 @@ export default class ZoneHelpers
         for(let drawing of drawings)
         {
             let converted = {
-                name : drawing.text || "Zone",
+                name : drawing.text || game.i18n.localize("WH.Zone.DefaultName"),
                 visibility : showZones ? 2 : 0
             };
 
@@ -506,7 +506,7 @@ export default class ZoneHelpers
 
         canvas.scene.createEmbeddedDocuments("Region", zones).then(zones => 
         {
-            ui.notifications.notify(`Created ${zones.length} Regions`);
+            ui.notifications.notify(game.i18n.format("WH.Notification.RegionsCreated", {count: zones.length}));
         });
         if (!keepDrawings)
         {

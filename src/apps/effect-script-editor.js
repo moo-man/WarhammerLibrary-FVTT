@@ -156,6 +156,6 @@ export default class WarhammerEffectScriptEditor extends WarhammerScriptEditor
             script = `options.${script}`;
         }
         game.clipboard.copyPlainText(foundry.utils.getProperty(deref, script));
-        ui.notifications.info("Script copied");
+        ui.notifications.info("WH.Notification.ScriptCopied", {localize: true});
     }
 }

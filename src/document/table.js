@@ -55,10 +55,10 @@ export class WarhammerRollTable extends RollTable
         if (inputs?.length || roll)
         {
             return await foundry.applications.api.Dialog.wait({
-                window: {title: this.name + " Formula"},
+                window: {title: game.i18n.format("WH.Table.FormulaDialogTitle", {name: this.name})},
                 content: `
                 <div>
-                    <p style="text-align: center"><strong>Table formula requires inputs</strong></p>
+                    <p style="text-align: center"><strong>${game.i18n.localize("WH.Table.FormulaInputsRequired")}</strong></p>
                     <p style="text-align: center">${this.formula}</p>
                 </div>
                     ` + inputs.map(i => 

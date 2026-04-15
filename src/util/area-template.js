@@ -39,7 +39,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
 
         // Prepare template data
         const templateData = {
-            name: "Preview",
+            name: game.i18n.localize("WH.AreaTemplate.PreviewName"),
             user: game.user.id,
             color: game.user.color,
             visibility: 3,

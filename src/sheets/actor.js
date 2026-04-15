@@ -127,7 +127,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         }
         catch (e)
         {
-            ui.notifications.error("Error Adding Condition Data: " + e);
+            ui.notifications.error(game.i18n.format("WH.Error.ConditionData", {error: e}));
         }
     }
 
@@ -192,7 +192,7 @@ export default class WarhammerActorSheetV2 extends WarhammerSheetMixinV2(Handleb
         if (type.includes(","))
         {
             let keys = type.split(",").map(i => i.trim());
-            let choice = await ItemDialog.create(keys.map(key => {return {id : key, name:  game.i18n.localize(CONFIG.Item.typeLabels[key])}; }), 1, {text : "Select Item Type", title : "New Item"});
+            let choice = await ItemDialog.create(keys.map(key => {return {id : key, name:  game.i18n.localize(CONFIG.Item.typeLabels[key])}; }), 1, {text : game.i18n.localize("WH.Dialog.SelectItemType"), title : game.i18n.localize("WH.Dialog.NewItem")});
             if (choice[0])
             {
                 type = choice[0].id;
