@@ -91,7 +91,7 @@ export default class WarhammerBugReporter extends HandlebarsApplicationMixin(App
         if (sidebarInfo && systemConfig().bugReporterConfig?.repoEndpoint)
         {
             let button = document.createElement("button");
-            button.textContent = "Submit Issue";
+            button.textContent = game.i18n.localize("WH.BugReporter.SubmitIssue");
             button.addEventListener("click", ev => 
             {
                 new this().render({force: true});
@@ -134,7 +134,7 @@ export default class WarhammerBugReporter extends HandlebarsApplicationMixin(App
         // Add notification if any module is out of date
         if (Object.values(isLatest).some(i => !i))
         {
-            this.addNotification("Some options are disabled because they are out of date!", select.parentElement, {classes : "warning hint", position: "afterend", key: "modules"});
+            this.addNotification(game.i18n.localize("WH.BugReporter.Warning.OutOfDate"), select.parentElement, {classes : "warning hint", position: "afterend", key: "modules"});
         }
     }
 

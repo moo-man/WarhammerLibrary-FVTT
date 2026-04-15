@@ -31,16 +31,16 @@ export default class WarhammerEffectShapeConfig extends WHFormApplication
         data.radius = this.document.system.transferData.area.radius;
         data.aura = this.document.system.transferData.type == "aura";
         data.curvatures = {
-            "round": "Round",
-            "flat" : "Flat",
-            "semicircle" : "Semicircle"
+            "round": game.i18n.localize("WH.Curvature.Round"),
+            "flat" : game.i18n.localize("WH.Curvature.Flat"),
+            "semicircle" : game.i18n.localize("WH.Curvature.Semicircle")
         },
         data.types = {
-            "circle" : "Circle",
-            "cone" : "Cone",
-            "rectangle" : "Rectangle",
-            "ellipse" : "Ellipse",
-            "line" : "Line"
+            "circle" : game.i18n.localize("WH.ShapeType.Circle"),
+            "cone" : game.i18n.localize("WH.ShapeType.Cone"),
+            "rectangle" : game.i18n.localize("WH.ShapeType.Rectangle"),
+            "ellipse" : game.i18n.localize("WH.ShapeType.Ellipse"),
+            "line" : game.i18n.localize("WH.ShapeType.Line")
         };
         return data;
     }

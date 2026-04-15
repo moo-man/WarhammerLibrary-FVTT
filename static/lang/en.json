@@ -18,6 +18,14 @@
             "Target": "Applies the Effect to the targets of the action or the tokens currently targeted.",
             "Zone": "Select a Zone to apply this Effect to, applying to tokens within."
         },
+        "AreaTemplate": {
+            "PreviewName": "Preview"
+        },
+        "AuraVisibility": {
+            "AlwaysEveryone": "Always for Everyone",
+            "AlwaysGM": "Always for Gamemaster",
+            "OnlyRegionLayer": "Only on Region Layer"
+        },
         "Badge": {
             "Discord": "DISCORD",
             "Issues": "ISSUES",
@@ -47,21 +55,25 @@
             "NeedsAttention": "NEEDS ATTENTION",
             "Report": "Report",
             "ReportSuccess": "Issue submitted! See the console for a link.",
+            "SubmitIssue": "Submit Issue",
             "SubmittedIssues": "Submitted Issues",
             "Title": "Submit an Issue",
             "Warning": {
                 "Email": "<b>Be aware</b>: Your email will be publicly posted on this system's GitHub issues page. If you do not desire this, use your Discord tag or contact me (<a href='mailto:russellt@cubicle7games.com'>Moo Man</a>) directly.",
                 "NeedHelp": "Do not use the reporter if you need immediate assistance or want to ask general questions. Please see <a href='{url}'>Troubleshooting</a>",
+                "OutOfDate": "Some options are disabled because they are out of date!",
                 "PAT": "The PAT is considered sensitive information and is saved in this world's settings for future reports. This can be found by other users in this world if they know where to look."
             }
         },
         "CannotDeleteItemEffect": "This effect is from an Item on this Actor. Delete the Item itself or the effect from the Item's sheet.",
         "Chat": {
             "Commands": {
+                "Arguments": "Arguments",
                 "DefaultArgument": "Default Argument",
                 "Examples": "Examples",
                 "HelpAlias": "Command Help",
                 "HelpDescription": "Print instructions for how to use commands",
+                "None": "None",
                 "Notes": "Notes",
                 "PrintCommand": "<p>Below is the list of chat commands and available parameters. You can assign some value to a parameter by using <span style='font-family:monospaced'>=</span>. If a command has a default argument, it does not need to be assigned, but must be the first value provided.</p><p>e.g. <span style='font-family:monospaced'>{prefix}command 100 someArg=value1 anotherArg=value2</span></p>"
             }
@@ -140,6 +152,11 @@
         "Configuration": "Configuration",
         "ConfigureZoneTT": "Configure Zone",
         "ConvertDrawings": "Convert Drawings to Zones",
+        "Curvature": {
+            "Flat": "Flat",
+            "Round": "Round",
+            "Semicircle": "Semicircle"
+        },
         "DefendingAgainst": "Defending Against",
         "DefendingAgainstTT": "Run this script in the dialog of an Actor that has been targeted with this Actor or Item",
         "DeleteEffect": "Delete Effect",
@@ -153,10 +170,12 @@
             "EnterValue": "Enter Value",
             "Initial": "Initial",
             "Modifiers": "Dialog Modifiers",
+            "NewItem": "New Item",
             "RollBlind": "Blind",
             "RollPrivate": "Private",
             "RollPublic": "Public",
             "RollSelf": "Self",
+            "SelectItemType": "Select Item Type",
             "SelectValue": "Select Value",
             "UserEntry": "User Entry",
             "ValueDialog": "Value Dialog"
@@ -172,6 +191,8 @@
         "EnableScript": "Enable Script for {name}",
         "Error": {
             "AppliedEffectNoItems": "No Items passed the Active Effect's filter!",
+            "CompendiumDataLoadFailed": "Failed to load compendium data",
+            "ConditionData": "Error Adding Condition Data: {error}",
             "CreateZoneEffect": "Effects must be created via an Active Effect with the 'Zone' Transfer Type",
             "ID": "ID for {name} already exists in collection. This Document has been given a unique ID.",
             "LibraryOutaded": "The Warhammer Library is out of date. {system} defines the minimum library version to be {minimum}.",
@@ -246,12 +267,19 @@
         },
         "ItemDialog": "Item Dialog",
         "ItemsNotAllowed": "This Item is not allowed on this Actor type",
+        "Journal": {
+            "TitleLevel4": "Level 4"
+        },
         "KeepDrawings": "Keep Drawings?",
         "MakeZonesVisible": "Make Zones Visible?",
         "ManualEffectKeys": "Manual Effect Keys",
         "NewEffect": "New Effect",
         "NewItem": "New Item",
         "NewScript": "New Script",
+        "Notification": {
+            "RegionsCreated": "Created {count} Regions",
+            "ScriptCopied": "Script copied"
+        },
         "OriginalDocument": "Original Document",
         "PickZone": "Pick the Zone you wish to apply the Active Effect to.",
         "PlaceEffect": "Place {name}",
@@ -269,14 +297,27 @@
         "Scripts": "Scripts",
         "ScriptTrigger": "Trigger",
         "SendingSocketRequest": "Sending Socket Request",
+        "ShapeType": {
+            "Circle": "Circle",
+            "Cone": "Cone",
+            "Ellipse": "Ellipse",
+            "Line": "Line",
+            "Rectangle": "Rectangle"
+        },
         "ShowDuplicates": "Show Duplicates",
         "ShowDuplicatesHint": "Check to show this script's button even if there are other manual scripts with the same name",
         "SubmissionScript": "Submission Script",
         "SubmitChoices": "Submit Choices",
+        "Table": {
+            "FormulaDialogTitle": "{name} Formula",
+            "FormulaInputsRequired": "Table formula requires inputs"
+        },
         "Target": "Target",
         "Targeter": "Targeter",
         "TargeterTT": "Run this script in the dialog of any Actor that is targeting this Actor.",
-        "TemplateCustomization": "Template Customization",
+        "TemplateCustomization": {
+            "Title": "Template Customization"
+        },
         "Theme": {
             "Config": "Theme Configuration",
             "ConfigButton": "Configure Theme",
@@ -394,6 +435,10 @@
         "ValueDialog": "Value Dialog",
         "Warning": {
             "RenderAuraChange": "To reflect the change to Render Aura, disable and re-enable the source Effect, or replace the Token on the Scene."
+        },
+        "Zone": {
+            "ConfirmConvert": "Convert {count} Drawings into Zones?",
+            "DefaultName": "Zone"
         },
         "ZoneConfig": "Zone Configuration",
         "ZoneEffect": "Zone Effect",
