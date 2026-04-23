@@ -60,7 +60,7 @@ export default class WarhammerActiveEffectConfig extends foundry.applications.sh
         this.element.querySelector("[name='statuses']")?.closest(".form-group").remove();
 
         let details = this.element.querySelector("section[data-tab='details']");
-        details.innerHTML += transferDataHTML;
+        details.insertAdjacentHTML("beforeend", transferDataHTML);
 
         let manualToggle = document.createElement("div");
         manualToggle.classList.add("form-group");

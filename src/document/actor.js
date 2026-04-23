@@ -259,6 +259,39 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         }
     }
 
+    get actorsInZone()
+    {
+        let token = this.getActiveTokens()[0]?.document;
+        let inRegions = Array.from(token?.regions || []);
+
+        
+        if (token && inRegions.length)
+        {
+            let tokensInZone = [];
+
+            for(let region of inRegions)
+            {
+                tokensInZone = tokensInZone.concat(Array.from(region.tokens).filter(i => i.id != token.id));
+            }
+
+            return tokensInZone.map(i => i.actor).filter(i => i);
+        }
+        else 
+        {
+            return [];
+        }
+    }
+
+    get enemiesInZone()
+    {
+        return this.actorsInZone.filter(a => !a.sameSideAs(this));
+    }
+
+    get friendliesInZone()
+    {
+        return this.actorsInZone.filter(a => a.sameSideAs(this));
+    }
+
     speakerData(token) 
     {
         if (this.isToken || token) 
