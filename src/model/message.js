@@ -69,7 +69,7 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
             return;
         }
         let template = await AreaTemplate.fromEffect({effect}, this.parent.id);
-        await template.drawPreview(ev);
+        template.drawPreview();
     }
     
     static async onApplyZoneEffect(ev, target) 

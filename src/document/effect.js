@@ -461,6 +461,60 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return effect;
     }
 
+    async handleCanvasDrop({x, y, elevation=0})
+    {
+        const token = Array.from(canvas.tokens.quadtree.getObjects(new PIXI.Rectangle(x, y, 0, 0)))
+            .sort((a, b) => a._lastSortedIndex - b._lastSortedIndex).at(0);
+
+        // Effect may have been dropped on an Actor
+        let dropActor = token?.actor;
+
+
+        // Not-followed zone effect, apply to zone dropped onto, if none, prompt zone
+        if (this.system.transferData.type == "zone" && this.system.transferData.zone.type != "follow")
+        {
+            let regions = canvas.scene.regions.filter(r => r.testPoint({x, y, elevation}));
+            this.applyToZone(regions.map(i => i.id));
+        }
+
+        // Create area effect preview if area effect
+        if (this.system.transferData.type == "area")
+        {
+            let template = await AreaTemplate.fromEffect({effect: this});
+            template.drawPreview();
+            template.moveTo({x, y});
+        }
+
+        // Just apply to dropped actor if not area/zone/aura effect
+        if (this.system.transferData.type == "document" || 
+        this.system.transferData.type == "target" || 
+        this.system.transferData.type == "damage")
+        {
+            if (!dropActor)
+            {
+                ui.notifications.error("WH.Error.NoTargetDrop", {localize: true});
+            }
+            else 
+            {
+                dropActor.applyEffect({effects: this});
+            }
+        }
+
+        // Create aura/followed zone directly ("applying" would remove the aura)
+        if (this.system.transferData.type == "aura" ||
+        (this.system.transferData.type == "zone" && this.system.transferData.zone.type == "follow"))
+        {
+            if (!dropActor)
+            {
+                ui.notifications.error("WH.Error.NoTargetDrop", {localize: true});
+            }
+            else 
+            {
+                dropActor.createEmbeddedDocuments("ActiveEffect", [this]);
+            }
+        }
+    }
+
     // helper function for scripts to check zone actors
     // If no zone  is provided, just use the actor's zones
     actorsInZone(regions)
@@ -542,7 +596,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         await template.drawPreview();
     }
 
-    async applyToZone() 
+    async applyToZone(zoneIds=[]) 
     {
         let effectData;
         effectData = this.convertToApplied();
@@ -551,7 +605,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect({effectData : [effectData]});
+        ZoneHelpers.promptZoneEffect({effectData : [effectData], zoneIds});
     };
 
     get show()

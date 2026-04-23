@@ -275,14 +275,21 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
         let now = Date.now(); // Apply a 20ms throttle
         if ( now - this.#moveTime <= 20 ) {return;}
         const center = event.data.getLocalPosition(this.layer);
+        this.moveTo(center);
+    }
+
+    moveTo(point)
+    {
+        let now = Date.now(); // Apply a 20ms throttle
+        if ( now - this.#moveTime <= 20 ) {return;}
         if (!canvas.grid.isGridless)
         {
-            const snapped = this.getSnappedPosition(center);
+            const snapped = this.getSnappedPosition(point);
             this._updateShape(snapped);
         }
         else 
         {
-            this._updateShape(center);
+            this._updateShape(point);
         }
         this.refresh();
         this.#moveTime = now;

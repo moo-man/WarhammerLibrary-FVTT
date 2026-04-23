@@ -13,6 +13,7 @@ import sidebar from "./sidebar";
 import directories from "./directories.js";
 import i18n from "./i18n.js";
 import table from "./table.js";
+import effects from "./effects.js";
 
 /**
  *
@@ -32,6 +33,7 @@ export default function()
     sidebar();
     i18n();
     table();
+    effects();
 
     // #if _ENV == "development"
     debug();

@@ -192,7 +192,8 @@
             "NoTargets": "No targeted Actors!",
             "NotValidChoiceType": "Not a valid choice",
             "WrongChoiceOptionType": "This type of Item isn't allowed. Allowed Types: {types}",
-            "AppliedEffectNoItems" : "No Items passed the Active Effect's filter!"
+            "AppliedEffectNoItems" : "No Items passed the Active Effect's filter!",
+            "NoTargetDrop" : "Effect must be applied to a Token"
         },
         "ErrorNoZones": "No Zones to select. Add Regions to the Scene to create Zones.",
         "ErrorUnableToFindEffect": "Unable to find effect to apply.",

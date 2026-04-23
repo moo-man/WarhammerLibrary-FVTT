@@ -295,7 +295,7 @@ export default class ZoneHelpers
     }
 
 
-    static promptZoneEffect({effectUuids=[], effectData=[]}, messageId)
+    static promptZoneEffect({effectUuids=[], effectData=[], zoneIds=[]}, messageId)
     {
         if (!(effectUuids instanceof Array))
         {
@@ -309,6 +309,18 @@ export default class ZoneHelpers
 
         // Zone must have Text
         let zones = canvas.scene.regions.contents;
+
+        // If zoneIds are defined, don't prompt dialog, just apply to all
+        if (zoneIds.length)
+        {
+            zones = zones.filter(z => zoneIds.includes(z.id));
+
+            for(let z of zones)
+            {
+                this.applyEffectToZone({effectUuids, effectData}, z, messageId);
+                return;
+            }
+        }
 
         if (zones.length == 0)
         {
