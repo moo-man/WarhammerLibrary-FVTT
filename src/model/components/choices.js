@@ -269,7 +269,7 @@ export class ChoiceModel extends foundry.abstract.DataModel
             // If inserting onto another option, form a choice between them instead
             location.options = [foundry.utils.deepClone(location), data];
             location.type = "and";
-            location.id = randomID();
+            location.id = foundry.utils.randomID();
         }
         else
         {
