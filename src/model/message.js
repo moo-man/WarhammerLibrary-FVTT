@@ -64,7 +64,8 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
     static async onPlaceAreaEffect(ev, target) 
     {
         let effect = await this._getEffect(target.dataset);
-        if (!(await effect.runPreApplyScript()))
+        let test = this.test;
+        if (!(await effect.runPreApplyScript({test})))
         {
             return;
         }
@@ -75,11 +76,14 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
     static async onApplyZoneEffect(ev, target) 
     {
         let effect = await this._getEffect(target.dataset);
-        if (!(await effect.runPreApplyScript()))
+        let test = this.test;
+        let effectData = effect.convertToApplied(test);
+
+        if (!(await effect.runPreApplyScript({test, effectData})))
         {
             return;
         }
-        ZoneHelpers.promptZoneEffect({effectData: effect.convertToApplied()}, this.parent.id);
+        ZoneHelpers.promptZoneEffect({effectData}, this.parent.id);
     };
 
     async _getEffect({uuid, id, path})

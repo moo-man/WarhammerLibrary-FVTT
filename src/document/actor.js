@@ -292,6 +292,15 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
         return this.actorsInZone.filter(a => a.sameSideAs(this));
     }
 
+    sharesZoneWith(actor)
+    {
+        if (!actor) { return false; }
+        else 
+        {
+            return this.actorsInZone.find(a => a.uuid == actor.uuid);
+        }
+    }
+
     speakerData(token) 
     {
         if (this.isToken || token) 

@@ -20,7 +20,8 @@ export default function ()
             choiceDecision : "modules/warhammer-lib/templates/partials/choice-decision.hbs",
             documentReference : "modules/warhammer-lib/templates/partials/document-reference.hbs",
             nameList : "modules/warhammer-lib/templates/partials/name-list.hbs",
-            nameListInput : "modules/warhammer-lib/templates/partials/name-list-input.hbs"
+            nameListInput : "modules/warhammer-lib/templates/partials/name-list-input.hbs",
+            nameListSelect : "modules/warhammer-lib/templates/partials/name-list-select.hbs"
         });
     });
 }

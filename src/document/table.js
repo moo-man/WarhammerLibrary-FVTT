@@ -6,8 +6,8 @@ export class WarhammerRollTable extends RollTable
         let noCenter = config.noCenter;
         let inline = config.inline;
         let separator = config.separator || "";
-
         let columns = (await Promise.all(config.columns?.split(",").map(i => fromUuid(i.trim())) || [])).map(t => t);
+        let title = config.title || (columns.length ? this.name.split("-")[0].trim() : this.name);
 
         let resultToText = (r) => 
         {
@@ -18,13 +18,13 @@ export class WarhammerRollTable extends RollTable
         };
 
         return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<div style="${config.style || ""}" class="table-container">${config.description == "top" ? this.description : ""}<table class="${game.system.id} embedded">
-        <thead>
-        <tr class="title"><td colspan="${columns.length + 2}">@UUID[${this.uuid}]{${columns.length ? this.name.split("-")[0].trim() : this.name}}</td></tr>
+        <thead class="${noCenter ? "no-center" : ""}">
+        <tr class="title"><td colspan="${columns.length + 2}">@UUID[${this.uuid}]{${title}}</td></tr>
         <tr class="subheader">
             <td class="formula">${this.formula}</td>
             ${columns.length 
-        ? [this].concat(columns).map(c => `@UUID[${c.uuid}]{${c.name.split("-")[1].trim()}}`).map(i => `<td class="label">${i}</td>`).join("") // If columns, column headers should be table names, otherwise use provided label
-        : `<td class="label">${config.label}</td>`}
+        ? [this].concat(columns).map(c => `@UUID[${c.uuid}]{${c.name.split("-")[1]?.trim() || c.name}}`).map(i => `<td class="label">${i}</td>`).join("") // If columns, column headers should be table names, otherwise use provided label
+        : `<td class="label">${config.label || "Result"}</td>`}
         </tr>
         </thead>
         <tbody class="${noCenter ? "no-center" : ""}">
@@ -52,7 +52,7 @@ export class WarhammerRollTable extends RollTable
     {
         let inputs = this.formula.match(/@([a-z.0-9_-]+)/gi);
 
-        if (inputs?.length || roll)
+        if (inputs?.length && !roll)
         {
             return await foundry.applications.api.Dialog.wait({
                 window: {title: this.name + " Formula"},

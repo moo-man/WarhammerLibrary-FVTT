@@ -359,9 +359,18 @@ export default class ZoneHelpers
             effectData = [effectData];
         }
 
+        let message = game.messages.get(messageId);
+        let test = message.system.test;
+
         let owningUser = getActiveDocumentOwner(region);
         if (owningUser?.id == game.user.id)
         {
+
+            effectData.forEach(e => 
+            {
+                e.system.sourceData.test = {...test};
+            });
+            
             let zoneEffects = deepClone(region.flags[game.system.id]?.effects || []).concat(effectData.filter(i => i.system.transferData.zone.type == "zone"));
 
             // One-time application effects that aren't added to a zone but instead added to tokens in the zone
@@ -371,7 +380,6 @@ export default class ZoneHelpers
             for (let uuid of effectUuids)
             {
                 let originalEffect = fromUuidSync(uuid);
-                let message = game.messages.get(messageId);
                 let zoneEffect = await CONFIG.ActiveEffect.documentClass.create(originalEffect.convertToApplied(message?.system?.test), {temporary : true, message : message?.id});
 
                 if (zoneEffect.system.transferData.zone.type == "tokens")
@@ -380,7 +388,9 @@ export default class ZoneHelpers
                 }
                 else if (zoneEffect.system.transferData.zone.type == "zone")
                 {
-                    zoneEffects.push(zoneEffect.toObject());
+                    let zoneEffectData = zoneEffect.toObject();
+                    zoneEffectData.system.sourceData.test = {...test};
+                    zoneEffects.push(zoneEffectData);
                     newZoneEffectNames.push(zoneEffect.name);
                 }
             }
