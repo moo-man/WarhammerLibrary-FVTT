@@ -52,7 +52,7 @@ export class CombatHelpers
         {
             for(let actor of combat.combatants.filter(i => i.actor).map(i => i.actor))
             {
-                actor.runScripts("updateCombat", {combat}, true);
+                actor.runScripts("updateCombat", {combat, update, options, user}, true);
             }
         }
 

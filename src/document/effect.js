@@ -22,6 +22,13 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         // We can't use simply take a reference to the message id and retrieve the test as
         // creating a Test object before actors are ready (scripts can execute before that) throws errors
         let test = game.messages.get(options.message)?.system?.test;
+
+        // Effect regions have a messageId flag, if so, use it as the source test
+        if (!test && data.system?.sourceData?.area)
+        {
+            test = game.messages.get(fromUuidSync(data.system.sourceData.area)?.getFlag(game.system.id, "messageId"))?.system?.test;
+        }
+
         if (test)
         {
             this.updateSource({[`system.sourceData.test`] : {...test}});
@@ -592,7 +599,7 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect(this.uuid, null, null, foundry.utils.diffObject(effectData, this.convertToApplied()));
+        let template = await AreaTemplate.fromEffect({effectUuid: this.uuid}, null, null, foundry.utils.diffObject(effectData, this.convertToApplied()));
         await template.drawPreview();
     }
 

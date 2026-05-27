@@ -231,7 +231,14 @@ export class ChoiceModel extends foundry.abstract.DataModel
             let document = await warhammer.utility.findItemId(option.documentId);
             if (includeDiff && !foundry.utils.isEmpty(option.diff))
             {
-                document = new Item.implementation(foundry.utils.mergeObject(document.toObject(), option.diff));
+                if (option.diff?.dereferenced)
+                {
+                    document = new Item.implementation(foundry.utils.mergeObject(option.diff));
+                }
+                else 
+                {
+                    document = new Item.implementation(foundry.utils.mergeObject(document.toObject(), option.diff));
+                }
             }
 
             return document;
