@@ -1,3 +1,4 @@
+import ItemDialog from "../../apps/item-dialog";
 import { ListPropertyForm } from "../../apps/list-form";
 import { DeferredReferenceModel, DiffReferenceModel, DocumentReferenceModel } from "./reference";
 
@@ -130,6 +131,12 @@ export class DocumentReferenceListModel extends ListModel
     {
         return await Promise.all(this.list.map(i => i.awaitDocument()));
     }
+
+    async choose(number, {title, text}={})
+    {
+        let documents = this.awaitDocuments();
+        return ItemDialog.create(documents, number, {title, text});
+    }
 }
 
 export class DeferredReferenceListModel extends ListModel 
@@ -155,6 +162,12 @@ export class DeferredReferenceListModel extends ListModel
     async awaitDocuments()
     {
         return await Promise.all(this.list.map(i => i.awaitDocument()));
+    }
+
+    async choose(number, {title, text}={})
+    {
+        let documents = await this.awaitDocuments();
+        return ItemDialog.create(documents, number, {title, text});
     }
 }
 
