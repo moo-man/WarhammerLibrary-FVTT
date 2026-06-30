@@ -65,11 +65,12 @@ export class WarhammerMessageModel extends foundry.abstract.DataModel
     {
         let effect = await this._getEffect(target.dataset);
         let test = this.test;
-        if (!(await effect.runPreApplyScript({test})))
+        let effectData = effect.convertToApplied(test);
+        if (!(await effect.runPreApplyScript({effectData, test})))
         {
             return;
         }
-        let template = await AreaTemplate.fromEffect({effect}, this.parent.id);
+        let template = await AreaTemplate.fromEffect({effectData}, this.parent.id);
         template.drawPreview();
     }
     

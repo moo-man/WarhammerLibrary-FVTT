@@ -65,6 +65,19 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
         return await this.handleImmediateScripts(data, options, user);
     }
 
+    
+    async _preUpdate(data, options, user)
+    {
+        if (this.parent)
+        {
+            if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {data, options, user, type: "effect", document: this }))).some(e => e == false))
+            {
+                return false;
+            }
+        }
+    }
+
+
     async _preDelete(options, user)
     {
         if (this.parent)
@@ -836,6 +849,21 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get sourceArea()
     {
         return fromUuidSync(this.system.sourceData.area);
+    }
+
+    get auraRegion()
+    {
+        if (this.isAura)
+        {
+            return canvas.scene?.regions.find(r => r.getFlag(game.system.id, "effectUuid") == this.uuid);
+        }
+        return null;
+    }
+
+    // Check if is an active aura (not a transferred aura).
+    get isAura()
+    {
+        return this.system.transferData.type == "aura" && !this.system.transferData.area.aura.transferred;
     }
 
     get changeKeys()

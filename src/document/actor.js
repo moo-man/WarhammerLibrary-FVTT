@@ -194,18 +194,6 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
      */
     *allApplicableEffects(includeItemEffects = false) 
     {
-
-        for (const effect of this.effects.contents.concat(this.system.getOtherEffects())) 
-        {
-            if (effect.system.transferData.documentType == "Item" && includeItemEffects) // Some effects are intended to modify items, but are placed on the actor for ease of tracking
-            {
-                yield effect;
-            }
-            else if (effect.system.transferData.documentType == "Actor") // Normal effects (default documentType is actor)
-            {
-                yield effect;
-            }
-        }
         for (const item of this.items) 
         {
             for (const effect of item.effects.contents.concat(item.system.getOtherEffects())) 
@@ -219,7 +207,19 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
                     yield effect;
                 }
             }
+        }
 
+        // Not exactly ideal for handling priority, but for now, move temporary effects down here because they should be evaluated last (last wins)
+        for (const effect of this.effects.contents.concat(this.system.getOtherEffects())) 
+        {
+            if (effect.system.transferData.documentType == "Item" && includeItemEffects) // Some effects are intended to modify items, but are placed on the actor for ease of tracking
+            {
+                yield effect;
+            }
+            else if (effect.system.transferData.documentType == "Actor") // Normal effects (default documentType is actor)
+            {
+                yield effect;
+            }
         }
     }
 
@@ -343,7 +343,7 @@ export class WarhammerActor extends WarhammerDocumentMixin(Actor)
   
     get auraEffects() 
     {
-        return this.items.reduce((acc, item) => acc.concat(Array.from(item.allApplicableEffects())), []).concat(this.effects.contents).filter(e => e.system.transferData.type == "aura" && !e.system.transferData.area.aura.transferred).filter(i => i.active);
+        return this.items.reduce((acc, item) => acc.concat(Array.from(item.allApplicableEffects())), []).concat(this.effects.contents).filter(e => e.isAura).filter(i => i.active);
     }
 
     get followedZoneEffects()

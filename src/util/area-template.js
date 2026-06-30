@@ -1,4 +1,5 @@
 import ValueDialog from "../apps/value-dialog";
+import WarhammerActiveEffect from "../document/effect";
 import { getActiveDocumentOwner } from "./utility";
 
 /**
@@ -88,7 +89,7 @@ export default class AreaTemplate extends foundry.canvas.placeables.Region
         foundry.utils.mergeObject(effectData, mergeData);
 
 
-        radius = radius || Number(effectData.system.transferData.area.radius) || effect?.radius; 
+        radius = radius || Number(effectData.system.transferData.area.radius) || new WarhammerActiveEffect(effectData).radius; 
 
         if (!radius)
         {
