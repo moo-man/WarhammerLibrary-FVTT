@@ -70,6 +70,12 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     {
         if (this.parent)
         {
+            // If expiring, prevent if exempt
+            if (data.duration?.expired == true && !this.duration.expired && this.isExpiryExempt)
+            {
+                return false;
+            }
+
             if ((await Promise.all(this.parent.runScripts("preUpdateDocument", {data, options, user, type: "effect", document: this }))).some(e => e == false))
             {
                 return false;
@@ -131,6 +137,15 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
             return;
         }
 
+        // If expiring, delete
+        // Not using CONFIG.ActiveEffect.expiryAction = "delete" because we need to check isExpiryExempt in preUpdate.
+        // if expiryAction is set to delete, no expiry update happens, and there's no indication that the delete came from expiration.
+        if (data.duration?.expired == true)
+        {
+            this.delete({expired: true});
+            ui.notifications.info(`${this.name} expired.`);
+        }
+
         // If an owned effect is updated, run parent update scripts
         if (this.parent)
         {
@@ -175,6 +190,14 @@ export default class WarhammerActiveEffect extends CONFIG.ActiveEffect.documentC
     get isTemporary()
     {
         return super.isTemporary || this.statuses.size > 0;
+    }
+
+    // The above isTemporary usage is difficult because Foundry expires temporary effects if they have infinite duration.
+    // However, I find infinite temporary effects useful for things that are actually suitable to be temporary, but tracked manually (or not suitable to be tracked by time)
+    // i.e. Engaged, Prone, most other conditions
+    get isExpiryExempt()
+    {
+        return this.isTemporary && !Number.isFinite(this.duration.value);
     }
 
     //#region Creation Handling
