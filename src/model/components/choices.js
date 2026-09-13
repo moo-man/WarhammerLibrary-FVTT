@@ -438,6 +438,33 @@ export class ChoiceModel extends foundry.abstract.DataModel
         return this._displayOptions(this.structure, {links : true});
     }
 
+
+    // If there are OR choices to make
+    get hasChoices()
+    {
+        return this._structureHasChoices(this.structure);
+    }
+
+    _structureHasChoices(structure)
+    {
+        let hasChoices = false;
+        if (structure.type == "or")
+        {
+            hasChoices = true;
+        }
+        else 
+        {
+            for(let option of structure.options)
+            {
+                if (option.type != "option")
+                {
+                    hasChoices = hasChoices || !!(this._structureHasChoices(option));
+                }
+            }
+        }
+        return hasChoices;
+    }
+
     _displayOptions(structure, displayOptions={})
     {
         try 
