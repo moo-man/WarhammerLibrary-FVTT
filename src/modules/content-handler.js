@@ -101,7 +101,8 @@ export class WarhammerModuleContentHandler
         if (existingDocuments.length)
         {
             log("Pre Existing Documents: ", null, {args : existingDocuments});
-            existingDocuments = await new Promise(resolve => new ModuleDocumentResolver(existingDocuments, {resolve}).render(true));
+            let pairs = existingDocuments.map(incoming => ({incoming, current : collection.get(incoming.id)}));
+            existingDocuments = await new Promise(resolve => new ModuleDocumentResolver(pairs, {resolve}).render(true));
             log("Post Existing Documents: ", null, {args : existingDocuments});
         }
         this._addData(existingDocuments);
@@ -272,23 +273,104 @@ export class WarhammerModuleContentHandler
 }
 
 
-class ModuleDocumentResolver extends FormApplication
+const DIFF_IGNORE_KEYS = ["_id", "_stats", "ownership", "sort", "folder", "_key"];
+const EMBEDDED_COLLECTION_KEYS = ["items", "effects", "pages"];
+
+export class ModuleDocumentResolver extends FormApplication
 {
-    static get defaultOptions() 
+    static get defaultOptions()
     {
         const options = super.defaultOptions;
         options.resizable = true;
         options.height = 600;
-        options.width = 400;
+        options.width = 600;
         options.template = "modules/warhammer-lib/templates/modules/document-resolver.hbs";
         options.classes.push("document-resolver");
-        options.title = localize("WH.ResolveDuplicates");
+        options.title = localize("WH.Initialization.ResolveDuplicates");
         return options;
     }
 
+    getData()
+    {
+        let data = super.getData();
+        data.pairs = this.object.map(pair =>
+        {
+            let currentData = pair.current.toObject();
+            let diff = foundry.utils.diffObject(currentData, pair.incoming.toObject());
+            for (let key of DIFF_IGNORE_KEYS)
+            {
+                delete diff[key];
+            }
+            return {
+                id : pair.incoming.id,
+                name : pair.incoming.name,
+                img : pair.incoming.img,
+                changes : this._flattenDiff(diff, currentData)
+            };
+        });
+        return data;
+    }
+
+    // `current` here is always plain data (a toObject() result), never a Document,
+    // so nested lookups don't return EmbeddedCollections/Maps that print as [object Map]
+    _flattenDiff(diff, current, path = "")
+    {
+        let changes = [];
+        for (let [key, value] of Object.entries(diff))
+        {
+            let fullPath = path ? `${path}.${key}` : key;
+            if (!path && EMBEDDED_COLLECTION_KEYS.includes(key))
+            {
+                let change = this._collectionDiff(foundry.utils.getProperty(current, fullPath), value);
+                if (change)
+                {
+                    changes.push({field : fullPath, ...change});
+                }
+            }
+            else if (foundry.utils.getType(value) === "Object")
+            {
+                changes.push(...this._flattenDiff(value, current, fullPath));
+            }
+            else
+            {
+                changes.push({
+                    field : fullPath,
+                    oldValue : this._displayValue(foundry.utils.getProperty(current, fullPath)),
+                    newValue : this._displayValue(value)
+                });
+            }
+        }
+        return changes;
+    }
+
+    // Embedded collections (items/effects/pages) are diffed by name, showing only
+    // names removed/added between the two sides - names present in both are noise
+    // (e.g. reordering) and are excluded. Returns null when nothing actually differs.
+    _collectionDiff(current, incoming)
+    {
+        let oldNames = (current ?? []).map(i => i.name);
+        let newNames = (incoming ?? []).map(i => i.name);
+        let removed = oldNames.filter(n => !newNames.includes(n));
+        let added = newNames.filter(n => !oldNames.includes(n));
+        if (!removed.length && !added.length)
+        {
+            return null;
+        }
+        return {oldValue : removed.join(", "), newValue : added.join(", ")};
+    }
+
+    _displayValue(value)
+    {
+        let type = foundry.utils.getType(value);
+        if (type === "Array" || type === "Object")
+        {
+            return JSON.stringify(value);
+        }
+        return value;
+    }
 
     _updateObject(ev, formData)
-    {   
-        this.options.resolve(this.object.filter(i => formData[i.id]));
+    {
+        this.options.resolve(this.object.filter(pair => formData[pair.incoming.id]).map(pair => pair.incoming));
     }
 }

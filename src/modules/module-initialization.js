@@ -1,5 +1,6 @@
 import { localize, log, format } from "../util/utility";
 import WarhammerModuleUpdater from "./module-updater";
+import { ModuleDocumentResolver } from "./content-handler";
 
 
 export default class WarhammerModuleInitializer extends Dialog 
@@ -121,7 +122,8 @@ export default class WarhammerModuleInitializer extends Dialog
         if (existingDocuments.length)
         {
             log("Pre Existing Documents: ", null, {args : existingDocuments});
-            existingDocuments = await new Promise(resolve => new ModuleDocumentResolver(existingDocuments, {resolve}).render(true));
+            let pairs = existingDocuments.map(incoming => ({incoming, current : collection.get(incoming.id)}));
+            existingDocuments = await new Promise(resolve => new ModuleDocumentResolver(pairs, {resolve}).render(true));
             log("Post Existing Documents: ", null, {args : existingDocuments});
         }
         this._addData(existingDocuments);
@@ -180,27 +182,5 @@ export default class WarhammerModuleInitializer extends Dialog
             let moduleFolders = game.folders.filter(doc => doc.flags?.source == id);
             CONFIG.Folder.documentClass.deleteDocuments(moduleFolders.map(doc => doc.id));
         }
-    }
-}
-
-
-class ModuleDocumentResolver extends FormApplication
-{
-    static get defaultOptions() 
-    {
-        const options = super.defaultOptions;
-        options.resizable = true;
-        options.height = 600;
-        options.width = 400;
-        options.template = "modules/warhammer-lib/templates/modules/document-resolver.hbs";
-        options.classes.push("document-resolver");
-        options.title = localize("WH.ResolveDuplicates");
-        return options;
-    }
-
-
-    _updateObject(ev, formData)
-    {   
-        this.options.resolve(this.object.filter(i => formData[i.id]));
     }
 }

@@ -1,15 +1,38 @@
 <form autocomplete="off">
     <div>
-        <p class="note">{{{localize "INIT.ResolveDuplicatesNote"}}}</p>
-        {{#each object}}
+        <p class="note">{{{localize "WH.Initialization.ResolveDuplicatesNote"}}}</p>
+        {{#each pairs}}
             <div class="document">
-                <img src="{{this.img}}">
-                <a>{{this.name}}</a>
-                <input type="checkbox" name="{{this.id}}" checked="true">
+                <header>
+                    <img src="{{this.img}}">
+                    <a>{{this.name}}</a>
+                    <input type="checkbox" name="{{this.id}}" checked="true">
+                </header>
+                {{#if this.changes.length}}
+                <table class="diff">
+                    <thead>
+                        <tr>
+                            <th>{{localize "WH.Initialization.DiffField"}}</th>
+                            <th>{{localize "WH.Initialization.DiffCurrent"}}</th>
+                            <th>{{localize "WH.Initialization.DiffIncoming"}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each this.changes}}
+                        <tr>
+                            <td class="field">{{this.field}}</td>
+                            <td class="old">{{this.oldValue}}</td>
+                            <td class="new">{{this.newValue}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+                {{else}}
+                <p class="no-changes">{{localize "WH.Initialization.NoChanges"}}</p>
+                {{/if}}
             </div>
         {{/each}}
     </div>
 
     <button type="submit" name="submit">{{localize "Submit"}}</button>
 </form>
-    
