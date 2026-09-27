@@ -274,32 +274,57 @@ export class WarhammerModuleContentHandler
 
 
 const DIFF_IGNORE_KEYS = ["_id", "_stats", "ownership", "sort", "folder", "_key"];
+const DIFF_IGNORE_PREFIXES = ["prototypeToken", "flags"];
 const EMBEDDED_COLLECTION_KEYS = ["items", "effects", "pages"];
 
-export class ModuleDocumentResolver extends FormApplication
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+export class ModuleDocumentResolver extends HandlebarsApplicationMixin(ApplicationV2)
 {
-    static get defaultOptions()
+    static DEFAULT_OPTIONS = {
+        tag : "form",
+        classes : ["warhammer", "document-resolver"],
+        window : {
+            title : "WH.Initialization.ResolveDuplicates",
+            resizable : true,
+            contentClasses: ["standard-form"]
+        },
+        position : {
+            width : 600,
+            height : 600
+        },
+        form : {
+            handler : this.submit,
+            submitOnChange : false,
+            closeOnSubmit : true
+        }
+    };
+
+    static PARTS = {
+        resolver : {template : "modules/warhammer-lib/templates/modules/document-resolver.hbs"},
+        footer : {template : "templates/generic/form-footer.hbs"}
+    };
+
+    constructor(pairs, options)
     {
-        const options = super.defaultOptions;
-        options.resizable = true;
-        options.height = 600;
-        options.width = 600;
-        options.template = "modules/warhammer-lib/templates/modules/document-resolver.hbs";
-        options.classes.push("document-resolver");
-        options.title = localize("WH.Initialization.ResolveDuplicates");
-        return options;
+        super(options);
+        this.pairs = pairs;
     }
 
-    getData()
+    async _prepareContext(options)
     {
-        let data = super.getData();
-        data.pairs = this.object.map(pair =>
+        let context = await super._prepareContext(options);
+        context.buttons = [{ type: "submit", label: "Submit" }];
+        context.pairs = this.pairs.map(pair =>
         {
             let currentData = pair.current.toObject();
             let diff = foundry.utils.diffObject(currentData, pair.incoming.toObject());
-            for (let key of DIFF_IGNORE_KEYS)
+            for (let key of Object.keys(diff))
             {
-                delete diff[key];
+                if (DIFF_IGNORE_KEYS.includes(key) || DIFF_IGNORE_PREFIXES.some(prefix => key.startsWith(prefix)))
+                {
+                    delete diff[key];
+                }
             }
             return {
                 id : pair.incoming.id,
@@ -307,8 +332,10 @@ export class ModuleDocumentResolver extends FormApplication
                 img : pair.incoming.img,
                 changes : this._flattenDiff(diff, currentData)
             };
-        });
-        return data;
+        // Documents whose only differences were in ignored keys/prefixes have nothing
+        // left to review, so drop them instead of surfacing a "no changes" row
+        }).filter(pair => pair.changes.length);
+        return context;
     }
 
     // `current` here is always plain data (a toObject() result), never a Document,
@@ -369,8 +396,9 @@ export class ModuleDocumentResolver extends FormApplication
         return value;
     }
 
-    _updateObject(ev, formData)
+    static async submit(ev, form, formData)
     {
-        this.options.resolve(this.object.filter(pair => formData[pair.incoming.id]).map(pair => pair.incoming));
+        let data = formData.object;
+        this.options.resolve(this.pairs.filter(pair => data[pair.incoming.id]).map(pair => pair.incoming));
     }
 }

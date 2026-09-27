@@ -216,7 +216,6 @@
             "ExistingContentMessage": "Existing Documents have been found from a previous initialization. Initializing again may prompt you to choose between keeping the current imported versions or replacing them from this initialization. Do you wish to continue?",
             "Items": "Initializing Items",
             "Journals": "Initializing Journals",
-            "NoChanges": "No differences found.",
             "ResolveDuplicates": "Resolve Duplicates",
             "ResolveDuplicatesNote": "The following Documents already exist in this world. Review the differences below and choose which incoming versions to apply.",
             "Scenes": "Initializing Scenes",
