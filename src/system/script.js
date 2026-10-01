@@ -42,7 +42,7 @@ export default class WarhammerScript
         }
         catch(e)
         {
-            console.error(`Script ${this.Label} threw error: ${e}.\n Context and Arguments:`, this.context, args);
+            console.error(`Script ${this.Label} threw error: ${e}.\n${this.item ? `Item: ${this.item.name}\n` : ""} Context and Arguments:`, this.context, args);
         }
     }
 
