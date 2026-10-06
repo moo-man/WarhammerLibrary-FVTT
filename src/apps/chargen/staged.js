@@ -218,6 +218,67 @@ export class StagedCharacterCreation extends HandlebarsApplicationMixin(Applicat
                 this.element.querySelector(".active-stage").appendChild(instance.element);
             }
         }
+        else 
+        {
+            this.element.querySelector(".active-stage").appendChild(await this.getCharacterHTML());
+        }
+    }
+
+    async getCharacterHTML()
+    {
+    }
+
+    compileResults()
+    {
+        let compiled = {};
+        let items = [];
+
+        for (let result of Object.values(this.stageResults))
+        {
+            items = items.concat(result.items || []);
+            let flattened = foundry.utils.flattenObject(result);
+            for(let key in flattened)
+            {
+                if (key == "items") 
+                {
+                    continue;
+                }
+                if (compiled[key])
+                {
+                    if (typeof compiled[key] == "number")
+                    {
+                        compiled[key] += flattened[key];
+                    }
+                    else 
+                    {
+                        compiled[key] = flattened[key];
+                    }
+                }
+                else 
+                {
+                    compiled[key] = flattened[key];
+                }
+            }
+        }
+
+        compiled = foundry.utils.expandObject(compiled);
+        if (!compiled.name)
+        {
+            compiled.name = "New Character";
+        }
+        compiled.items = items;
+        return compiled;
+    }
+
+    // Subclasses should define type and other system specific things
+    compileCharacter()
+    {
+        return new Actor.implementation(foundry.utils.mergeObject(this.compileResults(), this.getSystemData()));
+    }
+
+    getSystemData()
+    {
+        return {};
     }
 
     static _onStartStage(ev, target)
@@ -235,11 +296,11 @@ export class StagedCharacterCreation extends HandlebarsApplicationMixin(Applicat
         this.close();
     }
 
-    static async submit(ev, target)
+    static async submit(ev, target, formData)
     {
         if (this._activeStage)
         {
-            this.completeStage(this._activeStage, await this.stages[this._activeStage].instance.getStageResults());
+            this.completeStage(this._activeStage, await this.stages[this._activeStage].instance.getStageResults(new foundry.applications.ux.FormDataExtended(this.stages[this._activeStage].instance.element)));
         }
     }
 }

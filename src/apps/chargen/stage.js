@@ -104,7 +104,7 @@ export class BaseCharacterCreationStage extends DraggableApp(HandlebarsApplicati
     
     static async submit(event, form, formData)
     {
-        this.options.complete(this.options.id, await this.getStageResults());
+        this.options.complete(this.options.id, await this.getStageResults(formData));
     }
 }
 
