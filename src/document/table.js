@@ -18,16 +18,16 @@ export class WarhammerRollTable extends RollTable
         };
 
         return $(await foundry.applications.ux.TextEditor.implementation.enrichHTML(`<div style="${config.style || ""}" class="table-container">${config.description == "top" ? this.description : ""}<table class="${game.system.id} embedded">
-        <thead class="${noCenter ? "no-center" : ""}">
+        <thead>
         <tr class="title"><td colspan="${columns.length + 2}">@UUID[${this.uuid}]{${title}}</td></tr>
         <tr class="subheader">
-            <td class="formula">${this.formula}</td>
+            <th class="formula" ${config.leftColWidth ? `style="width: ${Number(config.leftColWidth)}%"` : ""}>${this.formula}</th>
             ${columns.length 
-        ? [this].concat(columns).map(c => `@UUID[${c.uuid}]{${c.name.split("-")[1]?.trim() || c.name}}`).map(i => `<td class="label">${i}</td>`).join("") // If columns, column headers should be table names, otherwise use provided label
-        : `<td class="label">${config.label || "Result"}</td>`}
+        ? [this].concat(columns).map(c => `@UUID[${c.uuid}]{${c.name.split("-")[1]?.trim() || c.name}}`).map(i => `<th class="label">${i}</th>`).join("") // If columns, column headers should be table names, otherwise use provided label
+        : `<th class="label">${config.label || "Result"}</th>`}
         </tr>
         </thead>
-        <tbody class="${noCenter ? "no-center" : ""}">
+        <tbody class="${noCenter ? "no-center notleft" : ""}">
     ${this.results.contents.sort((a, b) => a.range[0] - b.range[0]).map(r => 
     {
         let results = columns.length ? [r].concat(columns.map(i => i.results.find(other => other.range[0] == r.range[0]))) : [r];

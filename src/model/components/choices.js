@@ -476,4 +476,46 @@ export class ChoiceModel extends foundry.abstract.DataModel
             return "Error displaying choice options";
         }
     }
+
+    static async fromStrings(strings)
+    {
+        if (typeof strings == "string")
+        {
+            strings = strings.split(",").map(i => i.trim());
+        }
+
+        {
+
+            let options = [];
+
+            for(let s of strings)
+            {
+                let item = await game.wfrp4e.utility.findItem(s);
+
+                if (item && item.system.isPhysical)
+                {
+                    options.push({type: "item", id: foundry.utils.randomID(), name: s, documentId: item.uuid, idType: "uuid"});
+                }
+                else 
+                {
+                    options.push({type: "placeholder", name: s, id: foundry.utils.randomID()});
+                }
+            }
+
+            return {
+                structure: {
+                    type: "and",
+                    id: "root",
+                    options: options.map(i => 
+                    {
+                        return {
+                            id: i.id,
+                            type: "option"
+                        };
+                    })
+                },
+                options
+            };
+        }
+    }
 }

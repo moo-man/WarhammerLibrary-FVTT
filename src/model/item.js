@@ -20,6 +20,11 @@ export class BaseWarhammerItemModel extends BaseWarhammerModel
         }
     }
 
+    getAvoidTestData()
+    {
+        return this.test?.toObject();
+    }
+
     effectIsApplicable(effect, {ignoreDisabled=false}={}) 
     {
         return !effect.disabled || ignoreDisabled;

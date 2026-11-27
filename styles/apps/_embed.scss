@@ -55,3 +55,10 @@ table.embedded {
         }
     }
 }
+
+// generated tables come from @ToTable enricher, but those are always wrapped around <p> tags which can't contain a table, which then generates <p> elements above and below the generated table
+// This will offset those p elements, not clean but not sure what else to do
+table.generated {
+    margin-top: calc(-0.5em + -1.2em) ;
+    margin-bottom: calc(-0.5em + -1.2em) ;
+}

@@ -66,6 +66,7 @@ import DraggableApp from "./apps/draggable";
 import ContainerizedApp from "./apps/containerized";
 import { WHFormApplication } from "./apps/form-application";
 import DragDialog from "./apps/drag-dialog.js";
+import enrichers from "./system/enrichers.js";
 hooks();
 overrides();
 
@@ -165,3 +166,5 @@ globalThis.warhammer = warhammer;
 
 window.customElements.define("filter-state", FilterStateElement);
 window.customElements.define("warhammer-checkbox", CheckboxElement);
+
+enrichers();
